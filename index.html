@@ -38,9 +38,9 @@
   .small{font-family:var(--sans);font-size:13px;color:var(--mute)}
   /* the shelf: height = predicted score, width = cost. Built by shelf() from R and COST. */
   .shelf{margin:44px 0 0;position:relative}
-  .books{display:flex;align-items:flex-end;gap:10px;padding:0 24px;height:290px}
+  .books{display:flex;align-items:flex-end;gap:12px;padding:0 18px;height:290px}
   .spine{position:relative;display:flex;flex-direction:column;justify-content:space-between;align-items:center;flex:0 0 auto;
-         height:calc(var(--h)*1px);width:calc(var(--w)*1px);background:var(--c);color:#fbfaf7;border:0;cursor:pointer;font:inherit;
+         height:calc(var(--h)*1px);flex:var(--w) 1 0;min-width:0;background:var(--c);color:#fbfaf7;border:0;cursor:pointer;font:inherit;
          border-radius:2px 3px 3px 2px;box-shadow:inset 3px 0 0 rgba(255,255,255,.18),inset -4px 0 0 rgba(0,0,0,.18),0 1px 0 rgba(0,0,0,.25);
          transition:transform .22s ease,box-shadow .22s ease;padding:16px 0 12px;overflow:hidden}
   .spine::before,.spine::after{content:"";position:absolute;left:8px;right:8px;height:1px;background:rgba(251,250,247,.45)}
@@ -162,8 +162,8 @@
     .nav .tool{margin-left:0;flex-basis:100%}
     h1{font-size:31px}.tri h2 .n{font-size:32px}
     .hero{padding-top:36px}
-    .books{gap:5px;padding:0 8px;height:150px}
-    .spine{width:auto;flex:1 1 0;min-width:0;padding:8px 0 6px;border-radius:1px 2px 2px 1px;height:calc(var(--h)*0.5px)}
+    .books{gap:5px;padding:0 6px;height:150px}
+    .spine{padding:8px 0 6px;border-radius:1px 2px 2px 1px;height:calc(var(--h)*0.5px)}
     .spine .t{font-size:11.5px}.spine .long{display:none}.spine .short{display:block}
     .spine .num{font-size:9px;margin-top:4px}.spine .num em{display:none}
     .spine::before{top:5px}.spine::after{bottom:4px}
@@ -289,7 +289,7 @@
 </section>
 
 <div class="pf">
-  <span>Built by Shirley · AI-assisted · v0, 9 September 2026 · <a href="how-its-built.html">How it's built, and what gets measured next</a></span>
+  <span>Built by Shirley · v0, 9 September 2026 · <a href="how-its-built.html">The Librarian: how it's built →</a></span>
   <span class="mini" id="mini" aria-hidden="true"></span>
 </div>
 </div>
@@ -499,7 +499,7 @@ const score=id=>Q.reduce((s,q)=>s+({good:1,partial:.5,wrong:0}[R[id][q.n].v]),0)
 const costx=id=>parseFloat(COST[id][2])||1;
 
 function shelf(){
-  // height 140–280px for 0–6; width 40px at 1x, +14px per doubling of cost. Mobile scales in CSS.
+  // height 140–280px for 0–6; width is a flex share: 40 at 1x, +14 per doubling of cost, so the seven fill the shelf. Mobile scales in CSS.
   const SHORT={naive:'Naive',rerank:'Rerank',multimodal:'Multimodal',graph:'Graph',hybrid:'Hybrid',agentic:'Agentic',multiagent:'Multi-agent'};
   const fmt=n=>Number.isInteger(n)?String(n):n.toFixed(1);
   $('books').innerHTML=P.map((p,i)=>{const sc=score(p.id),h=Math.round(140+sc*140/6),w=Math.round(40+14*Math.log2(costx(p.id)));

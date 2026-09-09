@@ -23,7 +23,13 @@ laptop ── branch ── pull request ──▶ GitHub  shhirl/ragpatterns  (
 - Every change is a branch + pull request. Shirley merges. An AI session opens PRs and never merges them.
 - `.github/PULL_REQUEST_TEMPLATE.md` carries the checklist.
 
-## Cloudflare Pages (Shirley does this once; needs her Cloudflare login)
+## Cloudflare Pages (done 9 Sep 2026)
+
+Connected on 9 September 2026 by Claude driving Shirley's browser; she entered the GitHub sudo password herself. Project `ragpatterns`, production branch `main`, no build command, output `/`. Custom domains `ragpatterns.com` and `www.ragpatterns.com` both active; Cloudflare added the CNAME records to `ragpatterns.pages.dev` itself. First production deploy was the merge of PR #1. The GitHub app "Cloudflare Workers and Pages" has access to exactly two repos: `ragpatterns` and `shhirl-site`.
+
+One Pages behaviour to know: it serves clean URLs, so `/how-its-built.html` answers 308 to `/how-its-built`. Internal links keep the `.html` (the local preview needs it); the redirect is free and cached.
+
+The steps, kept for the next site:
 
 1. Cloudflare dashboard → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**.
 2. Pick the GitHub account `shhirl` (authorise the Cloudflare GitHub app if asked; grant it only `ragpatterns`) → repository **ragpatterns**.
