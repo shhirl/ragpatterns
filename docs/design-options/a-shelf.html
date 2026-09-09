@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Option A · The shelf — Seven RAGs, one shelf</title>
+<style>
+  :root{--bg:#fbfaf7;--ink:#1a1a1a;--ink2:#3d3a33;--mute:#7a7568;--line:#e5e2da;--soft:#f3f1ea;--rule:#ecE9e0;
+        --naive:#b8741a;--rerank:#3b6bb0;--multimodal:#8a2f7a;--graph:#2f8a6a;--hybrid:#c2621a;--agentic:#2f6f9f;--multiagent:#6b2f8a;--acc:#1f5e4e;
+        --good:#1f5e4e;--partial:#b8741a;--wrong:#9c2f2f;
+        --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+        --sans:-apple-system,"Helvetica Neue",Inter,Arial,sans-serif;
+        --mono:"SF Mono",Menlo,Consolas,monospace}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:var(--serif);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.6;
+       background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 31px,var(--rule) 31px,var(--rule) 32px)}
+  a{color:var(--ink)}
+  .wrap{max-width:900px;margin:0 auto;padding:0 22px}
+
+  /* option label */
+  .optlabel{position:fixed;top:10px;right:10px;z-index:50;font-family:var(--mono);font-size:11px;letter-spacing:.06em;background:var(--ink);color:var(--bg);padding:6px 10px;border-radius:2px}
+
+  /* sticky nav */
+  .nav{position:sticky;top:0;z-index:40;background:rgba(251,250,247,.92);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+  .nav .wrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px;padding-right:180px;font-family:var(--sans);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase}
+  .nav a{text-decoration:none;color:var(--ink2);border-bottom:2px solid transparent;padding-bottom:2px}
+  .nav a:hover,.nav a.here{color:var(--ink);border-bottom-color:var(--acc)}
+  .nav .brand{font-family:var(--mono);letter-spacing:.04em;text-transform:none;font-size:12px;border:0;color:var(--ink)}
+  .nav .tool{margin-left:auto;font-weight:600;border:0}
+
+  /* hero */
+  .hero{padding:56px 0 0}
+  .kicker{font-family:var(--sans);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin:0}
+  .kicker i{font-style:normal;font-family:var(--mono);color:var(--acc);letter-spacing:.04em;text-transform:none}
+  h1{font-weight:500;font-size:46px;line-height:1.1;margin:12px 0 18px;letter-spacing:-.015em;max-width:780px}
+  .lede{font-size:19.5px;color:var(--ink2);max-width:720px;margin:0 0 14px}
+  p,li{font-size:16.5px}
+  p{max-width:720px}
+
+  /* the shelf */
+  .shelf{margin:44px 0 0;position:relative}
+  .books{display:flex;align-items:flex-end;gap:10px;padding:0 24px;height:290px}
+  .spine{position:relative;display:flex;flex-direction:column;justify-content:space-between;align-items:center;flex:0 0 auto;width:54px;
+         background:var(--c);color:#fbfaf7;text-decoration:none;border-radius:2px 3px 3px 2px;
+         box-shadow:inset 3px 0 0 rgba(255,255,255,.18),inset -4px 0 0 rgba(0,0,0,.18),0 1px 0 rgba(0,0,0,.25);
+         transition:transform .22s ease,box-shadow .22s ease;padding:16px 0 12px}
+  .spine::before,.spine::after{content:"";position:absolute;left:8px;right:8px;height:1px;background:rgba(251,250,247,.45)}
+  .spine::before{top:10px}.spine::after{bottom:8px}
+  .spine:hover{transform:translateY(-12px);box-shadow:inset 3px 0 0 rgba(255,255,255,.18),inset -4px 0 0 rgba(0,0,0,.18),0 14px 22px -10px rgba(0,0,0,.45)}
+  .spine{overflow:hidden}.spine .short{display:none}
+  .spine .t{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--serif);font-size:15px;letter-spacing:.02em;white-space:nowrap;line-height:1}
+  .spine .num{font-family:var(--mono);font-size:10px;letter-spacing:.08em;opacity:.85;margin-top:8px;white-space:nowrap;text-align:center}.spine .num em{display:block;font-style:normal;font-size:8.5px;letter-spacing:0;opacity:.9;margin-top:2px}
+  .spine.h1x{height:198px;width:40px}.spine.h2x{height:222px;width:44px}.spine.h3x{height:210px;width:59px}.spine.h4x{height:233px;width:48px}.spine.h5x{height:233px;width:52px}.spine.h6x{height:268px;width:48px}.spine.h7x{height:280px;width:82px}
+  .plank{height:7px;background:var(--ink);border-radius:1px;box-shadow:0 6px 0 -3px rgba(26,26,26,.18),0 10px 14px -8px rgba(0,0,0,.35)}
+  .shelfcap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px;color:var(--mute);margin:12px 24px 0;letter-spacing:.02em}
+
+  /* sections */
+  section{margin-top:72px}
+  .tri{border-top:1px solid var(--ink);padding-top:22px}
+  .tri h2{font-size:19px;font-weight:400;color:var(--ink2);margin:0 0 16px;line-height:1.35;letter-spacing:0;max-width:720px}
+  .tri h2 .n{font-size:44px;font-weight:500;letter-spacing:-.02em;color:var(--ink);display:block;margin-bottom:8px;line-height:1.05}
+  .tri h2 .n b{font-weight:500;color:var(--acc)}
+  .tri.core h2 .n::before{content:"";display:block;width:40px;height:6px;background:var(--acc);margin-bottom:16px}
+  blockquote{margin:24px 0;padding:0 0 0 20px;border-left:3px solid var(--acc);font-size:21px;line-height:1.4;color:var(--ink);max-width:680px}
+  code,.mono{font-family:var(--mono);font-size:.86em}
+
+  /* explorer */
+  .ex{margin-top:24px;border:1px solid var(--line);background:#fff;box-shadow:0 1px 0 var(--line)}
+  .chips{display:flex;flex-wrap:wrap;gap:0;border-bottom:1px solid var(--line);background:var(--bg)}
+  .chip{display:flex;align-items:center;gap:8px;flex:1 1 auto;padding:12px 12px;border:0;background:transparent;cursor:pointer;font-family:var(--sans);font-size:12.5px;font-weight:600;color:var(--mute);border-bottom:3px solid transparent;white-space:nowrap;text-decoration:none}
+  .chip i{display:inline-block;width:8px;height:26px;background:var(--c);border-radius:1px;box-shadow:inset -2px 0 0 rgba(0,0,0,.2);transition:transform .15s}
+  .chip:hover{color:var(--ink)}.chip:hover i{transform:translateY(-2px)}
+  .chip.on{color:var(--ink);border-bottom-color:var(--c);background:#fff}
+  .head{padding:22px 22px 6px;display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap}
+  .head .pname{font-size:27px;font-weight:500;margin:0;letter-spacing:-.01em}
+  .head .pname small{font-family:var(--sans);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--pc);margin-left:10px;font-weight:600;vertical-align:middle}
+  .head p{margin:6px 0 0;color:var(--ink2);font-size:16px}
+  .ledger{font-family:var(--mono);font-size:11.5px;color:var(--mute);line-height:1.8;border:1px solid var(--line);padding:6px 12px;background:var(--bg);min-width:190px}
+  .ledger b{color:var(--ink);font-weight:600;float:right;margin-left:14px}
+  .diag{padding:10px 22px 0;overflow-x:auto}
+  .diag svg{display:block;min-width:760px;width:100%;height:auto;font-family:var(--sans)}
+  .cells{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:14px}
+  .cell{padding:12px 18px;border-right:1px solid var(--line);font-family:var(--sans);font-size:13.5px;line-height:1.5;color:var(--ink2)}
+  .cell:last-child{border-right:0}
+  .cell b{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin-bottom:4px}
+  .run{display:grid;grid-template-columns:290px minmax(0,1fr)}
+  .qs{border-right:1px solid var(--line);padding:14px 0}
+  .q{display:grid;grid-template-columns:34px minmax(0,1fr) 16px;gap:8px;align-items:start;width:100%;text-align:left;border:0;background:transparent;cursor:pointer;padding:10px 16px 10px 15px;font-family:var(--serif);font-size:14.5px;line-height:1.4;color:var(--ink2);border-left:3px solid transparent}
+  .q:hover{background:var(--soft)}
+  .q.on{border-left-color:var(--pc);color:var(--ink);background:var(--soft)}
+  .q .qn{font-family:var(--mono);font-size:11px;color:var(--mute);padding-top:4px}
+  .q .qd{width:10px;height:10px;border-radius:50%;margin-top:6px}
+  .res{padding:18px 22px 22px}
+  .tests{font-family:var(--sans);font-size:13px;color:var(--mute);margin:0 0 14px}
+  .tests b{color:var(--ink);font-weight:600;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-right:6px}
+  .trace{margin:0;padding:0;list-style:none;border-top:1px solid var(--ink)}
+  .trace li{display:grid;grid-template-columns:118px minmax(0,1fr);gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-family:var(--sans);font-size:13.5px;line-height:1.5}
+  .trace li .st{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);padding-top:3px}
+  .trace li .st em{font-style:normal;color:var(--pc);margin-right:6px}
+  .trace li.ref{background:var(--bg)}
+  .trace li.ref .st{color:var(--acc)}
+  .ans{margin:16px 0 0;padding:16px 18px;background:var(--soft);border-left:3px solid var(--pc)}
+  .ans .lab{font-family:var(--sans);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  .ans .txt{font-size:15.5px;line-height:1.55}
+  .badge{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;padding:3px 9px;border-radius:2px;color:#fff;background:#999}
+  .badge.good{background:var(--good)}.badge.partial{background:var(--partial)}.badge.wrong{background:var(--wrong)}
+  .badge.ghost{background:transparent;color:var(--mute);border:1px dashed #cfcabd;font-weight:500}
+  .why{font-family:var(--sans);font-size:13.5px;color:var(--ink2);margin:14px 0 0;line-height:1.55}
+  .why b{color:var(--ink)}
+  .dot{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:middle}
+  .dot.good{background:var(--good)}.dot.partial{background:linear-gradient(90deg,var(--partial) 50%,#fff 50%);border:1.5px solid var(--partial)}.dot.wrong{background:#fff;border:1.5px solid var(--wrong)}
+  .note{font-family:var(--sans);font-size:13px;color:var(--mute);border:1px dashed #d9d5cb;padding:8px 12px;margin:14px 0;max-width:720px}
+
+  /* scorecard */
+  .scroll{overflow-x:auto;background:#fff;border:1px solid var(--line);margin-top:18px}
+  table.matrix{width:100%;min-width:640px;border-collapse:collapse;font-family:var(--sans);font-size:14px}
+  .matrix th{text-align:left;font-weight:600;padding:12px 10px;border-bottom:1px solid var(--ink);vertical-align:bottom;font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+  .matrix th.c,.matrix td.c{text-align:center}
+  .matrix td{padding:10px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .matrix tr:last-child td{border-bottom:0}
+  .matrix td.c{cursor:pointer}
+  .matrix td.c:hover{background:var(--soft)}
+  .matrix td.c.sel{background:var(--soft);outline:1px solid var(--ink);outline-offset:-1px}
+  .matrix td.name{white-space:nowrap;font-weight:600;padding-left:14px}
+  .matrix td.name i{display:inline-block;width:7px;height:22px;margin-right:10px;vertical-align:middle;border-radius:1px;background:var(--c);box-shadow:inset -2px 0 0 rgba(0,0,0,.2)}
+  .matrix td.m{font-family:var(--mono);font-size:12px;color:var(--ink2);white-space:nowrap;text-align:right}
+  .matrix th.m{text-align:right}
+  .matrix td.gap,.matrix th.gap{border-left:1px solid var(--line)}
+  .legend{display:flex;gap:18px;align-items:center;color:var(--mute);margin:10px 0 0;font-family:var(--sans);font-size:12px;flex-wrap:wrap}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+
+  .pf{margin-top:64px;padding:18px 0 60px;border-top:1px solid var(--ink);font-family:var(--sans);font-size:13.5px;color:var(--mute);line-height:1.7;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .pf .mini{display:flex;gap:3px;align-items:flex-end}
+  .pf .mini i{display:inline-block;width:5px;background:var(--c);border-radius:1px}
+
+  @media (max-width:700px){
+    .nav .wrap{padding-right:150px;gap:10px;font-size:10.5px;letter-spacing:.08em}
+    .nav .brand{display:none}
+    .nav .tool{margin-left:0;flex-basis:100%}
+    h1{font-size:31px}.tri h2 .n{font-size:32px}
+    .hero{padding-top:36px}
+    .books{gap:5px;padding:0 8px;height:150px}
+    .spine{width:auto;flex:1 1 0;min-width:0;padding:8px 0 6px;border-radius:1px 2px 2px 1px}
+    .spine .t{font-size:11.5px}.spine .long{display:none}.spine .short{display:block}
+    .spine .num{font-size:9px;margin-top:4px}
+    .spine::before{top:5px}.spine::after{bottom:4px}
+    .spine.h1x{height:154px}.spine.h2x{height:176px}.spine.h3x{height:165px}.spine.h4x{height:187px}.spine.h5x{height:187px}.spine.h6x{height:219px}.spine.h7x{height:230px}
+    .spine:hover{transform:translateY(-5px)}
+    .shelfcap{margin:10px 8px 0}
+    .cells{grid-template-columns:1fr}.cell{border-right:0;border-bottom:1px solid var(--line)}.cell:last-child{border-bottom:0}
+    .run{grid-template-columns:1fr}.qs{border-right:0;border-bottom:1px solid var(--line)}
+    .trace li{grid-template-columns:1fr;gap:2px}
+    .chip{flex:1 1 33%;padding:10px 8px;font-size:11.5px}
+    .head{display:block}.ledger{margin-top:12px}
+    .pf{display:block}
+  }
+</style>
+</head>
+<body>
+<div class="optlabel">Option A · The shelf</div>
+
+<div class="nav"><div class="wrap">
+  <a class="brand" href="#">seven-rags/</a>
+  <a href="#thesis">thesis</a>
+  <a href="#compare">compare</a>
+  <a href="#scorecard">scorecard</a>
+  <a class="tool" href="#">How it's built →</a>
+</div></div>
+
+<div class="wrap">
+<div class="hero">
+  <p class="kicker">Project · <i>v0</i> · predicted, not yet measured</p>
+  <h1>Seven RAGs, one shelf. The pattern is the product.</h1>
+  <p class="lede">Retrieval-augmented generation is not one technique any more. It is seven designs that solve seven different problems, and most teams pick one by accident. This page runs all seven on the same small, real knowledge base and the same six questions, so the only thing that changes between columns is the architecture.</p>
+  <p>The knowledge base is my own bookshelf: a Goodreads export, my Kindle highlights, a list of who recommended what, and a few photographed pages. I chose it because I can tell a right answer from a plausible one in a second, which is the whole job when you evaluate retrieval, and because "it invented a book I never read" is the most legible failure a RAG system can have. Every trace below is a prediction of how each pipeline handles the question. Nothing is measured yet. <a href="#">The method page</a> says what gets measured and when.</p>
+
+  <div class="shelf" aria-label="The seven patterns">
+    <div class="books">
+      <a class="spine h1x" style="--c:var(--naive)" href="#compare"><span class="t long">Naive RAG</span><span class="t short">Naive</span><span class="num">01<em>2.5/6</em></span></a>
+      <a class="spine h2x" style="--c:var(--rerank)" href="#compare"><span class="t long">Retrieve and rerank</span><span class="t short">Rerank</span><span class="num">02<em>3.5/6</em></span></a>
+      <a class="spine h3x" style="--c:var(--multimodal)" href="#compare"><span class="t long">Multimodal RAG</span><span class="t short">Multimodal</span><span class="num">03<em>3/6</em></span></a>
+      <a class="spine h4x" style="--c:var(--graph)" href="#compare"><span class="t long">Graph RAG</span><span class="t short">Graph</span><span class="num">04<em>4/6</em></span></a>
+      <a class="spine h5x" style="--c:var(--hybrid)" href="#compare"><span class="t long">Hybrid RAG</span><span class="t short">Hybrid</span><span class="num">05<em>4/6</em></span></a>
+      <a class="spine h6x" style="--c:var(--agentic)" href="#compare"><span class="t long">Agentic RAG (router)</span><span class="t short">Agentic</span><span class="num">06<em>5.5/6</em></span></a>
+      <a class="spine h7x" style="--c:var(--multiagent)" href="#compare"><span class="t long">Multi-agent RAG</span><span class="t short">Multi-agent</span><span class="num">07<em>6/6</em></span></a>
+    </div>
+    <div class="plank"></div>
+    <div class="shelfcap"><span>height = predicted score out of 6 (correct 1, partial ½) · width = cost vs naive · both predicted, not measured</span><span>pick a spine to open its trace ↓</span></div>
+  </div>
+</div>
+
+<section id="thesis" class="tri core">
+  <h2><span class="n"><b>§01</b> · The thesis</span>Most RAG systems don't break on the model. They break on the pattern.</h2>
+  <p>Teams upgrade the embedding model, switch to a stronger LLM, add more chunks to the prompt, and still get shallow or wrong answers. The reason is usually upstream of the model: the retrieval design cannot reach the information the question needs. Similarity search has no idea what "2024" or "under 300 pages" means. A text index cannot look at a photograph. A single retriever cannot see that two books argue with each other, because that fact lives in neither book. And no retrieval at all can compose four constraints into a reading list.</p>
+  <blockquote>The real skill isn't building RAG. It's choosing the right pattern for the problem, and being able to show why.</blockquote>
+  <p>Comparing patterns on different demos measures the demos. To compare the patterns you need to hold everything else still: same corpus, same questions, same generation model, and answers you can grade. That is what this page does.</p>
+</section>
+
+<section id="compare" class="tri core">
+  <h2><span class="n"><b>§03</b> · Same question, seven pipelines</span>Pick a pattern, pick a question, read what the pipeline is expected to do</h2>
+  <p>Each trace shows what gets retrieved, in what order, what the model is given, and the answer it is likely to produce, graded against the reference. The "why" line under each answer is the point of the page.</p>
+
+  <div class="ex" style="--pc:var(--rerank)">
+    <div class="chips">
+      <a class="chip" style="--c:var(--naive)" href="#compare"><i></i>Naive RAG</a>
+      <a class="chip on" style="--c:var(--rerank)" href="#compare"><i></i>Retrieve and rerank</a>
+      <a class="chip" style="--c:var(--multimodal)" href="#compare"><i></i>Multimodal</a>
+      <a class="chip" style="--c:var(--graph)" href="#compare"><i></i>Graph</a>
+      <a class="chip" style="--c:var(--hybrid)" href="#compare"><i></i>Hybrid</a>
+      <a class="chip" style="--c:var(--agentic)" href="#compare"><i></i>Agentic (router)</a>
+      <a class="chip" style="--c:var(--multiagent)" href="#compare"><i></i>Multi-agent</a>
+    </div>
+
+    <div class="head">
+      <div>
+        <p class="pname">Retrieve and rerank <small>pattern 02</small></p>
+        <p>Retrieve wide, then a second model scores each chunk against the question before generation.</p>
+      </div>
+      <div class="ledger">
+        <div>calls <b>1 + reranker</b></div>
+        <div>latency <b>~2 s</b></div>
+        <div>cost vs naive <b>1.2x</b></div>
+      </div>
+    </div>
+
+    <div class="diag">
+      <svg viewBox="0 0 1020 132" role="img" aria-label="Pipeline: query, embedding model, vector index top-20, reranker cross-encoder, top-4 chunks, generative model, answer">
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="#7a7568"/>
+          </marker>
+        </defs>
+        <!-- step numbers -->
+        <g font-family="SF Mono,Menlo,Consolas,monospace" font-size="10" fill="#7a7568" letter-spacing="1">
+          <text x="20" y="18">01</text><text x="162" y="18">02</text><text x="304" y="18">03</text><text x="446" y="18">04</text><text x="588" y="18">05</text><text x="730" y="18">06</text><text x="872" y="18">07</text>
+        </g>
+        <!-- arrows -->
+        <g stroke="#7a7568" stroke-width="1.2" marker-end="url(#ah)">
+          <line x1="140" y1="60" x2="160" y2="60"/><line x1="282" y1="60" x2="302" y2="60"/><line x1="424" y1="60" x2="444" y2="60"/><line x1="566" y1="60" x2="586" y2="60"/><line x1="708" y1="60" x2="728" y2="60"/><line x1="850" y1="60" x2="870" y2="60"/>
+        </g>
+        <!-- 01 query (in) -->
+        <rect x="20" y="32" width="120" height="56" rx="28" fill="none" stroke="#1a1a1a" stroke-width="1.2"/>
+        <text x="80" y="65" text-anchor="middle" font-size="13" fill="#1a1a1a">Query</text>
+        <!-- 02 embedding model -->
+        <rect x="162" y="32" width="120" height="56" rx="3" fill="#3b6bb0" fill-opacity=".1" stroke="#3b6bb0" stroke-width="1.2"/>
+        <text x="222" y="65" text-anchor="middle" font-size="13" fill="#1a1a1a">Embedding model</text>
+        <!-- 03 vector index (store) -->
+        <rect x="304" y="32" width="120" height="56" rx="3" fill="#fff" stroke="#1a1a1a" stroke-width="1.2"/>
+        <line x1="304" y1="40" x2="424" y2="40" stroke="#1a1a1a" stroke-width="1"/>
+        <text x="364" y="62" text-anchor="middle" font-size="13" fill="#1a1a1a">Vector index</text>
+        <text x="364" y="78" text-anchor="middle" font-size="10.5" fill="#7a7568" font-family="SF Mono,Menlo,Consolas,monospace">top-20</text>
+        <!-- 04 reranker (model) -->
+        <rect x="446" y="32" width="120" height="56" rx="3" fill="#3b6bb0" fill-opacity=".1" stroke="#3b6bb0" stroke-width="1.2"/>
+        <text x="506" y="62" text-anchor="middle" font-size="13" fill="#1a1a1a">Reranker</text>
+        <text x="506" y="78" text-anchor="middle" font-size="10.5" fill="#7a7568" font-family="SF Mono,Menlo,Consolas,monospace">cross-encoder</text>
+        <!-- 05 top-4 chunks (doc) -->
+        <path d="M588 32 H696 L708 44 V88 H588 Z" fill="#f3f1ea" stroke="#1a1a1a" stroke-width="1.2"/>
+        <path d="M696 32 V44 H708" fill="none" stroke="#1a1a1a" stroke-width="1.2"/>
+        <text x="648" y="65" text-anchor="middle" font-size="13" fill="#1a1a1a">Top-4 chunks</text>
+        <!-- 06 generative model -->
+        <rect x="730" y="32" width="120" height="56" rx="3" fill="#3b6bb0" fill-opacity=".1" stroke="#3b6bb0" stroke-width="1.2"/>
+        <text x="790" y="65" text-anchor="middle" font-size="13" fill="#1a1a1a">Generative model</text>
+        <!-- 07 answer (out) -->
+        <rect x="872" y="32" width="120" height="56" rx="28" fill="#1a1a1a" stroke="#1a1a1a" stroke-width="1.2"/>
+        <text x="932" y="65" text-anchor="middle" font-size="13" fill="#fbfaf7">Answer</text>
+        <!-- key -->
+        <g font-family="SF Mono,Menlo,Consolas,monospace" font-size="10" fill="#7a7568" letter-spacing=".5">
+          <rect x="20" y="110" width="12" height="9" fill="#3b6bb0" fill-opacity=".1" stroke="#3b6bb0" stroke-width="1"/><text x="38" y="118">model call</text>
+          <rect x="120" y="110" width="12" height="9" fill="#fff" stroke="#1a1a1a" stroke-width="1"/><line x1="120" y1="113" x2="132" y2="113" stroke="#1a1a1a"/><text x="138" y="118">store</text>
+          <path d="M190 110 H199 L202 113 V119 H190 Z" fill="#f3f1ea" stroke="#1a1a1a" stroke-width="1"/><text x="208" y="118">context handed to the model</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="cells">
+      <div class="cell"><b>What it adds</b><span>A cross-encoder reads question and chunk together, so "why two stars" beats a dozen admiring highlights that merely share words.</span></div>
+      <div class="cell"><b>What it costs</b><span>1 model call plus a reranker pass over ~20 chunks. Roughly +400 ms. Where production should usually start.</span></div>
+      <div class="cell"><b>How it fails</b><span>Scores chunks one at a time. Cannot rank rows it never retrieved, cannot see a link between two chunks, cannot look at a photo.</span></div>
+    </div>
+
+    <div class="run">
+      <div class="qs">
+        <button class="q"><span class="qn">Q1</span><span>Where did I read the line about [a phrase from one of my highlights]?</span><i class="qd dot good"></i></button>
+        <button class="q"><span class="qn">Q2</span><span>What did I read in 2024, rated five stars, under 300 pages?</span><i class="qd dot wrong"></i></button>
+        <button class="q on"><span class="qn">Q3</span><span>Why did I give [a book] two stars when everyone else loved it?</span><i class="qd dot good"></i></button>
+        <button class="q"><span class="qn">Q4</span><span>Which of my books argue with each other?</span><i class="qd dot partial"></i></button>
+        <button class="q"><span class="qn">Q5</span><span>[A photographed page] Which book is this, and what did I highlight near it?</span><i class="qd dot partial"></i></button>
+        <button class="q"><span class="qn">Q6</span><span>Build me a two-week holiday list from my to-read shelf: nothing over 400 pages, one recommended by a friend, nothing like the last three I abandoned.</span><i class="qd dot partial"></i></button>
+      </div>
+      <div class="res">
+        <p class="tests"><b>Tests</b> contradicting sources: my review, my own admiring highlights from the same book, and the crowd's 4.3 average.</p>
+        <ul class="trace">
+          <li class="ref"><span class="st">reference</span><span>The reason from my own review, ranked above my highlights and above the crowd's average.</span></li>
+          <li><span class="st"><em>01</em>retrieve</span><span>Top-20: my highlights from the book, my review in two chunks, the ledger row rendered as text with both ratings.</span></li>
+          <li><span class="st"><em>02</em>rerank</span><span>Question and chunk read together: "why two stars" matches the review, not the admiring quotes. Review first, the ratings row second, highlights below the cut.</span></li>
+          <li><span class="st"><em>03</em>prompt</span><span>Top-4 after reranking.</span></li>
+        </ul>
+        <div class="ans">
+          <div class="lab"><span>predicted answer · Q3</span><span><span class="badge ghost">predicted</span> <span class="badge good">good</span></span></div>
+          <div class="txt">Quotes the reason from my review and notes the gap between my rating and the crowd's average.</div>
+        </div>
+        <p class="why"><b>Predicted correct by one extra call.</b> The cheapest fix for the most common failure: the reranker knows the difference between what I marked and what I said.</p>
+      </div>
+    </div>
+  </div>
+  <p class="note">v0: every trace on this page is a prediction written from how the pipeline is designed and what the corpus contains. No pipeline has run. Each cell is replaced by a real trace, with the date, as the version that measures it ships; the schedule is on the <a href="#">method page</a>.</p>
+</section>
+
+<section id="scorecard" class="tri core">
+  <h2><span class="n"><b>§04</b> · The scorecard</span>Nobody wins every column, and the cheapest pattern wins the first one</h2>
+  <div class="scroll">
+    <table class="matrix">
+      <thead>
+        <tr>
+          <th>pattern</th>
+          <th class="c">Q1</th><th class="c">Q2</th><th class="c">Q3</th><th class="c">Q4</th><th class="c">Q5</th><th class="c">Q6</th>
+          <th class="m gap">calls</th><th class="m">latency</th><th class="m">cost</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="name" style="--c:var(--naive)"><i></i>Naive RAG</td>
+          <td class="c"><i class="dot good"></i></td><td class="c"><i class="dot wrong"></i></td><td class="c"><i class="dot wrong"></i></td><td class="c"><i class="dot partial"></i></td><td class="c"><i class="dot partial"></i></td><td class="c"><i class="dot partial"></i></td>
+          <td class="m gap">1</td><td class="m">~1.5 s</td><td class="m">1x</td></tr>
+        <tr><td class="name" style="--c:var(--rerank)"><i></i>Retrieve and rerank</td>
+          <td class="c"><i class="dot good"></i></td><td class="c"><i class="dot wrong"></i></td><td class="c sel"><i class="dot good"></i></td><td class="c"><i class="dot partial"></i></td><td class="c"><i class="dot partial"></i></td><td class="c"><i class="dot partial"></i></td>
+          <td class="m gap">1 + reranker</td><td class="m">~2 s</td><td class="m">1.2x</td></tr>
+        <tr><td class="name" style="--c:var(--multimodal)"><i></i>Multimodal RAG</td>
+          <td class="c"><i class="dot good"></i></td><td class="c"><i class="dot wrong"></i></td><td class="c"><i class="dot wrong"></i></td><td class="c"><i class="dot partial"></i></td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot partial"></i></td>
+          <td class="m gap">1 (image tokens)</td><td class="m">~2.5 s</td><td class="m">2.5x</td></tr>
+        <tr><td class="name" style="--c:var(--graph)"><i></i>Graph RAG</td>
+          <td class="c"><i class="dot good"></i></td><td class="c"><i class="dot partial"></i></td><td class="c"><i class="dot partial"></i></td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot partial"></i></td><td class="c"><i class="dot partial"></i></td>
+          <td class="m gap">2 + indexing</td><td class="m">~2.2 s</td><td class="m">1.5x</td></tr>
+        <tr><td class="name" style="--c:var(--hybrid)"><i></i>Hybrid RAG</td>
+          <td class="c"><i class="dot good"></i></td><td class="c"><i class="dot partial"></i></td><td class="c"><i class="dot partial"></i></td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot partial"></i></td><td class="c"><i class="dot partial"></i></td>
+          <td class="m gap">2–3</td><td class="m">~2.5 s</td><td class="m">1.8x</td></tr>
+        <tr><td class="name" style="--c:var(--agentic)"><i></i>Agentic RAG (router)</td>
+          <td class="c"><i class="dot good"></i></td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot partial"></i></td>
+          <td class="m gap">2–3</td><td class="m">~2.5 s</td><td class="m">1.5x</td></tr>
+        <tr><td class="name" style="--c:var(--multiagent)"><i></i>Multi-agent RAG</td>
+          <td class="c"><i class="dot good"></i></td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot good"></i></td>
+          <td class="m gap">5–8</td><td class="m">~12 s</td><td class="m">8x</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="legend"><span><i class="dot good"></i> predicted correct</span><span><i class="dot partial"></i> partial or generic</span><span><i class="dot wrong"></i> wrong or invented</span><span>· click a cell to open its trace</span></div>
+  <p style="margin-top:18px">Three things to read off the grid. Every pattern gets the easy question right, so the easy question tells you nothing about which pattern to use. The Q2 column splits the table cleanly into patterns with a tool and patterns without one, and no amount of embedding quality moves a pattern across that line. And reranking fixes the most common failure for the price of one extra call, which is why it should be the first upgrade, not the graph.</p>
+  <p>The prediction I most expect to be wrong is naive on Q1. Kindle highlights are short, so the nearest chunk is sometimes a different book quoting the same author. If that happens, Q1 stops being a control and reranking earns its call one column earlier.</p>
+</section>
+
+<div class="pf">
+  <span>Built by Shirley · AI-assisted · v0, 9 September 2026 · <a href="#">How it's built, and what gets measured next</a></span>
+  <span class="mini" aria-hidden="true">
+    <i style="--c:var(--naive);height:16px"></i><i style="--c:var(--rerank);height:20px"></i><i style="--c:var(--multimodal);height:18px"></i><i style="--c:var(--graph);height:21px"></i><i style="--c:var(--hybrid);height:17px"></i><i style="--c:var(--agentic);height:19px"></i><i style="--c:var(--multiagent);height:22px"></i>
+  </span>
+</div>
+</div>
+</body>
+</html>

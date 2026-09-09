@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seven RAGs, one shelf — Option D · Marginalia</title>
+<meta name="description" content="Design option D for ragpatterns.com: a Tufte-style book page with the honest asides in the margin.">
+<style>
+  :root{
+    --paper:#faf6ee;--ink:#1c1a17;--ink2:#433e36;--mute:#7c7567;--hair:#d9d2c4;--hair2:#e8e2d5;
+    --hl:rgba(245,230,163,.78);--hl2:#f5e6a3;--acc:#1f5e4e;
+    --naive:#b8741a;--rerank:#3b6bb0;--multimodal:#8a2f7a;--graph:#2f8a6a;--hybrid:#c2621a;--agentic:#2f6f9f;--multiagent:#6b2f8a;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Helvetica,Arial,sans-serif;
+    --mono:"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  html{background:var(--paper)}
+  body{margin:0;padding:0 0 60px;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:17.5px;line-height:1.58;-webkit-font-smoothing:antialiased}
+  a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--acc)}
+  a:hover{color:var(--acc)}
+  .page{max-width:960px;margin:0 auto;padding:0 24px}
+
+  /* option tag */
+  .opt{position:fixed;top:10px;right:10px;z-index:9;font-family:var(--sans);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;background:var(--ink);color:var(--paper);padding:5px 9px;border-radius:2px}
+
+  /* top nav */
+  .top{display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap;padding:22px 0 12px;border-bottom:1px solid var(--hair);font-family:var(--sans);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase}
+  .top nav{display:flex;gap:18px;flex-wrap:wrap}
+  .top .wm{font-family:var(--serif);font-style:italic;text-transform:none;letter-spacing:0;font-size:15px;border:0;margin-right:10px;color:var(--ink2)}
+  .top .tool{font-weight:600}
+
+  /* the book page: main column + margin column */
+  .grid{display:grid;grid-template-columns:minmax(0,1fr) 220px;column-gap:44px;align-items:start}
+  .b{grid-column:1;min-width:0}
+  .sn{grid-column:2;min-width:0}
+  .full{grid-column:1 / -1;min-width:0}
+  section.grid{margin-top:64px;padding-top:18px;border-top:1px solid var(--ink)}
+
+  .lab{font-family:var(--sans);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin:0 0 8px}
+  .lab b{color:var(--acc);font-weight:600}
+  .kicker{font-family:var(--sans);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin:52px 0 0}
+  h1{font-weight:500;font-size:46px;line-height:1.1;letter-spacing:-.012em;margin:14px 0 20px}
+  h2{font-weight:400;font-style:italic;font-size:29px;line-height:1.22;letter-spacing:-.005em;margin:0 0 18px}
+  h3{font-family:var(--sans);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);font-weight:600;margin:34px 0 10px}
+  .lede{font-size:20.5px;line-height:1.5;color:var(--ink2);margin:0 0 22px}
+  p{margin:0 0 20px}
+  p.small{font-family:var(--sans);font-size:13px;color:var(--mute)}
+
+  /* the kindle highlight */
+  mark{background:transparent;color:inherit;background-image:linear-gradient(to bottom,transparent 9%,var(--hl) 9%,var(--hl) 91%,transparent 91%);padding:0 .12em;margin:0 -.12em;-webkit-box-decoration-break:clone;box-decoration-break:clone;border-radius:2px}
+
+  /* sidenotes */
+  sup.r{font-family:var(--sans);font-size:10px;color:var(--acc);vertical-align:super;line-height:0;margin-left:1px;font-weight:600}
+  .sn{font-style:italic;font-size:13.5px;line-height:1.5;color:var(--ink2);margin:5px 0 20px}
+  .sn .n{font-family:var(--sans);font-style:normal;font-size:10px;color:var(--acc);vertical-align:super;line-height:0;margin-right:3px;font-weight:600}
+  .sn .h{display:block;font-family:var(--sans);font-style:normal;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-bottom:4px}
+  .sn .h i{font-style:normal;color:var(--acc)}
+  .sn + .sn{margin-top:-6px}
+  .sn dl{margin:4px 0 0}
+  .sn dt{font-family:var(--sans);font-style:normal;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin-top:8px}
+  .sn dd{margin:0}
+  .sn code{font-family:var(--mono);font-style:normal;font-size:11.5px}
+
+  blockquote.epi{margin:26px 0 26px 28px;padding:0;font-size:22px;line-height:1.42;font-style:italic;max-width:520px}
+  blockquote.epi::before{content:"“";display:block;font-size:44px;line-height:.3;color:var(--acc);margin:14px 0 8px -22px}
+
+  /* corpus list */
+  dl.corpus{margin:0 0 20px;border-top:1px solid var(--hair)}
+  dl.corpus div{display:grid;grid-template-columns:150px minmax(0,1fr);gap:16px;padding:9px 0;border-bottom:1px solid var(--hair)}
+  dl.corpus dt{font-size:16px;font-weight:500}
+  dl.corpus dd{margin:0;font-size:15px;line-height:1.5;color:var(--ink2)}
+  dl.corpus dd i{color:var(--ink)}
+
+  /* contents list */
+  ol.toc{list-style:none;margin:0 0 6px;padding:0;border-top:1px solid var(--hair)}
+  ol.toc li{display:grid;grid-template-columns:22px 14px minmax(0,1fr) auto;column-gap:10px;align-items:baseline;padding:9px 0 8px;border-bottom:1px solid var(--hair)}
+  ol.toc .num{font-family:var(--mono);font-size:11.5px;color:var(--mute)}
+  ol.toc .sw{width:10px;height:10px;border-radius:1px;position:relative;top:0}
+  ol.toc .nm{font-size:17.5px;font-weight:500;line-height:1.3}
+  ol.toc .nm small{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--acc);margin-left:8px;font-weight:500}
+  ol.toc .cost{font-family:var(--mono);font-size:12px;color:var(--mute);white-space:nowrap}
+  ol.toc .tag{grid-column:3 / span 2;font-style:italic;font-size:14px;line-height:1.45;color:var(--ink2);margin-top:1px}
+
+  /* pipeline diagram */
+  .dg{overflow-x:auto;margin:6px 0 4px;padding-bottom:6px}
+  .dg svg{display:block;min-width:600px;width:100%;height:auto}
+  .cap{font-style:italic;font-size:13.5px;color:var(--mute);margin:2px 0 20px}
+
+  /* questions */
+  ol.qs{list-style:none;margin:0 0 8px;padding:0;border-top:1px solid var(--hair)}
+  ol.qs li{display:grid;grid-template-columns:40px minmax(0,1fr);column-gap:10px;padding:9px 0;border-bottom:1px solid var(--hair);font-size:16.5px;line-height:1.45;color:var(--ink2)}
+  ol.qs .qn{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;color:var(--mute);padding-top:4px}
+  ol.qs li.on{color:var(--ink)}
+  ol.qs li.on .qn{color:var(--ink)}
+  ol.qs .vd{display:inline-block;margin-left:8px;vertical-align:middle}
+
+  /* trace: text in the main column, step labels in the margin */
+  .trace{grid-column:1 / -1;border-top:1px solid var(--ink);margin-top:4px}
+  .trow{display:grid;grid-template-columns:minmax(0,1fr) 220px;column-gap:44px;border-bottom:1px solid var(--hair)}
+  .trow p{margin:0;padding:11px 0;font-size:15.5px;line-height:1.5;color:var(--ink2)}
+  .trow p i{color:var(--ink)}
+  .tl{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);padding:14px 0 0}
+  .tl b{font-weight:500;color:var(--ink);margin-right:8px}
+  .tl i{display:block;font-family:var(--serif);font-style:italic;text-transform:none;letter-spacing:0;font-size:12.5px;margin-top:2px}
+
+  .ans{margin:22px 0 0;padding:14px 18px 14px 18px;border-left:3px solid var(--naive);background:rgba(255,255,255,.5);font-size:17px;line-height:1.5}
+  .ans .lab{margin-bottom:6px}
+  .ans p{margin:0}
+  .badge{display:inline-block;font-family:var(--sans);font-style:normal;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;padding:3px 8px;border-radius:2px;color:#fff;background:#999;margin-bottom:8px}
+  .badge.good{background:#1f5e4e}.badge.partial{background:#b8741a}.badge.wrong{background:#9c2f2f}
+  .why{font-size:16.5px;color:var(--ink2);margin-top:18px}
+  .why b{color:var(--ink);font-weight:600}
+
+  /* scorecard */
+  .sc{overflow-x:auto;margin:4px 0 8px}
+  table.mx{width:100%;min-width:560px;border-collapse:collapse;font-family:var(--mono);font-size:12px}
+  table.mx th{font-family:var(--sans);font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--mute);text-align:center;padding:6px 4px 8px;border-bottom:1px solid var(--ink);vertical-align:bottom}
+  table.mx th.l{text-align:left}
+  table.mx th.r{text-align:right}
+  table.mx td{padding:9px 4px;border-bottom:1px solid var(--hair);text-align:center;vertical-align:middle}
+  table.mx td.nm{font-family:var(--serif);font-size:15.5px;text-align:left;white-space:nowrap}
+  table.mx td.nm i{display:inline-block;width:10px;height:10px;margin-right:9px;vertical-align:middle;border-radius:1px}
+  table.mx td.r{text-align:right;color:var(--ink2);white-space:nowrap}
+  table.mx td.sel{background:var(--hl);outline:1px solid var(--ink);outline-offset:-1px}
+  .dot{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:middle}
+  .dot.good{background:#1f5e4e}
+  .dot.partial{background:linear-gradient(90deg,#b8741a 50%,transparent 50%);border:1.5px solid #b8741a}
+  .dot.wrong{background:transparent;border:1.5px solid #9c2f2f}
+  .lg{list-style:none;margin:2px 0 0;padding:0}
+  .lg li{display:flex;gap:8px;align-items:center;margin-bottom:5px}
+
+  .pf{margin-top:72px;padding-top:16px;border-top:1px solid var(--ink);font-family:var(--sans);font-size:13px;color:var(--mute);line-height:1.7;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+  @media (max-width:900px){
+    .grid,.trow{grid-template-columns:minmax(0,1fr) 180px;column-gap:30px}
+  }
+  @media (max-width:760px){
+    body{padding-top:26px;font-size:16.5px}
+    .page{padding:0 18px}
+    .grid{grid-template-columns:1fr;column-gap:0}
+    .b,.sn,.full{grid-column:1}
+    h1{font-size:33px}
+    h2{font-size:24px}
+    .lede{font-size:18.5px}
+    .kicker{margin-top:36px}
+    .sn{margin:-6px 0 22px 16px;padding:2px 0 2px 12px;border-left:2px solid var(--hl2);font-size:13px}
+    .sn + .sn{margin-top:-12px}
+    blockquote.epi{margin-left:22px;font-size:19.5px}
+    dl.corpus div{grid-template-columns:1fr;gap:2px}
+    ol.toc li{grid-template-columns:22px 14px minmax(0,1fr) auto}
+    .trace{margin-top:8px}
+    .trow{display:flex;flex-direction:column}
+    .tl{order:-1;padding:10px 0 0}
+    .tl i{display:inline;margin-left:6px}
+    .trow p{padding-top:2px}
+    .opt{top:0;right:0;border-radius:0 0 0 3px}
+  }
+</style>
+</head>
+<body>
+<div class="opt">Option D · Marginalia</div>
+
+<div class="page">
+
+<div class="top">
+  <nav>
+    <span class="wm">Seven RAGs, one shelf</span>
+    <a href="#thesis">thesis</a>
+    <a href="#usecase">the shelf</a>
+    <a href="#compare">compare</a>
+    <a href="#scorecard">scorecard</a>
+  </nav>
+  <a class="tool" href="#">How it's built →</a>
+</div>
+
+<!-- hero -->
+<header class="grid">
+  <div class="b">
+    <p class="kicker">Project · v0 · predicted, not yet measured</p>
+    <h1>Seven RAGs, one shelf. <mark>The pattern is the product.</mark></h1>
+    <p class="lede">Retrieval-augmented generation is not one technique any more. It is seven designs that solve seven different problems, and most teams pick one by accident. This page runs all seven on the same small, real knowledge base and the same six questions, so the only thing that changes between columns is the architecture.</p>
+  </div>
+  <aside class="sn" style="margin-top:206px">
+    <span class="h">Colophon</span>
+    One shelf, four sources: a Goodreads export, my Kindle highlights, a list of who recommended what, and a few photographed pages. Six fixed questions, one per failure mode. Same corpus, same questions, same generation model for every column.
+  </aside>
+
+  <p class="b">The knowledge base is my own bookshelf: a Goodreads export, my Kindle highlights, a list of who recommended what, and a few photographed pages. I chose it because I can tell a right answer from a plausible one in a second, which is the whole job when you evaluate retrieval, and because "it invented a book I never read" is the most legible failure a RAG system can have. Every trace below is a prediction of how each pipeline handles the question. Nothing is measured yet.<sup class="r">1</sup> <a href="#">The method page</a> says what gets measured and when.</p>
+  <aside class="sn"><span class="n">1</span>Predicted, not measured. Every trace on this page is a prediction written from how the pipeline is designed and what the corpus contains. No pipeline has run. Each cell is replaced by a real trace, with the date, as the version that measures it ships.</aside>
+</header>
+
+<!-- §01 thesis -->
+<section id="thesis" class="grid">
+  <div class="b">
+    <p class="lab"><b>§01</b> · The thesis</p>
+    <h2>Most RAG systems don't break on the model. They break on the pattern.</h2>
+  </div>
+  <p class="b">Teams upgrade the embedding model, switch to a stronger LLM, add more chunks to the prompt, and still get shallow or wrong answers. The reason is usually upstream of the model: the retrieval design cannot reach the information the question needs. Similarity search has no idea what "2024" or "under 300 pages" means. A text index cannot look at a photograph. A single retriever cannot see that two books argue with each other, because that fact lives in neither book. And no retrieval at all can compose four constraints into a reading list.</p>
+  <blockquote class="b epi">The real skill isn't building RAG. <mark>It's choosing the right pattern for the problem, and being able to show why.</mark></blockquote>
+  <p class="b">Comparing patterns on different demos measures the demos. To compare the patterns you need to hold everything else still: same corpus, same questions, same generation model, and answers you can grade. That is what this page does.</p>
+</section>
+
+<!-- §02 the shelf -->
+<section id="usecase" class="grid">
+  <div class="b">
+    <p class="lab"><b>§02</b> · One shelf</p>
+    <h2>A real reading life, exported in an afternoon, messy in exactly the ways that matter</h2>
+  </div>
+  <p class="b">Three files and a handful of photos. The Goodreads export is the ledger: every book, when I read it, what I rated it, how long it is, what everyone else rated it, and the review I wrote. The Kindle clippings are the quotes: one short highlight per block, hundreds of them. A hand-written list says who recommended what. Nothing is fabricated, private notes are never ingested,<sup class="r">2</sup> and the export is curated before it goes anywhere near a public page.</p>
+  <aside class="sn"><span class="n">2</span>Private notes never ingested. The Goodreads "Private Notes" column is dropped before anything is read. Recommenders appear as initials only.</aside>
+
+  <div class="b">
+    <h3>The corpus</h3>
+    <dl class="corpus">
+      <div><dt>Goodreads export</dt><dd>one row per book: title, author, ISBN, pages, date read, my rating, the average rating, shelves, my review. <i>The ledger. Queried, never embedded.</i><sup class="r">3</sup></dd></div>
+      <div><dt>Kindle highlights</dt><dd>one short quotation per block, with book, location and date. <i>The semantic index, and the misattribution trap:</i> a highlight in one book quoting another author.</dd></div>
+      <div><dt>Recommendations</dt><dd>title, who (initials), where, when. <i>The people edges in the graph.</i></dd></div>
+      <div><dt>Photos</dt><dd>covers, a few photographed pages, one shelf. <i>Answers with no text form.</i></dd></div>
+      <div><dt>Extracted graph</dt><dd>who wrote what, who recommended what, which books mention or argue with which, themes. <i>Built once by a model with a fixed schema,</i> published as JSON so a missed edge is visible.</dd></div>
+    </dl>
+  </div>
+  <aside class="sn" style="margin-top:61px"><span class="n">3</span>The ledger is rows, never embedded. Dates, ratings and page counts are stored as rows and queried by a tool. "What did I read in 2024, rated five stars, under 300 pages?" is a filter, not a similarity.</aside>
+</section>
+
+<!-- §03 explorer -->
+<section id="compare" class="grid">
+  <div class="b">
+    <p class="lab"><b>§03</b> · Same question, seven pipelines</p>
+    <h2>Pick a pattern, pick a question, read what the pipeline is expected to do</h2>
+  </div>
+  <p class="b">Each trace shows what gets retrieved, in what order, what the model is given, and the answer it is likely to produce, graded against the reference. The "why" line under each answer is the point of the page.</p>
+
+  <div class="b">
+    <h3>Contents · seven patterns</h3>
+    <ol class="toc">
+      <li><span class="num">1</span><span class="sw" style="background:var(--naive)"></span><span class="nm"><mark>Naive RAG</mark><small>shown below</small></span><span class="cost">1x</span><span class="tag">Embed the highlights, retrieve the nearest chunks, generate. The pattern every tutorial teaches.</span></li>
+      <li><span class="num">2</span><span class="sw" style="background:var(--rerank)"></span><span class="nm">Retrieve and rerank</span><span class="cost">1.2x</span><span class="tag">Retrieve wide, then a second model scores each chunk against the question before generation.</span></li>
+      <li><span class="num">3</span><span class="sw" style="background:var(--multimodal)"></span><span class="nm">Multimodal RAG</span><span class="cost">2.5x</span><span class="tag">Highlights and photos share one embedding space; a vision-language model reads whatever comes back.</span></li>
+      <li><span class="num">4</span><span class="sw" style="background:var(--graph)"></span><span class="nm">Graph RAG</span><span class="cost">1.5x</span><span class="tag">A model extracts people, books, themes and the links between them at index time; queries traverse edges instead of matching text.</span></li>
+      <li><span class="num">5</span><span class="sw" style="background:var(--hybrid)"></span><span class="nm">Hybrid RAG</span><span class="cost">1.8x</span><span class="tag">Vector search and graph traversal run in parallel; the union goes to the model.</span></li>
+      <li><span class="num">6</span><span class="sw" style="background:var(--agentic)"></span><span class="nm">Agentic RAG (router)</span><span class="cost">1.5x</span><span class="tag">A small model reads the query and chooses which retriever to run, including a query over the ledger. One path per question.</span></li>
+      <li><span class="num">7</span><span class="sw" style="background:var(--multiagent)"></span><span class="nm">Multi-agent RAG</span><span class="cost">8x</span><span class="tag">A planner decomposes the question; sub-agents retrieve from different sources and tools; a synthesizer writes the answer.</span></li>
+    </ol>
+  </div>
+  <aside class="sn" style="margin-top:58px">
+    <span class="h">Naive RAG · <i>what it adds</i></span>
+    One index, one call. Correct on any question whose answer is a quotation that sits in the index, worded like the question.
+    <span class="h" style="margin-top:14px">How it fails</span>
+    Similarity finds the topic, not the answer. It has no idea what a year or a page count means, and it will name a book you never read to fill the gap.
+    <span class="h" style="margin-top:14px">Right column</span>
+    Predicted cost relative to naive, per query. Predicted, not measured.
+  </aside>
+
+  <div class="b">
+    <h3>Pipeline · Naive RAG</h3>
+    <div class="dg">
+      <svg viewBox="0 0 640 108" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Naive RAG pipeline: query, embedding model, vector index of highlights, top-4 chunks, generative model, answer">
+        <defs>
+          <marker id="ah" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+            <path d="M1 1 L7 4 L1 7" fill="none" stroke="#1c1a17" stroke-width="1.1"/>
+          </marker>
+        </defs>
+        <!-- stage numbers -->
+        <g font-family="SF Mono,Menlo,Consolas,monospace" font-size="9" fill="#7c7567" text-anchor="middle">
+          <text x="40" y="10">1</text><text x="152" y="10">2</text><text x="264" y="10">3</text><text x="376" y="10">4</text><text x="488" y="10">5</text><text x="600" y="10">6</text>
+        </g>
+        <!-- connectors -->
+        <g fill="none" stroke="#1c1a17" stroke-width="1.1" marker-end="url(#ah)">
+          <path d="M56 40 H107"/>
+          <path d="M197 40 H225"/>
+          <path d="M303 40 H351"/>
+          <path d="M399 40 H443"/>
+          <path d="M533 40 H583"/>
+        </g>
+        <!-- nodes -->
+        <g fill="none" stroke="#1c1a17" stroke-width="1.3">
+          <circle cx="40" cy="40" r="14"/>
+          <text x="40" y="45" font-family="Iowan Old Style,Palatino,Georgia,serif" font-style="italic" font-size="14" fill="#1c1a17" stroke="none" text-anchor="middle">?</text>
+          <rect x="110" y="23" width="84" height="34" rx="2"/>
+          <path d="M228 26 a36 6 0 1 1 72 0 a36 6 0 1 1 -72 0 M228 26 v28 a36 6 0 0 0 72 0 v-28"/>
+          <rect x="364" y="20" width="32" height="30" fill="#faf6ee"/>
+          <rect x="360" y="24" width="32" height="30" fill="#faf6ee"/>
+          <rect x="356" y="28" width="32" height="30" fill="#faf6ee"/>
+          <path d="M362 36 H382 M362 42 H382 M362 48 H376" stroke-width="1"/>
+          <rect x="446" y="23" width="84" height="34" rx="2"/>
+          <circle cx="600" cy="40" r="14" fill="#1c1a17"/>
+        </g>
+        <!-- labels -->
+        <g font-family="SF Mono,Menlo,Consolas,monospace" font-size="10.5" fill="#1c1a17" text-anchor="middle">
+          <text x="40" y="80">Query</text>
+          <text x="152" y="80">Embedding model</text>
+          <text x="264" y="80">Vector index</text>
+          <text x="376" y="80">Top-4 chunks</text>
+          <text x="488" y="80">Generative model</text>
+          <text x="600" y="80">Answer</text>
+        </g>
+        <g font-family="Iowan Old Style,Palatino,Georgia,serif" font-style="italic" font-size="11" fill="#7c7567" text-anchor="middle">
+          <text x="264" y="95">highlights</text>
+          <text x="488" y="95">one call</text>
+        </g>
+      </svg>
+    </div>
+    <p class="cap">Fig. 1 · Naive RAG. Six stages, one model call at query time.</p>
+  </div>
+  <aside class="sn" style="margin-top:58px">
+    <span class="h">What it costs</span>
+    1 model call per query. The cheapest row on this page, and the one every other row should be compared against.
+  </aside>
+
+  <div class="b">
+    <h3>The six questions</h3>
+    <ol class="qs">
+      <li><span class="qn">Q1</span><span>Where did I read the line about [a phrase from one of my highlights]? <i class="dot good vd"></i></span></li>
+      <li><span class="qn">Q2</span><span>What did I read in 2024, rated five stars, under 300 pages? <i class="dot wrong vd"></i></span></li>
+      <li class="on"><span class="qn">Q3</span><span><mark>Why did I give [a book] two stars when everyone else loved it?</mark> <i class="dot wrong vd"></i></span></li>
+      <li><span class="qn">Q4</span><span>Which of my books argue with each other? <i class="dot partial vd"></i></span></li>
+      <li><span class="qn">Q5</span><span>[A photographed page] Which book is this, and what did I highlight near it? <i class="dot partial vd"></i></span></li>
+      <li><span class="qn">Q6</span><span>Build me a two-week holiday list from my to-read shelf: nothing over 400 pages, one recommended by a friend, nothing like the last three I abandoned. <i class="dot partial vd"></i></span></li>
+    </ol>
+  </div>
+  <aside class="sn" style="margin-top:154px">
+    <span class="h">Q3 tests</span>
+    contradicting sources: my review, my own admiring highlights from the same book, and the crowd's 4.3 average.
+    <span class="h" style="margin-top:14px">Reference answer</span>
+    The reason from my own review, ranked above my highlights and above the crowd's average.
+  </aside>
+
+  <div class="b"><h3>Trace · Naive RAG × Q3</h3></div>
+  <div class="trace">
+    <div class="trow"><p>Question embedded as one vector.</p><span class="tl"><b>01</b>embed</span></div>
+    <div class="trow"><p>Top-4: three of my own highlights from that book, which are exactly the passages I liked enough to mark, and one sentence of my review.</p><span class="tl"><b>02</b>retrieve<i>by cosine, over highlight chunks</i></span></div>
+    <div class="trow"><p>Three admiring quotes, one critical sentence, the question.</p><span class="tl"><b>03</b>prompt<i>one call</i></span></div>
+    <div class="trow"><p>The reason from my own review, ranked above my highlights and above the crowd's average.</p><span class="tl"><b>04</b>graded against<i>the reference, written before any pipeline runs</i></span></div>
+  </div>
+
+  <blockquote class="b ans">
+    <p class="lab">Predicted answer</p>
+    <p>Explains that I clearly enjoyed the book, quoting the highlighted lines, and speculates that the rating must reflect the ending or the pacing.</p>
+  </blockquote>
+  <aside class="sn" style="margin-top:26px">
+    <span class="badge wrong">Predicted · wrong</span><br>
+    v0: no pipeline has run. This cell is replaced by a real trace, with the date, as the version that measures it ships.
+  </aside>
+
+  <p class="b why"><b>Predicted wrong.</b> My highlights share more words with the question than the one review that answers it. <mark>Similarity found what I marked, not what I thought.</mark></p>
+</section>
+
+<!-- §04 scorecard -->
+<section id="scorecard" class="grid">
+  <div class="b">
+    <p class="lab"><b>§04</b> · The scorecard</p>
+    <h2>Nobody wins every column, and the cheapest pattern wins the first one</h2>
+  </div>
+
+  <div class="b sc">
+    <table class="mx">
+      <thead>
+        <tr><th class="l">pattern</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th><th>Q5</th><th>Q6</th><th class="r">calls</th><th class="r">latency</th><th class="r">cost</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="nm"><i style="background:var(--naive)"></i>Naive RAG</td><td><i class="dot good"></i></td><td><i class="dot wrong"></i></td><td class="sel"><i class="dot wrong"></i></td><td><i class="dot partial"></i></td><td><i class="dot partial"></i></td><td><i class="dot partial"></i></td><td class="r">1</td><td class="r">~1.5 s</td><td class="r">1x</td></tr>
+        <tr><td class="nm"><i style="background:var(--rerank)"></i>Retrieve and rerank</td><td><i class="dot good"></i></td><td><i class="dot wrong"></i></td><td><i class="dot good"></i></td><td><i class="dot partial"></i></td><td><i class="dot partial"></i></td><td><i class="dot partial"></i></td><td class="r">1 + reranker</td><td class="r">~2 s</td><td class="r">1.2x</td></tr>
+        <tr><td class="nm"><i style="background:var(--multimodal)"></i>Multimodal RAG</td><td><i class="dot good"></i></td><td><i class="dot wrong"></i></td><td><i class="dot wrong"></i></td><td><i class="dot partial"></i></td><td><i class="dot good"></i></td><td><i class="dot partial"></i></td><td class="r">1 (image tokens)</td><td class="r">~2.5 s</td><td class="r">2.5x</td></tr>
+        <tr><td class="nm"><i style="background:var(--graph)"></i>Graph RAG</td><td><i class="dot good"></i></td><td><i class="dot partial"></i></td><td><i class="dot partial"></i></td><td><i class="dot good"></i></td><td><i class="dot partial"></i></td><td><i class="dot partial"></i></td><td class="r">2 + indexing</td><td class="r">~2.2 s</td><td class="r">1.5x</td></tr>
+        <tr><td class="nm"><i style="background:var(--hybrid)"></i>Hybrid RAG</td><td><i class="dot good"></i></td><td><i class="dot partial"></i></td><td><i class="dot partial"></i></td><td><i class="dot good"></i></td><td><i class="dot partial"></i></td><td><i class="dot partial"></i></td><td class="r">2–3</td><td class="r">~2.5 s</td><td class="r">1.8x</td></tr>
+        <tr><td class="nm"><i style="background:var(--agentic)"></i>Agentic RAG (router)</td><td><i class="dot good"></i></td><td><i class="dot good"></i></td><td><i class="dot good"></i></td><td><i class="dot good"></i></td><td><i class="dot good"></i></td><td><i class="dot partial"></i></td><td class="r">2–3</td><td class="r">~2.5 s</td><td class="r">1.5x</td></tr>
+        <tr><td class="nm"><i style="background:var(--multiagent)"></i>Multi-agent RAG</td><td><i class="dot good"></i></td><td><i class="dot good"></i></td><td><i class="dot good"></i></td><td><i class="dot good"></i></td><td><i class="dot good"></i></td><td><i class="dot good"></i></td><td class="r">5–8</td><td class="r">~12 s</td><td class="r">8x</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <aside class="sn">
+    <span class="h">Legend · <i>all predicted</i></span>
+    <ul class="lg">
+      <li><i class="dot good"></i> predicted correct</li>
+      <li><i class="dot partial"></i> partial or generic</li>
+      <li><i class="dot wrong"></i> wrong or invented</li>
+    </ul>
+    Click a cell to open its trace. The highlighted cell is the one traced above. Calls, latency and cost are estimates per query; none has been measured yet.
+  </aside>
+
+  <p class="b">Three things to read off the grid. Every pattern gets the easy question right, so the easy question tells you nothing about which pattern to use. The Q2 column splits the table cleanly into patterns with a tool and patterns without one, and no amount of embedding quality moves a pattern across that line. And reranking fixes the most common failure for the price of one extra call, which is why it should be the first upgrade, not the graph.</p>
+  <p class="b"><mark>The prediction I most expect to be wrong is naive on Q1.</mark> Kindle highlights are short, so the nearest chunk is sometimes a different book quoting the same author. If that happens, Q1 stops being a control and reranking earns its call one column earlier.<sup class="r">4</sup></p>
+  <aside class="sn"><span class="n">4</span>When a cell becomes measured, the page says so with the date. Until then every dot on this grid is a prediction.</aside>
+</section>
+
+<footer class="pf">
+  <span>Built by Shirley · AI-assisted · v0, 9 September 2026</span>
+  <span><a href="#">How it's built, and what gets measured next</a></span>
+</footer>
+
+</div>
+</body>
+</html>

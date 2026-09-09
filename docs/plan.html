@@ -1,0 +1,405 @@
+<title>The Librarian build plan</title>
+<style>
+  :root{--bg:#fbfaf7;--ink:#1a1a1a;--ink2:#3d3a33;--mute:#7a7568;--line:#e5e2da;--soft:#f3f1ea;--acc:#1f5e4e;--acc-soft:#dcebe5;--warn:#b8741a;--bad:#9c2f2f;color-scheme:light}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#171613;--ink:#ece8dd;--ink2:#cfc9bb;--mute:#9a9486;--line:#33312b;--soft:#221f1a;--acc:#6fb59d;--acc-soft:#1f2f2a;--warn:#d9a24a;--bad:#d46b6b;color-scheme:dark}}
+  :root[data-theme="dark"]{--bg:#171613;--ink:#ece8dd;--ink2:#cfc9bb;--mute:#9a9486;--line:#33312b;--soft:#221f1a;--acc:#6fb59d;--acc-soft:#1f2f2a;--warn:#d9a24a;--bad:#d46b6b;color-scheme:dark}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+  main{max-width:820px;margin:0 auto;padding:44px 24px 80px}
+  .sans{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Arial,sans-serif}
+  .kicker{font-family:-apple-system,Inter,Arial,sans-serif;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin:0}
+  h1{font-weight:500;font-size:clamp(30px,5vw,40px);line-height:1.12;margin:10px 0 14px;letter-spacing:-.01em;text-wrap:balance;max-width:14em}
+  .lede{font-size:18px;color:var(--ink2);max-width:620px;margin:0 0 26px}
+  p,li{font-size:16px;max-width:660px}
+  section{margin-top:56px;border-top:1px solid var(--ink);padding-top:20px}
+  section h2{font-weight:500;font-size:26px;margin:0 0 6px;letter-spacing:-.01em;text-wrap:balance}
+  section h2 span{display:block;font-family:-apple-system,Inter,Arial,sans-serif;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin-bottom:8px}
+  h3{font-family:-apple-system,Inter,Arial,sans-serif;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin:26px 0 10px}
+  .sum{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);margin:8px 0 0}
+  .sum div{padding:14px 16px;border-right:1px solid var(--line);font-family:-apple-system,Inter,Arial,sans-serif;font-size:13.5px;line-height:1.5;color:var(--ink2)}
+  .sum div:last-child{border-right:0}
+  .sum b{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin-bottom:4px}
+  .tw{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-family:-apple-system,Inter,Arial,sans-serif;font-size:13.5px;margin:8px 0 4px;font-variant-numeric:tabular-nums}
+  th{text-align:left;font-weight:600;padding:8px 6px;border-bottom:1px solid var(--ink);vertical-align:bottom;white-space:nowrap}
+  td{padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+  td.c,th.c{text-align:center}
+  code{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:.86em;background:var(--soft);padding:1px 5px}
+  pre{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:12.5px;background:var(--soft);padding:14px 16px;line-height:1.5;overflow-x:auto;margin:10px 0;color:var(--ink2)}
+  figure{margin:20px 0;color:var(--ink)}
+  figure svg{max-width:100%;height:auto;display:block;font-family:-apple-system,Inter,Arial,sans-serif}
+  figcaption{font-family:-apple-system,Inter,Arial,sans-serif;font-size:12.5px;color:var(--mute);margin-top:8px;max-width:660px}
+  .dot{display:inline-block;width:11px;height:11px;border-radius:50%;vertical-align:middle}
+  .dot.g{background:var(--acc)}.dot.p{background:linear-gradient(90deg,var(--warn) 50%,transparent 50%);border:1.5px solid var(--warn)}.dot.w{border:1.5px solid var(--bad)}
+  .legend{font-family:-apple-system,Inter,Arial,sans-serif;font-size:12px;color:var(--mute);display:flex;gap:16px;flex-wrap:wrap;margin-top:8px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .rule{font-family:-apple-system,Inter,Arial,sans-serif;font-size:13.5px;border-left:3px solid var(--acc);padding:6px 14px;margin:12px 0;color:var(--ink2);max-width:640px}
+  .ask{border:1px dashed var(--mute);padding:12px 16px;margin:12px 0;font-family:-apple-system,Inter,Arial,sans-serif;font-size:14px;max-width:660px}
+  .ask b{color:var(--acc)}
+  ol.steps{padding-left:22px}ol.steps li{margin-bottom:6px}
+  .ver{display:grid;grid-template-columns:64px 1fr;gap:14px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .ver .v{font-family:-apple-system,Inter,Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--acc)}
+  .ver p{margin:0;font-size:15px}
+  .ver p b{font-weight:600}
+  .pf{margin-top:56px;padding-top:16px;border-top:1px solid var(--ink);font-family:-apple-system,Inter,Arial,sans-serif;font-size:13px;color:var(--mute);line-height:1.7}
+  @media (max-width:640px){.sum{grid-template-columns:1fr}.sum div{border-right:0;border-bottom:1px solid var(--line)}.sum div:last-child{border-bottom:0}}
+</style>
+<main>
+<p class="kicker">Seven RAGs, one shelf · build plan · 9 September 2026</p>
+<h1>The Librarian: seven RAG patterns on Shirley's own bookshelf</h1>
+<p class="lede">One corpus: the Goodreads export, the Kindle highlights, a short list of who recommended what, and a few photographed pages. Six fixed questions. Seven retrieval designs behind one interface. The site shows what each design retrieved, what it answered, and whether it was right, with numbers replacing predictions version by version.</p>
+<div class="sum">
+  <div><b>What it is</b>A chatbot over Shirley's reading life with a trace panel, and a comparison page where the same six questions run through all seven RAG patterns.</div>
+  <div><b>Why books</b>She can grade every answer in a second. The data exports in an afternoon. "It invented a book I never read" is the most legible RAG failure there is.</div>
+  <div><b>Done when</b>All six questions answered by all seven pipelines with measured verdicts, cost and latency on the site, and the "predicted" labels removed.</div>
+</div>
+
+<section id="corpus">
+  <h2><span>1</span>The corpus: what goes in, what stays out</h2>
+  <p>Three files Shirley already has or can write in twenty minutes, plus a handful of photos. Nothing is fabricated. Private notes are never ingested.</p>
+  <div class="tw"><table>
+    <tr><th>source</th><th>format</th><th>fields used</th><th>fields ignored</th><th>what it gives the comparison</th></tr>
+    <tr><td>Goodreads export</td><td><code>goodreads_library_export.csv</code></td><td>Title, Author, Additional Authors, ISBN13, My Rating, Average Rating, Number of Pages, Original Publication Year, Date Read, Date Added, Bookshelves, Exclusive Shelf, My Review, Read Count</td><td>Private Notes (never ingested), Book Id, Binding, Publisher, Spoiler, Owned Copies</td><td>the ledger: dates, ratings, page counts, shelves. Numbers that naive RAG invents. The crowd's opinion (Average Rating) against hers.</td></tr>
+    <tr><td>Kindle highlights</td><td><code>My Clippings.txt</code> from the device, or the per-book notebook export</td><td>title, author, location or page, date added, highlight text, her notes</td><td>bookmarks, clippings under 20 characters</td><td>the quotes. Where semantic search shines, and where a highlight in one book quoting another author sets the misattribution trap.</td></tr>
+    <tr><td>Recommendations</td><td><code>recommendations.csv</code>, written by hand: <code>title, by, where, date</code></td><td>all four; "by" as initials</td><td></td><td>the people edges. "Whose recommendations do I actually like" cannot be answered by similarity.</td></tr>
+    <tr><td>Photos</td><td>5 to 10 JPEGs: covers from Open Library by ISBN, plus her own photographed pages and one shelf</td><td>pixels; captions generated once at ingest</td><td></td><td>answers that have no text form.</td></tr>
+  </table></div>
+  <h3>Privacy and publishing rules</h3>
+  <p class="rule">Highlights only, never full text. A highlight is a short quotation with attribution, which is fine to publish in small numbers; a book is not.</p>
+  <p class="rule">Recommenders appear as initials. The mapping from initials to people lives in the CSV on her machine, not in the repo.</p>
+  <p class="rule">Shirley curates the export before ingest. Any title she does not want on a public page is deleted from the CSV, and the corpus is whatever is left. The site says the corpus is curated.</p>
+</section>
+
+<section id="ingest">
+  <h2><span>2</span>Ingest: three files become five stores</h2>
+  <figure>
+    <svg viewBox="0 0 820 400" role="img" aria-label="Goodreads CSV, Kindle clippings, recommendations CSV and photos flow through a normaliser into SQLite, then fan out to a chunker feeding the vector index, an extractor feeding the graph, and a captioner feeding the image index">
+      <defs><marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+      <g font-size="12" fill="currentColor" stroke="currentColor">
+        <!-- sources -->
+        <g stroke-width="1">
+          <rect x="10" y="20" width="150" height="46" fill="none"/><text x="85" y="39" text-anchor="middle" stroke="none" font-weight="600">Goodreads CSV</text><text x="85" y="55" text-anchor="middle" stroke="none" font-size="10.5" opacity=".7">ledger: 1 row per book</text>
+          <rect x="10" y="90" width="150" height="46" fill="none"/><text x="85" y="109" text-anchor="middle" stroke="none" font-weight="600">Kindle clippings</text><text x="85" y="125" text-anchor="middle" stroke="none" font-size="10.5" opacity=".7">1 block per highlight</text>
+          <rect x="10" y="160" width="150" height="46" fill="none"/><text x="85" y="179" text-anchor="middle" stroke="none" font-weight="600">recommendations.csv</text><text x="85" y="195" text-anchor="middle" stroke="none" font-size="10.5" opacity=".7">title, by, where, date</text>
+          <rect x="10" y="230" width="150" height="46" fill="none"/><text x="85" y="249" text-anchor="middle" stroke="none" font-weight="600">Photos</text><text x="85" y="265" text-anchor="middle" stroke="none" font-size="10.5" opacity=".7">covers, pages, one shelf</text>
+        </g>
+        <!-- normaliser -->
+        <rect x="230" y="90" width="130" height="116" fill="none" stroke-width="1"/>
+        <text x="295" y="140" text-anchor="middle" stroke="none" font-weight="600">Normaliser</text>
+        <text x="295" y="157" text-anchor="middle" stroke="none" font-size="10.5" opacity=".7">match titles across files</text>
+        <text x="295" y="171" text-anchor="middle" stroke="none" font-size="10.5" opacity=".7">by ISBN, then fuzzy title</text>
+        <g fill="none" stroke-width="1" marker-end="url(#a1)">
+          <path d="M160 43 C 200 43, 200 120, 228 120"/>
+          <path d="M160 113 L 228 133"/>
+          <path d="M160 183 L 228 160"/>
+          <path d="M160 253 C 200 253, 200 180, 228 180"/>
+        </g>
+        <!-- sqlite -->
+        <rect x="420" y="90" width="120" height="116" fill="var(--acc-soft)" stroke-width="1"/>
+        <text x="480" y="122" text-anchor="middle" stroke="none" font-weight="600">SQLite</text>
+        <text x="480" y="141" text-anchor="middle" stroke="none" font-size="11">books</text>
+        <text x="480" y="156" text-anchor="middle" stroke="none" font-size="11">highlights</text>
+        <text x="480" y="171" text-anchor="middle" stroke="none" font-size="11">recommendations</text>
+        <text x="480" y="186" text-anchor="middle" stroke="none" font-size="11">images</text>
+        <path d="M360 148 L 418 148" fill="none" stroke-width="1" marker-end="url(#a1)"/>
+        <text x="389" y="141" text-anchor="middle" stroke="none" font-size="10.5" opacity=".7">writes</text>
+        <!-- fan out -->
+        <g stroke-width="1">
+          <rect x="600" y="20" width="110" height="46" fill="none"/><text x="655" y="39" text-anchor="middle" stroke="none" font-weight="600">Chunker</text><text x="655" y="55" text-anchor="middle" stroke="none" font-size="10.5" opacity=".7">1 highlight = 1 chunk</text>
+          <rect x="600" y="125" width="110" height="46" fill="none"/><text x="655" y="144" text-anchor="middle" stroke="none" font-weight="600">Extractor</text><text x="655" y="160" text-anchor="middle" stroke="none" font-size="10.5" opacity=".7">Claude, fixed schema</text>
+          <rect x="600" y="230" width="110" height="46" fill="none"/><text x="655" y="249" text-anchor="middle" stroke="none" font-weight="600">Captioner</text><text x="655" y="265" text-anchor="middle" stroke="none" font-size="10.5" opacity=".7">vision model, once</text>
+        </g>
+        <g fill="none" stroke-width="1" marker-end="url(#a1)">
+          <path d="M540 120 C 570 120, 570 43, 598 43"/>
+          <path d="M540 148 L 598 148"/>
+          <path d="M540 176 C 570 176, 570 253, 598 253"/>
+        </g>
+        <text x="569" y="78" text-anchor="middle" stroke="none" font-size="10.5" opacity=".7">highlights + book metadata</text>
+        <text x="569" y="141" text-anchor="middle" stroke="none" font-size="10.5" opacity=".7">highlights, reviews</text>
+        <text x="569" y="219" text-anchor="middle" stroke="none" font-size="10.5" opacity=".7">images</text>
+        <!-- stores -->
+        <g stroke-width="1">
+          <rect x="740" y="20" width="70" height="46" fill="var(--acc-soft)"/><text x="775" y="47" text-anchor="middle" stroke="none" font-weight="600" font-size="11">Vector</text>
+          <rect x="740" y="125" width="70" height="46" fill="var(--acc-soft)"/><text x="775" y="152" text-anchor="middle" stroke="none" font-weight="600" font-size="11">Graph</text>
+          <rect x="740" y="230" width="70" height="46" fill="var(--acc-soft)"/><text x="775" y="252" text-anchor="middle" stroke="none" font-weight="600" font-size="11">Image</text><text x="775" y="265" text-anchor="middle" stroke="none" font-size="10" opacity=".7">index</text>
+        </g>
+        <g fill="none" stroke-width="1" marker-end="url(#a1)">
+          <path d="M710 43 L 738 43"/><path d="M710 148 L 738 148"/><path d="M710 253 L 738 253"/>
+        </g>
+        <!-- the ledger stays -->
+        <path d="M480 206 L 480 330" fill="none" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#a1)"/>
+        <rect x="395" y="332" width="170" height="46" fill="var(--acc-soft)" stroke-width="1"/>
+        <text x="480" y="351" text-anchor="middle" stroke="none" font-weight="600">SQL tool</text>
+        <text x="480" y="367" text-anchor="middle" stroke="none" font-size="10.5" opacity=".7">the ledger is queried, never embedded</text>
+        <text x="500" y="275" stroke="none" font-size="10.5" opacity=".7">rows stay rows</text>
+      </g>
+    </svg>
+    <figcaption>Ingest runs once per export. The ledger (dates, ratings, pages) is never embedded: it is the store the SQL tool queries, which is what separates "numbers" questions from "meaning" questions on the scorecard.</figcaption>
+  </figure>
+  <h3>Data model</h3>
+  <div class="tw"><table>
+    <tr><th>table</th><th>columns</th><th>source</th></tr>
+    <tr><td><code>books</code></td><td>id, title, author, isbn13, pages, pub_year, date_read, date_added, my_rating, avg_rating, shelf (read / to-read / abandoned), shelves[], my_review, read_count</td><td>Goodreads</td></tr>
+    <tr><td><code>highlights</code></td><td>id, book_id, location, page, added_on, text, note</td><td>Kindle, matched to books by ISBN or fuzzy title</td></tr>
+    <tr><td><code>recommendations</code></td><td>book_id, by_initials, where, date</td><td>hand-written CSV</td></tr>
+    <tr><td><code>images</code></td><td>id, book_id (nullable for the shelf), kind (cover / page / shelf), path, caption</td><td>photos; caption generated at ingest</td></tr>
+  </table></div>
+  <h3>Graph schema</h3>
+  <figure>
+    <svg viewBox="0 0 820 250" role="img" aria-label="Graph schema: Person recommended Book; Author wrote Book; Book about Theme; Book mentions Book or Author; Book read-after Book">
+      <defs><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+      <g font-size="12" fill="currentColor" stroke="currentColor" stroke-width="1">
+        <ellipse cx="410" cy="125" rx="62" ry="30" fill="var(--acc-soft)"/><text x="410" y="130" text-anchor="middle" stroke="none" font-weight="600">Book</text>
+        <ellipse cx="110" cy="60" rx="58" ry="26" fill="none"/><text x="110" y="65" text-anchor="middle" stroke="none" font-weight="600">Person</text>
+        <ellipse cx="110" cy="190" rx="58" ry="26" fill="none"/><text x="110" y="195" text-anchor="middle" stroke="none" font-weight="600">Author</text>
+        <ellipse cx="710" cy="60" rx="58" ry="26" fill="none"/><text x="710" y="65" text-anchor="middle" stroke="none" font-weight="600">Theme</text>
+        <ellipse cx="710" cy="190" rx="62" ry="30" fill="none" stroke-dasharray="4 3"/><text x="710" y="195" text-anchor="middle" stroke="none" font-weight="600">Book</text>
+        <g fill="none" marker-end="url(#a2)">
+          <path d="M166 68 L 350 112"/>
+          <path d="M166 183 L 350 138"/>
+          <path d="M470 112 L 654 68"/>
+          <path d="M470 138 L 648 180"/>
+          <path d="M410 155 C 410 210, 470 210, 470 155" />
+        </g>
+        <g stroke="none" font-size="10.5">
+          <rect x="205" y="72" width="96" height="16" fill="var(--bg)"/><text x="253" y="84" text-anchor="middle">RECOMMENDED (date)</text>
+          <rect x="230" y="150" width="50" height="16" fill="var(--bg)"/><text x="255" y="162" text-anchor="middle">WROTE</text>
+          <rect x="520" y="76" width="106" height="16" fill="var(--bg)"/><text x="573" y="88" text-anchor="middle">ABOUT (extracted)</text>
+          <rect x="505" y="150" width="130" height="16" fill="var(--bg)"/><text x="570" y="162" text-anchor="middle">MENTIONS / ARGUES_WITH</text>
+          <rect x="395" y="215" width="90" height="16" fill="var(--bg)"/><text x="440" y="227" text-anchor="middle">READ_AFTER (ledger)</text>
+        </g>
+        <text x="410" y="30" text-anchor="middle" stroke="none" font-size="11" opacity=".7">Book nodes carry my_rating, date_read and pages as properties for filtering; the ledger stays the source of truth.</text>
+      </g>
+    </svg>
+    <figcaption>Two edge types come from the files (WROTE, RECOMMENDED, READ_AFTER). Two are extracted by Claude from highlights and reviews with a fixed schema (ABOUT, MENTIONS / ARGUES_WITH), and those are where Graph RAG can be quietly wrong. The extracted graph is published as JSON so a missed edge is visible.</figcaption>
+  </figure>
+</section>
+
+<section id="questions">
+  <h2><span>3</span>The question set: six questions, one per failure mode</h2>
+  <p>Each question is a diagnostic. Q1 is a control every pattern should pass. Q2 is new relative to the handstand version: structured facts, the most common real-world RAG failure. Exact wording and the real books get fixed after the export is inspected; the shape of each question does not change.</p>
+  <div class="tw"><table>
+    <tr><th></th><th>question shape</th><th>needs</th><th>naive fails because</th><th>fixed by</th></tr>
+    <tr><td>Q1</td><td>"Where did I read the line about …?"</td><td>semantic match over highlights</td><td>it doesn't, mostly. Control.</td><td>nothing needed</td></tr>
+    <tr><td>Q2</td><td>"What did I read in 2024, rated five stars, under 300 pages?"</td><td>a filter over the ledger</td><td>similarity has no notion of "2024" or "&lt; 300"; it lists plausible titles, some wrong, some never read</td><td>a SQL tool (router, multi-agent)</td></tr>
+    <tr><td>Q3</td><td>"Why did I give [book] two stars when everyone else loved it?"</td><td>her review ranked above her own positive highlights and the crowd's 4.3 average</td><td>highlights from the book share more words with the question than the one review that answers it</td><td>reranking</td></tr>
+    <tr><td>Q4</td><td>"Which of my books argue with each other?"</td><td>MENTIONS / ARGUES_WITH edges across books</td><td>the relationship is between chunks, not inside any one</td><td>graph, hybrid</td></tr>
+    <tr><td>Q5</td><td>A photographed page: "Which book is this, and what did I highlight near it?"</td><td>image retrieval, then the ledger and highlights</td><td>no text to match</td><td>multimodal</td></tr>
+    <tr><td>Q6</td><td>"Two-week holiday list from my to-read shelf: nothing over 400 pages, one from a friend's recommendation, nothing like the last three I abandoned."</td><td>ledger filter, recommendation edges, themes of the abandoned books, and a plan</td><td>one retrieval cannot compose four sources</td><td>multi-agent</td></tr>
+  </table></div>
+  <h3>Predicted scorecard, to be replaced by measurements</h3>
+  <div class="tw"><table>
+    <tr><th>pattern</th><th class="c">Q1</th><th class="c">Q2</th><th class="c">Q3</th><th class="c">Q4</th><th class="c">Q5</th><th class="c">Q6</th><th>calls / query</th></tr>
+    <tr><td>Naive</td><td class="c"><i class="dot g"></i></td><td class="c"><i class="dot w"></i></td><td class="c"><i class="dot w"></i></td><td class="c"><i class="dot p"></i></td><td class="c"><i class="dot p"></i></td><td class="c"><i class="dot p"></i></td><td>1</td></tr>
+    <tr><td>Retrieve and rerank</td><td class="c"><i class="dot g"></i></td><td class="c"><i class="dot w"></i></td><td class="c"><i class="dot g"></i></td><td class="c"><i class="dot p"></i></td><td class="c"><i class="dot p"></i></td><td class="c"><i class="dot p"></i></td><td>1 + reranker</td></tr>
+    <tr><td>Multimodal</td><td class="c"><i class="dot g"></i></td><td class="c"><i class="dot w"></i></td><td class="c"><i class="dot w"></i></td><td class="c"><i class="dot p"></i></td><td class="c"><i class="dot g"></i></td><td class="c"><i class="dot p"></i></td><td>1, image tokens</td></tr>
+    <tr><td>Graph</td><td class="c"><i class="dot g"></i></td><td class="c"><i class="dot p"></i></td><td class="c"><i class="dot p"></i></td><td class="c"><i class="dot g"></i></td><td class="c"><i class="dot p"></i></td><td class="c"><i class="dot p"></i></td><td>2 + indexing</td></tr>
+    <tr><td>Hybrid</td><td class="c"><i class="dot g"></i></td><td class="c"><i class="dot p"></i></td><td class="c"><i class="dot p"></i></td><td class="c"><i class="dot g"></i></td><td class="c"><i class="dot p"></i></td><td class="c"><i class="dot p"></i></td><td>2 to 3</td></tr>
+    <tr><td>Agentic router</td><td class="c"><i class="dot g"></i></td><td class="c"><i class="dot g"></i></td><td class="c"><i class="dot g"></i></td><td class="c"><i class="dot g"></i></td><td class="c"><i class="dot g"></i></td><td class="c"><i class="dot p"></i></td><td>2 to 3</td></tr>
+    <tr><td>Multi-agent</td><td class="c"><i class="dot g"></i></td><td class="c"><i class="dot g"></i></td><td class="c"><i class="dot g"></i></td><td class="c"><i class="dot g"></i></td><td class="c"><i class="dot g"></i></td><td class="c"><i class="dot g"></i></td><td>5 to 8</td></tr>
+  </table></div>
+  <div class="legend"><span><i class="dot g"></i> correct</span><span><i class="dot p"></i> partial</span><span><i class="dot w"></i> wrong or invented</span><span>· every cell is a prediction until v5</span></div>
+  <p>The prediction I most expect to be wrong: naive on Q1. Kindle highlights are short, so the nearest chunk is often a different book quoting the same author. If that happens, Q1 stops being a control and reranking earns its call one column earlier.</p>
+</section>
+
+<section id="pipelines">
+  <h2><span>4</span>Seven pipelines are compositions of five retrievers</h2>
+  <p>There are not seven systems. There are five retrievers and one generation call, and each pattern is a rule for which retrievers run and in what order. Building it that way is what makes the comparison fair: the same reranker, the same graph, the same model, in every column.</p>
+  <figure>
+    <svg viewBox="0 0 820 330" role="img" aria-label="Matrix of seven patterns against five retrievers showing which retrievers each pattern uses; a router or a forced toggle selects the pattern, and every pattern ends in the same generation call">
+      <g font-size="12" fill="currentColor" stroke="currentColor">
+        <!-- column heads -->
+        <g stroke="none" font-weight="600" text-anchor="middle">
+          <text x="330" y="28">Vector</text><text x="420" y="28">Reranker</text><text x="510" y="28">SQL tool</text><text x="600" y="28">Graph</text><text x="690" y="28">Image index</text>
+        </g>
+        <line x1="20" y1="40" x2="740" y2="40" stroke-width="1"/>
+        <!-- rows -->
+        <g stroke="none">
+          <text x="20" y="66">Naive</text>
+          <text x="20" y="100">Retrieve and rerank</text>
+          <text x="20" y="134">Multimodal</text>
+          <text x="20" y="168">Graph</text>
+          <text x="20" y="202">Hybrid</text>
+          <text x="20" y="236">Agentic router</text>
+          <text x="20" y="270">Multi-agent</text>
+        </g>
+        <g stroke="none" opacity=".18"><rect x="20" y="222" width="720" height="22" fill="currentColor"/><rect x="20" y="256" width="720" height="22" fill="currentColor"/></g>
+        <!-- dots: filled = uses; ring = chooses among; -->
+        <g fill="var(--acc)" stroke="none">
+          <circle cx="330" cy="62" r="6"/>
+          <circle cx="330" cy="96" r="6"/><circle cx="420" cy="96" r="6"/>
+          <circle cx="330" cy="130" r="6"/><circle cx="690" cy="130" r="6"/>
+          <circle cx="600" cy="164" r="6"/>
+          <circle cx="330" cy="198" r="6"/><circle cx="600" cy="198" r="6"/>
+        </g>
+        <g fill="none" stroke="var(--acc)" stroke-width="2">
+          <circle cx="330" cy="232" r="6"/><circle cx="420" cy="232" r="6"/><circle cx="510" cy="232" r="6"/><circle cx="600" cy="232" r="6"/><circle cx="690" cy="232" r="6"/>
+        </g>
+        <g fill="var(--acc)" stroke="none">
+          <circle cx="330" cy="266" r="6"/><circle cx="420" cy="266" r="6"/><circle cx="510" cy="266" r="6"/><circle cx="600" cy="266" r="6"/><circle cx="690" cy="266" r="6"/>
+        </g>
+        <!-- annotations -->
+        <g stroke="none" font-size="10.5" opacity=".75">
+          <text x="240" y="136" text-anchor="end">vector index also holds image captions</text>
+          <text x="240" y="204" text-anchor="end">union, then dedupe</text>
+          <text x="240" y="238" text-anchor="end">picks one per query</text>
+          <text x="240" y="272" text-anchor="end">planner fans out, synthesizer merges</text>
+        </g>
+        <line x1="20" y1="288" x2="740" y2="288" stroke-width="1"/>
+        <text x="20" y="312" stroke="none" font-size="11.5">Every row ends in the same call: Claude Opus 5, one prompt template, context + question → answer + trace.</text>
+        <g stroke="none" font-size="10.5" opacity=".75"><circle cx="760" cy="62" r="5" fill="var(--acc)"/><text x="770" y="66">runs it</text><circle cx="760" cy="82" r="5" fill="none" stroke="var(--acc)" stroke-width="2"/><text x="770" y="86">chooses one</text></g>
+      </g>
+    </svg>
+    <figcaption>The SQL tool is only reachable through the two agentic rows. That is deliberate: the infographic's first five patterns have no tool call, and the Q2 column shows what that costs.</figcaption>
+  </figure>
+  <h3>One interface</h3>
+  <pre>answer(question: str, pattern: str | None, image: bytes | None) -> {
+    "answer":   str,
+    "context":  [ {source, id, score, stage} ],   # what reached the model, in order
+    "route":    str,                              # which pattern ran (router's choice or forced)
+    "calls":    int,                              # model calls, counted by the code
+    "ms":       int,
+    "usage":    {input_tokens, output_tokens, usd},
+}</pre>
+  <p>The eval, the site's live demo, and the trace panel all call this one function. What is measured is what a visitor gets.</p>
+</section>
+
+<section id="evals">
+  <h2><span>5</span>How every answer is judged</h2>
+  <div class="tw"><table>
+    <tr><th>measure</th><th>how</th><th>automatic?</th></tr>
+    <tr><td>Verdict</td><td>correct / partial / wrong against a reference answer Shirley wrote before any pipeline ran</td><td>no, by hand</td></tr>
+    <tr><td>Invented books</td><td>any title in the answer that is not in <code>books</code></td><td>yes, the headline number</td></tr>
+    <tr><td>Retrieval hit</td><td>did the chunk or row holding the reference answer reach the model?</td><td>yes</td></tr>
+    <tr><td>Consistency</td><td>same verdict on all 5 runs</td><td>yes, once verdicts exist</td></tr>
+    <tr><td>Calls, latency, cost</td><td>from the interface's own counters</td><td>yes</td></tr>
+  </table></div>
+  <p>6 questions × 7 patterns × 5 runs is 210 answers per version. Shirley reads every one before any number is published; the invented-book count is the check that catches what she misses. A second reader grades a sample before v5 and the agreement rate is published as the ceiling, as on fixmybanana.</p>
+</section>
+
+<section id="versions">
+  <h2><span>6</span>Versions: what turns from prediction into measurement</h2>
+  <figure>
+    <svg viewBox="0 0 820 150" role="img" aria-label="Version ladder from v0 to v5, each step turning one part of the scorecard from prediction into measurement">
+      <defs><marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+      <g font-size="12" fill="currentColor" stroke="currentColor" stroke-width="1">
+        <line x1="20" y1="60" x2="800" y2="60" marker-end="url(#a3)"/>
+        <g stroke="none" text-anchor="middle">
+          <circle cx="60" cy="60" r="7" fill="var(--acc)"/><text x="60" y="40" font-weight="600">v0</text><text x="60" y="88" font-size="11">site rewritten</text><text x="60" y="102" font-size="11">for books</text>
+          <circle cx="200" cy="60" r="7" fill="var(--bg)" stroke="currentColor" stroke-width="1.5"/><text x="200" y="40" font-weight="600">v1</text><text x="200" y="88" font-size="11">ingest, naive,</text><text x="200" y="102" font-size="11">rerank, SQL tool live</text>
+          <circle cx="340" cy="60" r="7" fill="var(--bg)" stroke="currentColor" stroke-width="1.5"/><text x="340" y="40" font-weight="600">v2</text><text x="340" y="88" font-size="11">graph + hybrid</text><text x="340" y="102" font-size="11">graph JSON published</text>
+          <circle cx="480" cy="60" r="7" fill="var(--bg)" stroke="currentColor" stroke-width="1.5"/><text x="480" y="40" font-weight="600">v3</text><text x="480" y="88" font-size="11">multimodal</text><text x="480" y="102" font-size="11">Q5 column real</text>
+          <circle cx="620" cy="60" r="7" fill="var(--bg)" stroke="currentColor" stroke-width="1.5"/><text x="620" y="40" font-weight="600">v4</text><text x="620" y="88" font-size="11">router + multi-agent</text><text x="620" y="102" font-size="11">Q6 and cost columns real</text>
+          <circle cx="760" cy="60" r="7" fill="var(--bg)" stroke="currentColor" stroke-width="1.5"/><text x="760" y="40" font-weight="600">v5</text><text x="760" y="88" font-size="11">full grid measured,</text><text x="760" y="102" font-size="11">labels off, live demo</text>
+        </g>
+        <text x="20" y="135" stroke="none" font-size="11" opacity=".75">Each version reruns the whole question set. The grid on the site never mixes measured and predicted cells without saying which is which.</text>
+      </g>
+    </svg>
+    <figcaption>Only v0 is done today. Every later rung replaces a specific set of cells, so the site can ship after each one.</figcaption>
+  </figure>
+  <div class="ver"><div class="v">v0</div><p><b>Site rewritten for books.</b> Thesis, corpus, six question shapes, predicted traces per cell, scorecard, decision guide, method page. Labels say "predicted".</p></div>
+  <div class="ver"><div class="v">v1</div><p><b>Ingest and the first three retrievers.</b> Parse both exports, build SQLite, embed highlights, add the cross-encoder and the SQL tool. Naive and rerank rows measured; Q2 gets its first real answer through a forced SQL path so the number exists early. <b>Done when</b> rows 1 and 2 of the grid carry measured cells with cost and latency.</p></div>
+  <div class="ver"><div class="v">v2</div><p><b>Graph and hybrid.</b> Claude extraction over highlights and reviews with the fixed schema; NetworkX traversal; the extracted graph committed as JSON. <b>Done when</b> the Q4 column is measured and the graph is browsable on the site.</p></div>
+  <div class="ver"><div class="v">v3</div><p><b>Multimodal.</b> Voyage multimodal embeddings for the photos, vision generation. <b>Done when</b> Q5 is measured with the photographed pages.</p></div>
+  <div class="ver"><div class="v">v4</div><p><b>Router and multi-agent.</b> Haiku 4.5 router over the five retrievers; planner, three sub-agents, synthesizer. <b>Done when</b> Q6 and the cost column are measured.</p></div>
+  <div class="ver"><div class="v">v5</div><p><b>The numbers.</b> All 210 answers graded, consistency and invented-book counts published, second reader's agreement, ten more questions from how people actually ask, the live "ask the librarian" box with the trace panel. <b>Done when</b> no cell on the site is a prediction.</p></div>
+</section>
+
+<section id="site">
+  <h2><span>7</span>The site and how it deploys</h2>
+  <p>Two static pages now, one small service later. The explorer renderer from the handstand version is kept as is; only its data object and the prose change. That is a content edit, not a rebuild.</p>
+  <div class="tw"><table>
+    <tr><th>page</th><th>job</th><th>changes at v0</th></tr>
+    <tr><td><code>index.html</code></td><td>thesis, the corpus, the explorer, scorecard, decision guide</td><td>title becomes "Seven RAGs, one shelf"; corpus section, six questions, 42 predicted cells, scorecard rewritten</td></tr>
+    <tr><td><code>how-its-built.html</code></td><td>the lab notebook: problem, why books, trade-offs, corpus, questions, judging, versions, stack</td><td>rewritten; versions section becomes the source of truth for measured vs predicted</td></tr>
+    <tr><td><code>docs/plan.html</code></td><td>this document</td><td>new</td></tr>
+    <tr><td>live demo (v5)</td><td>"ask the librarian" box, pattern toggle, trace panel</td><td>later; calls the service</td></tr>
+  </table></div>
+  <figure>
+    <svg viewBox="0 0 820 230" role="img" aria-label="GitHub repo deploys static pages to Cloudflare Pages at ragpatterns.com; a Python service on Railway at api.ragpatterns.com serves the same pipelines to the site's demo box and to the eval scripts; the service calls the Claude API and Voyage">
+      <defs><marker id="a4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+      <g font-size="12" fill="currentColor" stroke="currentColor" stroke-width="1">
+        <rect x="20" y="80" width="130" height="60" fill="none"/><text x="85" y="106" text-anchor="middle" stroke="none" font-weight="600">GitHub repo</text><text x="85" y="123" text-anchor="middle" stroke="none" font-size="10.5" opacity=".7">pages + service + evals</text>
+        <rect x="250" y="20" width="170" height="60" fill="var(--acc-soft)"/><text x="335" y="46" text-anchor="middle" stroke="none" font-weight="600">Cloudflare Pages</text><text x="335" y="63" text-anchor="middle" stroke="none" font-size="10.5" opacity=".7">ragpatterns.com · static</text>
+        <rect x="250" y="140" width="170" height="60" fill="var(--acc-soft)"/><text x="335" y="166" text-anchor="middle" stroke="none" font-weight="600">Railway service</text><text x="335" y="183" text-anchor="middle" stroke="none" font-size="10.5" opacity=".7">api.ragpatterns.com · Python</text>
+        <rect x="560" y="140" width="110" height="60" fill="none"/><text x="615" y="166" text-anchor="middle" stroke="none" font-weight="600">Claude API</text><text x="615" y="183" text-anchor="middle" stroke="none" font-size="10.5" opacity=".7">Opus 5 · Haiku 4.5</text>
+        <rect x="690" y="140" width="110" height="60" fill="none"/><text x="745" y="166" text-anchor="middle" stroke="none" font-weight="600">Voyage</text><text x="745" y="183" text-anchor="middle" stroke="none" font-size="10.5" opacity=".7">embeddings</text>
+        <rect x="560" y="20" width="130" height="60" fill="none" stroke-dasharray="4 3"/><text x="625" y="46" text-anchor="middle" stroke="none" font-weight="600">Eval scripts</text><text x="625" y="63" text-anchor="middle" stroke="none" font-size="10.5" opacity=".7">Shirley's machine</text>
+        <g fill="none" marker-end="url(#a4)">
+          <path d="M150 100 C 200 100, 200 50, 248 50"/>
+          <path d="M150 120 C 200 120, 200 170, 248 170"/>
+          <path d="M420 170 L 558 170"/>
+          <path d="M670 170 L 688 170"/>
+          <path d="M420 62 C 470 62, 470 150, 480 165 L 248 165" opacity="0"/>
+          <path d="M335 80 L 335 138"/>
+          <path d="M560 60 C 500 60, 500 150, 422 158"/>
+        </g>
+        <g stroke="none" font-size="10.5" opacity=".75">
+          <text x="200" y="66">push to main</text>
+          <text x="200" y="154">push to main, PR-gated</text>
+          <text x="345" y="112">demo box calls answer()</text>
+          <text x="470" y="130">same answer()</text>
+          <text x="470" y="164">generation, routing</text>
+          <text x="672" y="216">embed at ingest</text>
+        </g>
+      </g>
+    </svg>
+    <figcaption>The eval scripts and the site's demo box call the same function on the same service, so the published numbers describe what a visitor gets. Until v5 the service is only needed for eval runs.</figcaption>
+  </figure>
+  <h3>Repo layout</h3>
+  <pre>rag_website/
+  index.html               # thesis + explorer (data object at the bottom)
+  how-its-built.html       # the lab notebook
+  docs/plan.html           # this plan
+  service/
+    answer.py              # the one interface
+    retrievers/            # vector.py, rerank.py, sql.py, graph.py, image.py
+    patterns/              # naive.py, rerank.py, multimodal.py, graph.py, hybrid.py, router.py, multiagent.py
+    ingest/                # goodreads.py, kindle.py, recommendations.py, photos.py, extract_graph.py
+    data/                  # library.sqlite, graph.json, index files   (gitignored except graph.json)
+  eval/
+    questions.yaml         # the six questions + reference answers
+    run.py                 # 6 × 7 × 5, writes results/vN.csv
+    results/               # committed, bad numbers included
+  corpus/                  # curated exports (gitignored), photos (committed)</pre>
+</section>
+
+<section id="stack">
+  <h2><span>8</span>Stack</h2>
+  <div class="tw"><table>
+    <tr><th>part</th><th>choice</th><th>why</th></tr>
+    <tr><td>Pages</td><td>plain HTML, inline CSS and JS, Cloudflare Pages</td><td>house rule; deploys in twenty seconds, nothing to roll back</td></tr>
+    <tr><td>Service</td><td>Python on Railway, one process</td><td>the fixmybanana setup; main is production, PR-gated</td></tr>
+    <tr><td>Ledger</td><td>SQLite</td><td>a few hundred rows; the SQL tool queries it directly</td></tr>
+    <tr><td>Vectors</td><td>Voyage text embeddings; Voyage multimodal at v3; stored in SQLite with a vector extension</td><td>one file, no vector database to run</td></tr>
+    <tr><td>Reranker</td><td>local cross-encoder</td><td>no API call; its cost is milliseconds, not dollars</td></tr>
+    <tr><td>Graph</td><td>NetworkX in memory, loaded from committed JSON</td><td>under a thousand nodes; a graph database is a fourth thing to run</td></tr>
+    <tr><td>Generation</td><td>Claude Opus 5, adaptive thinking, one prompt template</td><td>same model in every column so retrieval is the only variable</td></tr>
+    <tr><td>Router and cheap agents</td><td>Claude Haiku 4.5</td><td>a classifier should cost like one</td></tr>
+    <tr><td>Extraction, captions</td><td>Claude Opus 5 at ingest, once</td><td>index-time cost, published as such</td></tr>
+  </table></div>
+</section>
+
+<section id="decisions">
+  <h2><span>9</span>Decisions that are Shirley's</h2>
+  <div class="ask"><b>Retire the handstand v0 entirely, or keep it as a second corpus later?</b> Recommendation: retire it now, keep the renderer. The site tells one story.</div>
+  <div class="ask"><b>Recommendations file.</b> Write <code>recommendations.csv</code> by hand (twenty rows is plenty), or tag Goodreads shelves like <code>rec-ab</code> and re-export? Recommendation: the CSV; shelves get messy.</div>
+  <div class="ask"><b>Which books for Q3 and Q5.</b> One book she rated low that the crowd rated high, and three to five pages she is happy to photograph. Chosen after the export is inspected.</div>
+  <div class="ask"><b>Domain.</b> ragpatterns.com is parked at Cloudflare checkout at $10.46 a year. The corpus change does not affect it. Buy, or close.</div>
+  <div class="ask"><b>Abandoned books.</b> Q6 needs them. Are they on a Goodreads shelf (e.g. "dnf") or only in her head? If the latter, five titles in a column of the CSV is enough.</div>
+</section>
+
+<section id="next">
+  <h2><span>10</span>First session, in order</h2>
+  <ol class="steps">
+    <li>Copy the two exports into <code>corpus/</code> (gitignored). Inspect: row counts, how many highlights match a ledger row by ISBN, how many need fuzzy title matching, date formats.</li>
+    <li>Propose the six questions with real titles from the data and write the six reference answers. Shirley approves before anything is built.</li>
+    <li>Build ingest: Goodreads parser, Kindle parser, normaliser, SQLite. Print the match rate; publish it.</li>
+    <li>Retrievers: vector and reranker over highlights; SQL tool over the ledger.</li>
+    <li>Patterns: naive, rerank. The one interface. The eval runner.</li>
+    <li>Run 2 × 6 × 5, grade, put the first measured cells on the site with the date. That is v1.</li>
+  </ol>
+</section>
+
+<div class="pf">Plan written 9 September 2026 for Shirley · supersedes the handstand corpus in the v0 site · the decisions in section 9 are open until she closes them</div>
+</main>

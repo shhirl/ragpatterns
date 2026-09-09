@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design options — Seven RAGs, one shelf</title>
+<style>
+  :root{--bg:#fbfaf7;--ink:#1a1a1a;--ink2:#3d3a33;--mute:#7a7568;--line:#e5e2da;--acc:#1f5e4e}
+  body{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;max-width:860px;margin:0 auto;padding:40px 22px 60px;background:var(--bg);color:var(--ink);line-height:1.6}
+  .kicker{font-family:-apple-system,Inter,Arial,sans-serif;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin:0}
+  h1{font-weight:500;font-size:34px;line-height:1.15;margin:10px 0 16px}
+  p{max-width:720px;font-size:16.5px}
+  .opt{border-top:1px solid var(--ink);padding:20px 0 24px;display:grid;grid-template-columns:120px 1fr;gap:18px}
+  .opt .id{font-family:-apple-system,Inter,Arial,sans-serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+  .opt .id b{display:block;font-size:30px;letter-spacing:0;color:var(--ink);font-weight:500;font-family:"Iowan Old Style",Palatino,Georgia,serif}
+  .opt h2{font-size:21px;font-weight:500;margin:0 0 6px}
+  .opt p{margin:6px 0}
+  .opt a.open{display:inline-block;margin-top:8px;font-family:-apple-system,Inter,Arial,sans-serif;font-size:13px;letter-spacing:.04em;text-decoration:none;color:var(--acc);border-bottom:2px solid var(--acc)}
+  .opt .pros{font-family:-apple-system,Inter,Arial,sans-serif;font-size:13.5px;color:var(--ink2)}
+  .pf{margin-top:40px;padding-top:14px;border-top:1px solid var(--ink);font-family:-apple-system,Inter,Arial,sans-serif;font-size:13px;color:var(--mute)}
+  @media (max-width:600px){.opt{grid-template-columns:1fr;gap:6px}}
+</style>
+</head>
+<body>
+<p class="kicker">Design options · 9 September 2026 · for Shirley to choose</p>
+<h1>Four directions for ragpatterns.com</h1>
+<p>Each option is a full-page mockup with the real v0 copy: hero, §01 thesis, an explorer sample and the scorecard. All four keep the house rules (one HTML file, inline CSS, no external requests, system fonts, "predicted" labels). Open each at desktop and at phone width. The decision goes into <code>HANDOFF.md</code> §3.1 once made; the unchosen files stay here as the record of what was considered.</p>
+
+<div class="opt">
+  <div class="id"><b>0</b>current</div>
+  <div><h2>The Miessler baseline (v0 as it stands)</h2>
+    <p>Cream page, serif body, §-numbered sections, explorer in the middle. Calm and readable; the least distinctive of the five.</p>
+    <a class="open" href="../../index.html">Open the current page →</a></div>
+</div>
+<div class="opt">
+  <div class="id"><b>A</b>the shelf</div>
+  <div><h2>Seven book spines as the hero and the navigation</h2>
+    <p>Same warm palette, but the seven patterns stand on a shelf as coloured spines; a monospace "ledger" voice for numbers and verdicts. The spines are a chart: height is the predicted score out of 6 (correct 1, partial ½) and width is cost relative to naive, so multi-agent is the tallest and widest book. When cells become measured the shelf changes shape.</p>
+    <p class="pros">Closest to the house style with the most personality added. Risk: the spines have to look good, or they look like a toy.</p>
+    <a class="open" href="a-shelf.html">Open option A →</a></div>
+</div>
+<div class="opt">
+  <div class="id"><b>B</b>reading room</div>
+  <div><h2>Dark, warm, lamplit</h2>
+    <p>Charcoal page, parchment text, one amber accent, pipeline nodes drawn as soft glowing points. Reads as "AI engineering" at a glance while staying literary.</p>
+    <p class="pros">Most different from shhirl.com and fixmybanana. Risk: dark pages are harder to keep honest-looking; long tables read worse on dark.</p>
+    <a class="open" href="b-reading-room.html">Open option B →</a></div>
+</div>
+<div class="opt">
+  <div class="id"><b>C</b>the grid</div>
+  <div><h2>Swiss / data-editorial, the scorecard is the hero</h2>
+    <p>Big sans display type, black rules, one signal-orange accent, and the 7×6 verdict grid placed at the top as the site's identity. Serif kept for the body so it still reads as an essay.</p>
+    <p class="pros">Most "product": the argument is visible in the first screen. Risk: coldest of the four; the grid must be measured before it earns that placement.</p>
+    <a class="open" href="c-grid.html">Open option C →</a></div>
+</div>
+<div class="opt">
+  <div class="id"><b>D</b>marginalia</div>
+  <div><h2>A book page with sidenotes and highlighter marks</h2>
+    <p>Tufte-style two-column page: main text left, honest asides in the margin right, a translucent Kindle-yellow highlight as the accent. The corpus is her highlights, so the page looks like one.</p>
+    <p class="pros">Most on-theme and most writerly. Risk: sidenotes collapse on mobile, where most LinkedIn readers will arrive.</p>
+    <a class="open" href="d-marginalia.html">Open option D →</a></div>
+</div>
+
+<div class="pf">Mockups are static: tabs and questions do not switch. The chosen direction gets applied to <code>index.html</code> and <code>how-its-built.html</code> without forking the explorer renderer.</div>
+</body>
+</html>

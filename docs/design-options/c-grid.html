@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Option C · The grid — Seven RAGs, one shelf</title>
+<style>
+  :root{
+    --bg:#f6f5f1;--ink:#121212;--ink2:#3a3936;--mute:#6f6d68;--line:#d9d6ce;--soft:#eceae3;--acc:#c8401f;
+    --naive:#b8741a;--rerank:#3b6bb0;--multimodal:#8a2f7a;--graph:#2f8a6a;--hybrid:#c2621a;--agentic:#2f6f9f;--multiagent:#6b2f8a;
+    --sans:-apple-system,"Helvetica Neue",Inter,Arial,sans-serif;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --c:54px;--g:6px;
+  }
+  *{box-sizing:border-box}
+  html{background:var(--bg)}
+  body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;line-height:1.5;overflow-x:clip}
+  a{color:inherit}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 28px}
+
+  /* fixed option label */
+  .opt{position:fixed;top:0;right:0;z-index:60;background:var(--acc);color:#fff;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;padding:7px 12px}
+
+  /* sticky nav */
+  .nav{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--ink)}
+  .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:48px;padding-right:170px}
+  .nav .mark{white-space:nowrap;font-weight:700;letter-spacing:-.02em;font-size:15px;text-decoration:none}
+  .nav .mark span{color:var(--acc)}
+  .nav ul{list-style:none;margin:0;padding:0;display:flex;gap:26px;white-space:nowrap;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase}
+  .nav ul a{text-decoration:none;color:var(--ink2)}
+  .nav ul a:hover{color:var(--acc)}
+  .nav .tool{white-space:nowrap;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;font-weight:600}
+
+  /* labels */
+  .lab{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mute);font-weight:600}
+  .kicker{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);font-weight:600;margin:0;display:block}
+  .kicker::before{content:"";width:10px;height:10px;background:var(--acc);display:inline-block;margin-right:10px;vertical-align:0}
+  .kicker em{font-style:normal;color:var(--acc)}
+
+  /* hero */
+  .hero{padding:64px 0 56px;border-bottom:1px solid var(--ink)}
+  h1{font-size:clamp(44px,7.2vw,84px);line-height:.98;letter-spacing:-.04em;font-weight:600;margin:18px 0 44px;max-width:1080px}
+  h1 span{color:var(--acc)}
+  .hero-body{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:56px;align-items:start}
+  .lede{font-family:var(--serif);font-size:21px;line-height:1.45;color:var(--ink);margin:0 0 20px;max-width:560px}
+  .hero-body p.body{font-family:var(--serif);font-size:16.5px;line-height:1.6;color:var(--ink2);max-width:560px;margin:0}
+
+  /* the verdict grid */
+  .vgwrap{border-top:1px solid var(--ink);padding-top:14px}
+  .vghead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:16px}
+  .vghead .lab b{color:var(--acc)}
+  .vg{display:grid;grid-template-columns:max-content repeat(6,var(--c));gap:var(--g) var(--g);align-items:center;justify-content:start}
+  .vg .corner{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);padding-right:16px;align-self:end}
+  .vg .qh{font-size:11px;letter-spacing:.1em;text-transform:uppercase;text-align:center;font-weight:600;padding-bottom:4px;border-bottom:1px solid var(--ink);align-self:end}
+  .vg .rl{font-size:13px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;padding-right:18px;display:flex;align-items:center;gap:9px}
+  .vg .rl i{width:8px;height:8px;flex:none;display:inline-block}
+  .vc{width:var(--c);height:var(--c);display:block}
+  .vc.good{background:var(--ink)}
+  .vc.partial{background:linear-gradient(90deg,var(--ink) 50%,transparent 50%);box-shadow:inset 0 0 0 1.5px var(--ink)}
+  .vc.wrong{background:transparent;box-shadow:inset 0 0 0 1.5px var(--acc)}
+  .legend{display:flex;gap:20px;flex-wrap:wrap;margin-top:16px;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+  .legend span{display:inline-flex;align-items:center;gap:8px}
+  .legend .vc{--c:12px}
+  .vgnote{font-size:12px;color:var(--mute);margin:12px 0 0;max-width:460px;line-height:1.5}
+
+  /* numbered sections */
+  .sec{display:grid;grid-template-columns:180px minmax(0,1fr);gap:24px 48px;border-top:1px solid var(--ink);padding:36px 0 72px}
+  .sec:first-of-type{border-top:0}
+  .sec .side{position:sticky;top:64px;align-self:start}
+  .sec .num{font-size:64px;font-weight:600;letter-spacing:-.05em;line-height:.9;display:block;margin-bottom:10px}
+  .sec .num::after{content:"";display:block;width:28px;height:4px;background:var(--acc);margin-top:14px}
+  .sec h2{font-size:clamp(26px,3vw,34px);letter-spacing:-.03em;line-height:1.12;font-weight:600;margin:6px 0 22px;max-width:760px}
+  .sec p{font-family:var(--serif);font-size:16.5px;line-height:1.6;color:var(--ink2);max-width:680px;margin:0 0 18px}
+  .sec .main{min-width:0}
+  .full{grid-column:1 / -1;min-width:0}
+  blockquote.stmt{margin:28px 0 36px;padding:36px 0;border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);font-family:var(--sans);font-size:clamp(26px,3.8vw,46px);letter-spacing:-.035em;line-height:1.08;font-weight:600;max-width:1100px}
+  blockquote.stmt::before{content:"“";color:var(--acc);margin-right:6px}
+
+  .props{display:grid;grid-template-columns:repeat(3,1fr);gap:0 28px;margin:26px 0 8px}
+  .prop{border-top:1px solid var(--ink);padding:14px 0 18px}
+  .prop b{display:block;font-size:14.5px;letter-spacing:-.01em;margin-bottom:6px}
+  .prop span{font-family:var(--serif);font-size:14.5px;line-height:1.5;color:var(--ink2);display:block}
+  .prop i{display:block;font-style:normal;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);margin-top:10px;font-weight:600}
+  h3{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mute);margin:34px 0 10px;font-weight:600}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;line-height:1.45}
+  th{text-align:left;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;padding:8px 8px 8px 0;border-bottom:1px solid var(--ink);vertical-align:bottom}
+  td{padding:10px 8px 10px 0;border-bottom:1px solid var(--line);vertical-align:top}
+  td:first-child{font-weight:600;white-space:nowrap}
+  code{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:.86em;background:var(--soft);padding:1px 5px}
+
+  /* explorer */
+  .ex{border:1px solid var(--ink);margin-top:26px;background:var(--bg);min-width:0}
+  .tabs{display:flex;border-bottom:1px solid var(--ink);overflow-x:auto}
+  .tab{flex:1 1 auto;padding:13px 14px;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--mute);border-right:1px solid var(--line);white-space:nowrap;position:relative;text-align:center}
+  .tab:last-child{border-right:0}
+  .tab.on{color:var(--ink)}
+  .tab.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:var(--acc)}
+  .head{padding:26px 24px 8px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:end}
+  .pname{font-size:30px;font-weight:600;letter-spacing:-.03em;margin:0;line-height:1.05;display:flex;align-items:center;gap:12px}
+  .pname i{width:12px;height:12px;background:var(--agentic);display:inline-block;flex:none}
+  .head .tag{font-family:var(--serif);font-size:16px;color:var(--ink2);margin:8px 0 0;max-width:640px;line-height:1.5}
+  .head .lab{text-align:right;white-space:nowrap}
+  .diag{padding:16px 24px 8px;overflow-x:auto}
+  .diag svg{display:block;min-width:820px;width:100%;height:auto;font-family:var(--sans)}
+  .cells{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);margin-top:14px}
+  .cell{padding:14px 20px 16px;border-right:1px solid var(--line);font-size:13.5px;line-height:1.5;color:var(--ink2)}
+  .cell:last-child{border-right:0}
+  .cell b{display:block;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);margin-bottom:6px}
+  .run{display:grid;grid-template-columns:320px minmax(0,1fr)}
+  .qs{border-right:1px solid var(--ink);padding:10px 0}
+  .q{display:grid;grid-template-columns:38px 14px minmax(0,1fr);gap:10px;align-items:start;padding:12px 18px 12px 20px;border-left:3px solid transparent;font-family:var(--serif);font-size:14.5px;line-height:1.4;color:var(--ink2)}
+  .q .qn{font-family:var(--sans);font-size:11px;letter-spacing:.1em;font-weight:600;color:var(--ink);padding-top:2px}
+  .q .vc{--c:12px;margin-top:4px}
+  .q.on{border-left-color:var(--acc);background:var(--soft);color:var(--ink)}
+  .res{padding:22px 24px 26px;min-width:0}
+  .tests{font-size:13px;color:var(--mute);margin:0 0 16px;line-height:1.5}
+  .tests b{color:var(--ink);letter-spacing:.1em;text-transform:uppercase;font-size:10.5px;margin-right:8px}
+  .trace td:first-child{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);padding-top:12px;width:110px}
+  .trace td{font-size:13.5px}
+  .ans{margin:22px 0 0;border:1px solid var(--ink);padding:16px 18px 18px}
+  .ans .lab{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+  .ans .txt{font-family:var(--serif);font-size:16px;line-height:1.5}
+  .badge{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;padding:4px 10px;color:#fff;background:var(--ink)}
+  .badge.partial{color:var(--ink);background:transparent;box-shadow:inset 0 0 0 1.5px var(--ink)}
+  .badge.wrong{background:var(--acc)}
+  .why{font-size:13.5px;color:var(--ink2);margin:16px 0 0;line-height:1.55}
+  .why b{color:var(--ink)}
+  .note{font-size:12.5px;color:var(--mute);border:1px dashed var(--line);padding:10px 14px;margin:18px 0 0;max-width:720px;line-height:1.5}
+  .note a{color:inherit}
+
+  /* choosing */
+  .guide{border-top:1px solid var(--ink);margin-top:22px}
+  .g{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;padding:20px 0;border-bottom:1px solid var(--line)}
+  .g .ask{font-size:19px;letter-spacing:-.02em;font-weight:600;line-height:1.25}
+  .g .then{font-family:var(--serif);font-size:15px;line-height:1.55;color:var(--ink2)}
+  .g .then b{color:var(--ink);font-family:var(--sans);font-size:14px}
+
+  /* footer */
+  .pf{border-top:1px solid var(--ink);padding:22px 0 60px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .pf a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--acc)}
+
+  @media (max-width:1000px){
+    .nav ul{display:none}
+    .hero-body{grid-template-columns:1fr}
+    .sec{grid-template-columns:140px minmax(0,1fr)}
+    .props{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:700px){
+    :root{--c:34px;--g:3px}
+    .wrap{padding:0 18px}
+    .nav .wrap{padding-right:140px}
+    .nav ul,.nav .tool{display:none}
+    .hero{padding:44px 0 40px}
+    h1{margin:14px 0 32px}
+    .lede{font-size:18.5px}
+    .vg .rl{font-size:11px;padding-right:10px;gap:6px;max-width:112px;overflow:hidden;text-overflow:ellipsis;display:block;line-height:var(--c)}
+    .vg .rl i{margin-right:6px;vertical-align:middle}
+    .vg .rl .dk{display:none}
+    .vg .qh{font-size:10px;letter-spacing:.04em}
+    .vg .corner{font-size:0;padding:0}
+    .sec{grid-template-columns:minmax(0,1fr);gap:10px 0;padding:30px 0 52px}
+    .sec .side{position:static;display:flex;align-items:baseline;gap:14px}
+    .sec .num{font-size:40px;margin:0}
+    .sec .num::after{display:none}
+    .props{grid-template-columns:1fr}
+    .cells{grid-template-columns:1fr}.cell{border-right:0;border-bottom:1px solid var(--line)}.cell:last-child{border-bottom:0}
+    .run{grid-template-columns:1fr}.qs{border-right:0;border-bottom:1px solid var(--ink)}
+    .head{grid-template-columns:1fr;padding:22px 18px 6px}
+    .head .lab{text-align:left}
+    .pname{font-size:24px}
+    .diag{padding:12px 18px 4px}
+    .res{padding:18px 18px 22px}
+    .trace td:first-child{width:80px}
+    .g{grid-template-columns:1fr;gap:8px}
+    .pf{flex-direction:column}
+  }
+</style>
+</head>
+<body>
+<div class="opt">Option C · The grid</div>
+
+<nav class="nav"><div class="wrap">
+  <a class="mark" href="#">Seven RAGs<span>.</span></a>
+  <ul>
+    <li><a href="#thesis">Thesis</a></li>
+    <li><a href="#usecase">The shelf</a></li>
+    <li><a href="#compare">Compare</a></li>
+    <li><a href="#scorecard">Scorecard</a></li>
+    <li><a href="#choose">Choose</a></li>
+  </ul>
+  <a class="tool" href="../../how-its-built.html">How it's built →</a>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <p class="kicker">Project · v0 · <em>predicted, not yet measured</em></p>
+  <h1>Seven RAGs, one shelf. <span>The pattern is the product.</span></h1>
+  <div class="hero-body">
+    <div>
+      <p class="lede">Retrieval-augmented generation is not one technique any more. It is seven designs that solve seven different problems, and most teams pick one by accident. This page runs all seven on the same small, real knowledge base and the same six questions, so the only thing that changes between columns is the architecture.</p>
+      <p class="body">The knowledge base is my own bookshelf: a Goodreads export, my Kindle highlights, a list of who recommended what, and a few photographed pages. I chose it because I can tell a right answer from a plausible one in a second, which is the whole job when you evaluate retrieval, and because "it invented a book I never read" is the most legible failure a RAG system can have. Every trace below is a prediction of how each pipeline handles the question. Nothing is measured yet. <a href="../../how-its-built.html">The method page</a> says what gets measured and when.</p>
+    </div>
+    <div class="vgwrap">
+      <div class="vghead"><span class="lab">Seven patterns × six questions</span><span class="lab"><b>Predicted</b> · v0</span></div>
+      <div class="vg" role="table" aria-label="Predicted verdicts, seven patterns by six questions">
+        <div class="corner">pattern / question</div>
+        <div class="qh">Q1</div><div class="qh">Q2</div><div class="qh">Q3</div><div class="qh">Q4</div><div class="qh">Q5</div><div class="qh">Q6</div>
+
+        <div class="rl"><i style="background:var(--naive)"></i>Naive RAG</div>
+        <span class="vc good"></span><span class="vc wrong"></span><span class="vc wrong"></span><span class="vc partial"></span><span class="vc partial"></span><span class="vc partial"></span>
+
+        <div class="rl"><i style="background:var(--rerank)"></i>Retrieve and rerank</div>
+        <span class="vc good"></span><span class="vc wrong"></span><span class="vc good"></span><span class="vc partial"></span><span class="vc partial"></span><span class="vc partial"></span>
+
+        <div class="rl"><i style="background:var(--multimodal)"></i>Multimodal RAG</div>
+        <span class="vc good"></span><span class="vc wrong"></span><span class="vc wrong"></span><span class="vc partial"></span><span class="vc good"></span><span class="vc partial"></span>
+
+        <div class="rl"><i style="background:var(--graph)"></i>Graph RAG</div>
+        <span class="vc good"></span><span class="vc partial"></span><span class="vc partial"></span><span class="vc good"></span><span class="vc partial"></span><span class="vc partial"></span>
+
+        <div class="rl"><i style="background:var(--hybrid)"></i>Hybrid RAG</div>
+        <span class="vc good"></span><span class="vc partial"></span><span class="vc partial"></span><span class="vc good"></span><span class="vc partial"></span><span class="vc partial"></span>
+
+        <div class="rl"><i style="background:var(--agentic)"></i>Agentic RAG<span class="dk"> (router)</span></div>
+        <span class="vc good"></span><span class="vc good"></span><span class="vc good"></span><span class="vc good"></span><span class="vc good"></span><span class="vc partial"></span>
+
+        <div class="rl"><i style="background:var(--multiagent)"></i>Multi-agent RAG</div>
+        <span class="vc good"></span><span class="vc good"></span><span class="vc good"></span><span class="vc good"></span><span class="vc good"></span><span class="vc good"></span>
+      </div>
+      <div class="legend"><span><i class="vc good"></i> predicted correct</span><span><i class="vc partial"></i> partial or generic</span><span><i class="vc wrong"></i> wrong or invented</span></div>
+      <p class="vgnote">Predictions, not measurements. Each square is replaced by a real trace, with the date, as the version that measures it ships.</p>
+    </div>
+  </div>
+</div></header>
+
+<main class="wrap">
+
+<section id="thesis" class="sec">
+  <div class="side"><span class="num">01</span><span class="lab">The thesis</span></div>
+  <div class="main">
+    <h2>Most RAG systems don't break on the model. They break on the pattern.</h2>
+    <p>Teams upgrade the embedding model, switch to a stronger LLM, add more chunks to the prompt, and still get shallow or wrong answers. The reason is usually upstream of the model: the retrieval design cannot reach the information the question needs. Similarity search has no idea what "2024" or "under 300 pages" means. A text index cannot look at a photograph. A single retriever cannot see that two books argue with each other, because that fact lives in neither book. And no retrieval at all can compose four constraints into a reading list.</p>
+  </div>
+  <blockquote class="stmt full">The real skill isn't building RAG. It's choosing the right pattern for the problem, and being able to show why.</blockquote>
+  <div></div>
+  <div class="main">
+    <p>Comparing patterns on different demos measures the demos. To compare the patterns you need to hold everything else still: same corpus, same questions, same generation model, and answers you can grade. That is what this page does.</p>
+  </div>
+</section>
+
+<section id="usecase" class="sec">
+  <div class="side"><span class="num">02</span><span class="lab">One shelf</span></div>
+  <div class="main">
+    <h2>A real reading life, exported in an afternoon, messy in exactly the ways that matter</h2>
+    <p>Three files and a handful of photos. The Goodreads export is the ledger: every book, when I read it, what I rated it, how long it is, what everyone else rated it, and the review I wrote. The Kindle clippings are the quotes: one short highlight per block, hundreds of them. A hand-written list says who recommended what. Nothing is fabricated, private notes are never ingested, and the export is curated before it goes anywhere near a public page.</p>
+    <div class="props">
+      <div class="prop"><b>Numbers live in a ledger, not in text</b><span>"What did I read in 2024, rated five stars, under 300 pages?" is a filter, not a similarity. A text index answers it with plausible titles, some of which I never read.</span><i>breaks every pattern without a tool · fixed by a query</i></div>
+      <div class="prop"><b>Sources contradict each other</b><span>My two-star review, my own admiring highlights from the same book, and the crowd's 4.3 average all describe one book. Similarity finds the highlights first.</span><i>breaks naive · fixed by reranking</i></div>
+      <div class="prop"><b>Knowledge lives in relationships</b><span>Which of my books argue with each other is a fact about a pair, extracted from a highlight in one that names the author of the other. No single chunk contains it.</span><i>breaks vector search · fixed by graph</i></div>
+      <div class="prop"><b>Some answers are only in pictures</b><span>A photographed page has no text to match. Which book it is, and what I marked nearby, starts from pixels.</span><i>breaks text-only · fixed by multimodal</i></div>
+      <div class="prop"><b>Some questions need several sources</b><span>A holiday reading list needs the to-read shelf, page counts, who recommended what, and the themes of the last three books I gave up on.</span><i>breaks single-path · fixed by multi-agent</i></div>
+      <div class="prop"><b>I can grade every answer</b><span>It is my shelf. A wrong date, a misattributed quote, a book I never read: I see it in one second, and the invented-book count can be checked by code.</span><i>why this corpus and not an enterprise demo</i></div>
+    </div>
+    <h3>The corpus</h3>
+    <table>
+      <tr><th>source</th><th>what it holds</th><th>what it contributes</th></tr>
+      <tr><td>Goodreads export</td><td>one row per book: title, author, ISBN, pages, date read, my rating, the average rating, shelves, my review</td><td>the ledger. Queried, never embedded.</td></tr>
+      <tr><td>Kindle highlights</td><td>one short quotation per block, with book, location and date</td><td>the semantic index, and the misattribution trap: a highlight in one book quoting another author</td></tr>
+      <tr><td>Recommendations</td><td>title, who (initials), where, when</td><td>the people edges in the graph</td></tr>
+      <tr><td>Photos</td><td>covers, a few photographed pages, one shelf</td><td>answers with no text form</td></tr>
+      <tr><td>Extracted graph</td><td>who wrote what, who recommended what, which books mention or argue with which, themes</td><td>built once by a model with a fixed schema, published as JSON so a missed edge is visible</td></tr>
+    </table>
+  </div>
+</section>
+
+<section id="compare" class="sec">
+  <div class="side"><span class="num">03</span><span class="lab">Same question,<br>seven pipelines</span></div>
+  <div class="main">
+    <h2>Pick a pattern, pick a question, read what the pipeline is expected to do</h2>
+    <p>Each trace shows what gets retrieved, in what order, what the model is given, and the answer it is likely to produce, graded against the reference. The "why" line under each answer is the point of the page.</p>
+  </div>
+  <div class="full">
+    <div class="ex">
+      <div class="tabs">
+        <div class="tab">Naive</div>
+        <div class="tab">Rerank</div>
+        <div class="tab">Multimodal</div>
+        <div class="tab">Graph</div>
+        <div class="tab">Hybrid</div>
+        <div class="tab on">Agentic</div>
+        <div class="tab">Multi-agent</div>
+      </div>
+      <div class="head">
+        <div>
+          <p class="pname"><i></i>Agentic RAG (router)</p>
+          <p class="tag">A small model reads the query and chooses which retriever to run, including a query over the ledger. One path per question.</p>
+        </div>
+        <span class="lab">Pipeline · 6 of 7</span>
+      </div>
+      <div class="diag">
+        <svg viewBox="0 0 900 260" xmlns="http://www.w3.org/2000/svg" aria-label="Agentic router pipeline: query, router agent, five retrievers, generative model, answer">
+          <defs>
+            <marker id="ah" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0,0 L8,4 L0,8 z" fill="#121212"/>
+            </marker>
+          </defs>
+          <g fill="none" stroke="#121212" stroke-width="1.5">
+            <!-- query -> router -->
+            <line x1="110" y1="130" x2="158" y2="130" marker-end="url(#ah)"/>
+            <!-- router -> bus -->
+            <line x1="310" y1="130" x2="345" y2="130"/>
+            <line x1="345" y1="28" x2="345" y2="228"/>
+            <line x1="345" y1="28" x2="378" y2="28" marker-end="url(#ah)"/>
+            <line x1="345" y1="78" x2="378" y2="78" marker-end="url(#ah)"/>
+            <line x1="345" y1="128" x2="378" y2="128" marker-end="url(#ah)" stroke="#c8401f" stroke-width="2"/>
+            <line x1="345" y1="178" x2="378" y2="178" marker-end="url(#ah)"/>
+            <line x1="345" y1="228" x2="378" y2="228" marker-end="url(#ah)"/>
+            <!-- stores -> bus -> generator -->
+            <line x1="550" y1="28" x2="585" y2="28"/>
+            <line x1="550" y1="78" x2="585" y2="78"/>
+            <line x1="550" y1="128" x2="585" y2="128" stroke="#c8401f" stroke-width="2"/>
+            <line x1="550" y1="178" x2="585" y2="178"/>
+            <line x1="550" y1="228" x2="585" y2="228"/>
+            <line x1="585" y1="28" x2="585" y2="228"/>
+            <line x1="585" y1="130" x2="618" y2="130" marker-end="url(#ah)"/>
+            <!-- generator -> answer -->
+            <line x1="760" y1="130" x2="798" y2="130" marker-end="url(#ah)"/>
+          </g>
+          <!-- boxes -->
+          <g stroke="#121212" stroke-width="1.5" fill="#f6f5f1">
+            <rect x="0.75" y="110.75" width="109" height="40"/>
+            <rect x="160.75" y="100.75" width="149" height="60" fill="#2f6f9f" stroke="#2f6f9f"/>
+            <rect x="380.75" y="10.75" width="169" height="36"/>
+            <rect x="380.75" y="60.75" width="169" height="36"/>
+            <rect x="380.75" y="110.75" width="169" height="36" stroke="#c8401f" stroke-width="2"/>
+            <rect x="380.75" y="160.75" width="169" height="36"/>
+            <rect x="380.75" y="210.75" width="169" height="36"/>
+            <rect x="620.75" y="110.75" width="139" height="40"/>
+            <rect x="800.75" y="110.75" width="98" height="40"/>
+          </g>
+          <g font-size="12.5" font-weight="600" fill="#121212" text-anchor="middle">
+            <text x="55" y="135">Query</text>
+            <text x="235" y="127" fill="#fff">Router agent</text>
+            <text x="235" y="144" fill="#fff" font-size="10.5" font-weight="400">small model</text>
+            <text x="465" y="33">Vector index</text>
+            <text x="465" y="83">Vector + reranker</text>
+            <text x="465" y="128" fill="#c8401f">SQL tool</text>
+            <text x="465" y="141" fill="#c8401f" font-size="10" font-weight="400">the ledger</text>
+            <text x="465" y="183">Graph database</text>
+            <text x="465" y="233">Image index</text>
+            <text x="690" y="135">Generative model</text>
+            <text x="850" y="135">Answer</text>
+          </g>
+          <g font-size="10" fill="#6f6d68" text-anchor="start">
+            <text x="0" y="252" letter-spacing="1.4" font-weight="600">ROUTE FOR Q2 IN RED · ONE PATH PER QUESTION</text>
+          </g>
+        </svg>
+      </div>
+      <div class="cells">
+        <div class="cell"><b>What it adds</b><span>Not every query pays for the expensive path. Quotes go to the index; numbers go to the ledger; "which book is this" goes to the photos.</span></div>
+        <div class="cell"><b>What it costs</b><span>One extra routing call (small model, ~300 ms). Each retriever still has to exist and be maintained.</span></div>
+        <div class="cell"><b>How it fails</b><span>Picks one path. Cannot compose. And a misroute is a full failure with no fallback unless you build one.</span></div>
+      </div>
+      <div class="run">
+        <div class="qs">
+          <div class="q"><span class="qn">Q1</span><i class="vc good"></i><span>Where did I read the line about [a phrase from one of my highlights]?</span></div>
+          <div class="q on"><span class="qn">Q2</span><i class="vc good"></i><span>What did I read in 2024, rated five stars, under 300 pages?</span></div>
+          <div class="q"><span class="qn">Q3</span><i class="vc good"></i><span>Why did I give [a book] two stars when everyone else loved it?</span></div>
+          <div class="q"><span class="qn">Q4</span><i class="vc good"></i><span>Which of my books argue with each other?</span></div>
+          <div class="q"><span class="qn">Q5</span><i class="vc good"></i><span>[A photographed page] Which book is this, and what did I highlight near it?</span></div>
+          <div class="q"><span class="qn">Q6</span><i class="vc partial"></i><span>Build me a two-week holiday list from my to-read shelf: nothing over 400 pages, one recommended by a friend, nothing like the last three I abandoned.</span></div>
+        </div>
+        <div class="res">
+          <p class="tests"><b>Tests</b> a filter over the ledger. Numbers and dates have no meaning to a similarity search.</p>
+          <table class="trace">
+            <tr><th>step</th><th>what the pipeline is expected to do</th></tr>
+            <tr><td>route</td><td>Router: "a filter over dates, ratings and pages" → <b>SQL tool</b>.</td></tr>
+            <tr><td>retrieve</td><td><code>SELECT title, author, pages FROM books WHERE strftime('%Y', date_read) = '2024' AND my_rating = 5 AND pages &lt; 300</code>. Rows, not chunks.</td></tr>
+            <tr><td>prompt</td><td>The rows and the question.</td></tr>
+            <tr><td>reference</td><td>Exactly the ledger rows with date read in 2024, my rating 5, pages under 300. Zero titles from outside the ledger.</td></tr>
+          </table>
+          <div class="ans">
+            <div class="lab"><span>predicted answer</span><span class="badge good">good</span></div>
+            <div class="txt">Exactly the ledger rows. Zero invented titles, by construction.</div>
+          </div>
+          <p class="why"><b>Predicted correct, and the first cell in the Q2 column that is.</b> The router did not make the model smarter; it gave it a query instead of a similarity.</p>
+        </div>
+      </div>
+    </div>
+    <p class="note">v0: every trace on this page is a prediction written from how the pipeline is designed and what the corpus contains. No pipeline has run. Each cell is replaced by a real trace, with the date, as the version that measures it ships; the schedule is on the <a href="../../how-its-built.html#versions">method page</a>.</p>
+  </div>
+</section>
+
+<section id="scorecard" class="sec">
+  <div class="side"><span class="num">04</span><span class="lab">The scorecard</span></div>
+  <div class="main">
+    <h2>Nobody wins every column, and the cheapest pattern wins the first one</h2>
+    <p>Three things to read off the grid. Every pattern gets the easy question right, so the easy question tells you nothing about which pattern to use. The Q2 column splits the table cleanly into patterns with a tool and patterns without one, and no amount of embedding quality moves a pattern across that line. And reranking fixes the most common failure for the price of one extra call, which is why it should be the first upgrade, not the graph.</p>
+    <p>The prediction I most expect to be wrong is naive on Q1. Kindle highlights are short, so the nearest chunk is sometimes a different book quoting the same author. If that happens, Q1 stops being a control and reranking earns its call one column earlier.</p>
+    <p class="lab" style="font-family:var(--sans);font-size:11px;margin-top:8px"><a href="#" style="text-decoration:none;border-bottom:1px solid var(--acc)">The grid is at the top of the page ↑</a></p>
+  </div>
+</section>
+
+<section id="choose" class="sec">
+  <div class="side"><span class="num">05</span><span class="lab">Choosing</span></div>
+  <div class="main">
+    <h2>Five questions to ask about the problem before you pick a pattern</h2>
+    <div class="guide">
+      <div class="g"><div class="ask">Are people asking for numbers, dates, counts, or filters?</div><div class="then">Then the answer is a query, not a similarity. <b>Give the model a tool</b> over the structured data and route those questions to it. Embedding a ledger is how a system invents a book you never read.</div></div>
+      <div class="g"><div class="ask">Do the sources disagree with each other about the same thing?</div><div class="then">They almost always do once a corpus is bigger than a demo. <b>Start naive, add reranking early.</b> It is the cheapest fix for the noisiest failure and it costs one extra model call.</div></div>
+      <div class="g"><div class="ask">Is the answer a relationship between things, rather than a fact about one thing?</div><div class="then">Who recommended what, which books argue, what depends on what. <b>Graph RAG</b>, or hybrid if you also need the prose around each node. Budget for building and maintaining the graph; that is where the cost is.</div></div>
+      <div class="g"><div class="ask">Does the answer only exist in an image, diagram, or chart?</div><div class="then">Then no amount of text retrieval will find it. <b>Multimodal RAG</b>, composed with reranking, because it inherits every text-ranking problem it does not fix.</div></div>
+      <div class="g"><div class="ask">Do users ask for a deliverable that needs several sources combined?</div><div class="then">A plan, a list, a comparison. <b>An agentic router</b> chooses the right single path per query. Only <b>multi-agent</b> composes several. It is the slowest and most expensive row for a reason.</div></div>
+    </div>
+    <p style="margin-top:24px">Don't start complex. Start naive, add reranking, give the model a tool for the numbers, and evolve only when a fixed question set shows you the failure the next pattern fixes. A design space is only useful if you can say which point in it you are standing on, and why.</p>
+  </div>
+</section>
+
+<footer class="pf">
+  <span>Built by Shirley · AI-assisted · v0, 9 September 2026</span>
+  <a href="../../how-its-built.html">How it's built, and what gets measured next</a>
+</footer>
+
+</main>
+</body>
+</html>

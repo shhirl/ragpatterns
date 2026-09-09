@@ -1,0 +1,6 @@
+corpus/*.csv
+corpus/*.txt
+service/data/*
+!service/data/graph.json
+.env
+__pycache__/

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Option B · Reading room — Seven RAGs, one shelf</title>
+<meta name="description" content="Design option B for ragpatterns.com: a dark, warm, lamplit editorial look. Static mock; copy and predictions are the v0 copy from the live page.">
+<style>
+  :root{
+    --bg:#16140f;--bg2:#1c1913;--bg3:#221e17;--ink:#ece6d8;--ink2:#cfc7b5;--mute:#a59e8c;--dim:#6f6a5e;
+    --line:rgba(236,230,216,.15);--line2:rgba(236,230,216,.08);--amber:#d8a04a;--amber2:rgba(216,160,74,.16);
+    --good:#7fbf8f;--partial:#d8a04a;--wrong:#d1706a;
+    --naive:#d49a48;--rerank:#6f9be0;--multimodal:#c46fb3;--graph:#5cb896;--hybrid:#e0844a;--agentic:#6aa7d6;--multiagent:#a77bd0;
+    --pc:var(--graph);
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Inter,Arial,sans-serif;
+    --mono:"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  html{background:var(--bg)}
+  body{margin:0;font-family:var(--serif);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.6;overflow-x:hidden}
+  a{color:var(--ink);text-decoration-color:rgba(216,160,74,.55);text-underline-offset:3px}
+  a:hover{text-decoration-color:var(--amber)}
+  .wrap{max-width:900px;margin:0 auto;padding:0 24px}
+
+  /* fixed option label */
+  .opt{position:fixed;top:12px;right:12px;z-index:50;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);border:1px solid rgba(216,160,74,.45);background:rgba(22,20,15,.92);padding:5px 9px;border-radius:2px}
+
+  /* sticky nav */
+  .nav{position:sticky;top:0;z-index:40;background:rgba(22,20,15,.88);backdrop-filter:saturate(120%) blur(6px);-webkit-backdrop-filter:saturate(120%) blur(6px);border-bottom:1px solid var(--line2)}
+  .nav .in{max-width:900px;margin:0 auto;padding:14px 24px;padding-right:180px;display:flex;justify-content:space-between;align-items:baseline;gap:12px 20px;flex-wrap:wrap;font-family:var(--sans);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase}
+  .brand{color:var(--ink);text-decoration:none;font-family:var(--serif);font-size:15px;letter-spacing:0;text-transform:none;font-style:italic;white-space:nowrap}
+  .links{display:flex;gap:20px;flex-wrap:wrap}
+  .links a{text-decoration:none;color:var(--mute);padding-bottom:4px;border-bottom:1px solid transparent;white-space:nowrap}
+  .links a:hover{color:var(--ink)}
+  .links a.on{color:var(--ink);border-bottom-color:var(--amber)}
+  .tool{text-decoration:none;color:var(--amber);white-space:nowrap}
+
+  /* hero with lamp */
+  .hero{position:relative;padding:84px 0 24px}
+  .hero::before{content:"";position:absolute;inset:-140px -300px auto -300px;height:640px;pointer-events:none;
+    background:radial-gradient(ellipse 60% 55% at 38% 18%,rgba(216,160,74,.17),rgba(216,160,74,.05) 45%,transparent 72%)}
+  .hero>*{position:relative}
+  .kicker{font-family:var(--sans);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);margin:0}
+  h1{font-weight:300;font-size:60px;line-height:1.06;margin:16px 0 22px;letter-spacing:-.015em;max-width:800px;color:var(--ink)}
+  h1 em{font-style:italic;color:var(--ink)}
+  .lede{font-size:21px;line-height:1.5;color:var(--ink2);max-width:700px;margin:0 0 18px}
+  p,li{font-size:16.5px}
+  p{max-width:700px;color:var(--ink2)}
+  p strong,p b{color:var(--ink);font-weight:600}
+  .rule{height:1px;background:linear-gradient(90deg,var(--amber),rgba(216,160,74,0));max-width:140px;margin:34px 0 0}
+
+  /* sections */
+  section{margin-top:84px;padding-top:26px;border-top:1px solid var(--line)}
+  .sn{display:flex;align-items:baseline;gap:14px;font-family:var(--sans);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--mute);margin:0 0 18px}
+  .sn b{font-family:var(--mono);font-weight:500;color:var(--amber);letter-spacing:.06em;font-size:12px}
+  h2{font-weight:300;font-size:36px;line-height:1.18;letter-spacing:-.012em;margin:0 0 20px;max-width:760px;color:var(--ink)}
+  h3{font-family:var(--sans);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin:30px 0 10px;font-weight:500}
+  blockquote{margin:40px 0 36px;padding:0 0 0 26px;border-left:1px solid var(--amber);font-size:30px;line-height:1.3;font-weight:300;letter-spacing:-.01em;color:var(--ink);max-width:720px;font-style:italic}
+  blockquote::before{content:"“";display:block;font-family:var(--serif);font-size:56px;line-height:.4;color:var(--amber);margin:14px 0 18px;font-style:normal}
+
+  /* explorer */
+  .ex{margin-top:28px;border:1px solid var(--line);background:var(--bg2);border-radius:3px;box-shadow:0 30px 80px -40px rgba(0,0,0,.8)}
+  .tabs{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+  .tab{flex:1 1 auto;font-family:var(--sans);font-size:12px;font-weight:500;padding:13px 10px;border:0;background:transparent;color:var(--mute);border-bottom:1px solid transparent;margin-bottom:-1px;letter-spacing:.03em;white-space:nowrap;text-align:center;cursor:pointer}
+  .tab i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;vertical-align:1px;opacity:.75}
+  .tab:hover{color:var(--ink)}
+  .tab.on{color:var(--ink);border-bottom-color:var(--amber)}
+  .tab.on i{opacity:1;box-shadow:0 0 0 3px rgba(216,160,74,.12)}
+  .head{padding:26px 26px 6px}
+  .pname{font-size:30px;font-weight:300;margin:0;letter-spacing:-.01em;line-height:1.15}
+  .pname small{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--pc);margin-left:14px;font-weight:500}
+  .ptag{margin:8px 0 0;color:var(--ink2);font-size:16.5px;max-width:680px}
+  .meta{font-family:var(--mono);font-size:11.5px;color:var(--mute);letter-spacing:.04em;margin:14px 0 0;display:flex;gap:22px;flex-wrap:wrap}
+  .meta b{color:var(--ink);font-weight:500}
+  .diag{padding:14px 26px 4px;overflow-x:auto}
+  .diag svg{display:block;min-width:680px;width:100%;height:auto}
+  .cells{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:14px}
+  .cell{padding:14px 20px;border-right:1px solid var(--line);font-family:var(--sans);font-size:13.5px;line-height:1.55;color:var(--ink2)}
+  .cell:last-child{border-right:0}
+  .cell b{display:block;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-bottom:6px;font-weight:500}
+  .run{display:grid;grid-template-columns:290px minmax(0,1fr)}
+  .qs{border-right:1px solid var(--line);padding:14px 0}
+  .q{display:block;width:100%;text-align:left;border:0;background:transparent;cursor:pointer;padding:11px 20px 11px 18px;font-family:var(--serif);font-size:15px;line-height:1.4;color:var(--ink2);border-left:2px solid transparent}
+  .q:hover{background:var(--bg3)}
+  .q.on{border-left-color:var(--amber);color:var(--ink);background:var(--bg3)}
+  .q .qn{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin-bottom:3px}
+  .q.on .qn{color:var(--amber)}
+  .res{padding:20px 26px 26px}
+  .tests{font-family:var(--sans);font-size:13px;color:var(--mute);margin:0 0 16px;line-height:1.55}
+  .tests b{color:var(--ink);font-weight:500;font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;margin-right:8px}
+  .trace{margin:0;padding:0;list-style:none;border-top:1px solid var(--line)}
+  .trace li{display:grid;grid-template-columns:110px minmax(0,1fr);gap:14px;padding:11px 0;border-bottom:1px solid var(--line2);font-family:var(--sans);font-size:13.5px;line-height:1.55;color:var(--ink2)}
+  .trace li .st{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);padding-top:3px}
+  .trace li .st::before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--pc);margin-right:9px;vertical-align:2px}
+  .trace li.ref .st::before{background:transparent;border:1px solid var(--mute)}
+  .trace li b{color:var(--ink);font-weight:500}
+  .ans{margin:18px 0 0;padding:18px 20px 20px;background:var(--bg3);border:1px solid var(--line2);border-left:2px solid var(--pc);border-radius:2px}
+  .ans .lab{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  .ans .txt{font-size:16px;line-height:1.55;white-space:pre-line;color:var(--ink)}
+  .badge{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:500;padding:3px 9px;border-radius:2px;border:1px solid;background:transparent}
+  .badge.good{color:var(--good);border-color:rgba(127,191,143,.55);background:rgba(127,191,143,.08)}
+  .badge.partial{color:var(--partial);border-color:rgba(216,160,74,.55);background:rgba(216,160,74,.08)}
+  .badge.wrong{color:var(--wrong);border-color:rgba(209,112,106,.55);background:rgba(209,112,106,.08)}
+  .why{font-family:var(--sans);font-size:13.5px;color:var(--ink2);margin:16px 0 0;line-height:1.6}
+  .why b{color:var(--ink);font-weight:500}
+
+  /* verdict dots */
+  .dot{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle;flex:0 0 auto}
+  .dot.good{background:var(--good);box-shadow:0 0 0 3px rgba(127,191,143,.12)}
+  .dot.partial{background:linear-gradient(90deg,var(--partial) 50%,transparent 50%);border:1px solid var(--partial)}
+  .dot.wrong{background:transparent;border:1px solid var(--wrong)}
+  .note{font-family:var(--sans);font-size:13px;color:var(--mute);border:1px dashed rgba(216,160,74,.35);padding:10px 14px;margin:18px 0 0;max-width:720px;line-height:1.55}
+
+  /* scorecard */
+  .scroll{overflow-x:auto;margin-top:8px;border:1px solid var(--line);background:var(--bg2);border-radius:3px}
+  table{border-collapse:collapse;width:100%;min-width:640px;font-family:var(--sans);font-size:13.5px}
+  th{text-align:left;font-weight:500;padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:bottom;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+  th.c{text-align:center}
+  td{padding:11px 14px;border-bottom:1px solid var(--line2);vertical-align:middle}
+  tr:last-child td{border-bottom:0}
+  td.c{text-align:center}
+  td.c.sel{background:var(--amber2);box-shadow:inset 0 0 0 1px var(--amber)}
+  td.name{white-space:nowrap;color:var(--ink);font-weight:500}
+  td.name i{display:inline-block;width:8px;height:8px;margin-right:10px;vertical-align:1px;border-radius:50%}
+  td.cost{font-family:var(--mono);font-size:12px;color:var(--mute);white-space:nowrap}
+  .legend{display:flex;gap:22px;align-items:center;color:var(--mute);margin:14px 0 0;font-family:var(--sans);font-size:12.5px;flex-wrap:wrap}
+  .legend span{display:inline-flex;align-items:center;gap:8px}
+
+  /* footer */
+  .pf{margin:84px 0 40px;padding-top:20px;border-top:1px solid var(--line);font-family:var(--sans);font-size:13px;color:var(--mute);line-height:1.8;display:flex;justify-content:space-between;gap:12px 24px;flex-wrap:wrap}
+  .pf a{color:var(--mute)}
+  .pf .lamp{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--amber);box-shadow:0 0 12px 3px rgba(216,160,74,.45);margin-right:10px;vertical-align:1px}
+
+  @media (max-width:1240px){.nav .in{padding-right:180px}}
+  @media (max-width:700px){
+    .wrap{padding:0 18px}
+    .opt{font-size:9.5px;padding:4px 7px;top:10px;right:10px}
+    .nav .in{padding:38px 18px 11px;gap:8px 16px}
+    .brand{display:none}
+    .links{gap:14px}
+    .hero{padding-top:56px}
+    h1{font-size:38px}
+    .lede{font-size:18px}
+    h2{font-size:27px}
+    blockquote{font-size:22px;padding-left:18px;margin:28px 0}
+    section{margin-top:60px}
+    .head,.res{padding-left:18px;padding-right:18px}
+    .diag{padding-left:18px;padding-right:18px}
+    .cells{grid-template-columns:1fr}.cell{border-right:0;border-bottom:1px solid var(--line)}.cell:last-child{border-bottom:0}
+    .run{grid-template-columns:1fr}.qs{border-right:0;border-bottom:1px solid var(--line)}
+    .trace li{grid-template-columns:1fr;gap:3px}
+    .tab{flex:1 1 33%}
+    .pname{font-size:25px}
+    .pname small{display:block;margin:6px 0 0}
+  }
+</style>
+</head>
+<body>
+
+<div class="opt">Option B · Reading room</div>
+
+<div class="nav">
+  <div class="in">
+    <a class="brand" href="#">Seven RAGs, one shelf</a>
+    <nav class="links">
+      <a href="#thesis" class="on">thesis</a>
+      <a href="#usecase">the shelf</a>
+      <a href="#compare">compare</a>
+      <a href="#scorecard">scorecard</a>
+      <a href="#choose">choose</a>
+    </nav>
+    <a class="tool" href="#">How it's built →</a>
+  </div>
+</div>
+
+<div class="wrap">
+
+<header class="hero">
+  <p class="kicker">Project · v0 · predicted, not yet measured</p>
+  <h1>Seven RAGs, one shelf.<br>The pattern is <em>the product.</em></h1>
+  <p class="lede">Retrieval-augmented generation is not one technique any more. It is seven designs that solve seven different problems, and most teams pick one by accident. This page runs all seven on the same small, real knowledge base and the same six questions, so the only thing that changes between columns is the architecture.</p>
+  <p>The knowledge base is my own bookshelf: a Goodreads export, my Kindle highlights, a list of who recommended what, and a few photographed pages. I chose it because I can tell a right answer from a plausible one in a second, which is the whole job when you evaluate retrieval, and because "it invented a book I never read" is the most legible failure a RAG system can have. Every trace below is a prediction of how each pipeline handles the question. Nothing is measured yet. <a href="#">The method page</a> says what gets measured and when.</p>
+  <div class="rule"></div>
+</header>
+
+<section id="thesis">
+  <p class="sn"><b>§01</b> The thesis</p>
+  <h2>Most RAG systems don't break on the model. They break on the pattern.</h2>
+  <p>Teams upgrade the embedding model, switch to a stronger LLM, add more chunks to the prompt, and still get shallow or wrong answers. The reason is usually upstream of the model: the retrieval design cannot reach the information the question needs. Similarity search has no idea what "2024" or "under 300 pages" means. A text index cannot look at a photograph. A single retriever cannot see that two books argue with each other, because that fact lives in neither book. And no retrieval at all can compose four constraints into a reading list.</p>
+  <blockquote>The real skill isn't building RAG. It's choosing the right pattern for the problem, and being able to show why.</blockquote>
+  <p>Comparing patterns on different demos measures the demos. To compare the patterns you need to hold everything else still: same corpus, same questions, same generation model, and answers you can grade. That is what this page does.</p>
+</section>
+
+<section id="compare">
+  <p class="sn"><b>§03</b> Same question, seven pipelines</p>
+  <h2>Pick a pattern, pick a question, read what the pipeline is expected to do</h2>
+  <p>Each trace shows what gets retrieved, in what order, what the model is given, and the answer it is likely to produce, graded against the reference. The "why" line under each answer is the point of the page.</p>
+
+  <div class="ex">
+    <div class="tabs">
+      <button class="tab"><i style="background:var(--naive)"></i>Naive RAG</button>
+      <button class="tab"><i style="background:var(--rerank)"></i>Retrieve and rerank</button>
+      <button class="tab"><i style="background:var(--multimodal)"></i>Multimodal RAG</button>
+      <button class="tab on"><i style="background:var(--graph)"></i>Graph RAG</button>
+      <button class="tab"><i style="background:var(--hybrid)"></i>Hybrid RAG</button>
+      <button class="tab"><i style="background:var(--agentic)"></i>Agentic RAG (router)</button>
+      <button class="tab"><i style="background:var(--multiagent)"></i>Multi-agent RAG</button>
+    </div>
+
+    <div class="head">
+      <p class="pname">Graph RAG <small>graph</small></p>
+      <p class="ptag">A model extracts people, books, themes and the links between them at index time; queries traverse edges instead of matching text.</p>
+      <p class="meta"><span>calls <b>2 + indexing</b></span><span>latency <b>~2.2 s</b></span><span>cost <b>1.5x</b> naive</span></p>
+    </div>
+
+    <div class="diag">
+      <svg viewBox="0 0 760 132" role="img" aria-label="Graph RAG pipeline: query, entity linking, graph database, chunks for nodes touched, generative model, answer">
+        <!-- hairlines -->
+        <g stroke="#ece6d8" stroke-opacity=".18" stroke-width="1" fill="none">
+          <line x1="72" y1="52" x2="176" y2="52"/>
+          <line x1="200" y1="52" x2="304" y2="52"/>
+          <line x1="328" y1="52" x2="432" y2="52"/>
+          <line x1="456" y1="52" x2="560" y2="52"/>
+          <line x1="584" y1="52" x2="688" y2="52"/>
+        </g>
+        <!-- direction ticks -->
+        <g fill="#d8a04a" fill-opacity=".8">
+          <path d="M172 49l6 3-6 3z"/><path d="M300 49l6 3-6 3z"/><path d="M428 49l6 3-6 3z"/><path d="M556 49l6 3-6 3z"/><path d="M684 49l6 3-6 3z"/>
+        </g>
+        <!-- 1 Query (in) -->
+        <circle cx="60" cy="52" r="20" fill="#ece6d8" fill-opacity=".05"/>
+        <circle cx="60" cy="52" r="7" fill="none" stroke="#ece6d8" stroke-opacity=".8" stroke-width="1.2"/>
+        <text x="60" y="94" text-anchor="middle" font-family="SF Mono,Menlo,Consolas,monospace" font-size="10.5" letter-spacing="1.2" fill="#ece6d8">QUERY</text>
+        <!-- 2 Entity linking (model) -->
+        <circle cx="188" cy="52" r="22" fill="#d8a04a" fill-opacity=".10"/>
+        <circle cx="188" cy="52" r="13" fill="#d8a04a" fill-opacity=".16"/>
+        <circle cx="188" cy="52" r="7" fill="#d8a04a"/>
+        <text x="188" y="94" text-anchor="middle" font-family="SF Mono,Menlo,Consolas,monospace" font-size="10.5" letter-spacing="1.2" fill="#ece6d8">ENTITY LINKING</text>
+        <text x="188" y="110" text-anchor="middle" font-family="-apple-system,Helvetica Neue,Arial,sans-serif" font-size="11" fill="#a59e8c">model</text>
+        <!-- 3 Graph database (store) -->
+        <circle cx="316" cy="52" r="26" fill="#5cb896" fill-opacity=".10"/>
+        <circle cx="316" cy="52" r="16" fill="#5cb896" fill-opacity=".16"/>
+        <circle cx="316" cy="52" r="8" fill="#5cb896"/>
+        <text x="316" y="94" text-anchor="middle" font-family="SF Mono,Menlo,Consolas,monospace" font-size="10.5" letter-spacing="1.2" fill="#ece6d8">GRAPH DATABASE</text>
+        <text x="316" y="110" text-anchor="middle" font-family="-apple-system,Helvetica Neue,Arial,sans-serif" font-size="11" fill="#a59e8c">traverse edges</text>
+        <!-- 4 Chunks for nodes touched (doc) -->
+        <circle cx="444" cy="52" r="20" fill="#ece6d8" fill-opacity=".05"/>
+        <circle cx="444" cy="52" r="7" fill="#a59e8c" fill-opacity=".9"/>
+        <text x="444" y="94" text-anchor="middle" font-family="SF Mono,Menlo,Consolas,monospace" font-size="10.5" letter-spacing="1.2" fill="#ece6d8">CHUNKS FOR</text>
+        <text x="444" y="110" text-anchor="middle" font-family="SF Mono,Menlo,Consolas,monospace" font-size="10.5" letter-spacing="1.2" fill="#ece6d8">NODES TOUCHED</text>
+        <!-- 5 Generative model (model) -->
+        <circle cx="572" cy="52" r="22" fill="#d8a04a" fill-opacity=".10"/>
+        <circle cx="572" cy="52" r="13" fill="#d8a04a" fill-opacity=".16"/>
+        <circle cx="572" cy="52" r="7" fill="#d8a04a"/>
+        <text x="572" y="94" text-anchor="middle" font-family="SF Mono,Menlo,Consolas,monospace" font-size="10.5" letter-spacing="1.2" fill="#ece6d8">GENERATIVE MODEL</text>
+        <!-- 6 Answer (out) -->
+        <circle cx="700" cy="52" r="20" fill="#5cb896" fill-opacity=".07"/>
+        <circle cx="700" cy="52" r="7" fill="none" stroke="#5cb896" stroke-width="1.4"/>
+        <text x="700" y="94" text-anchor="middle" font-family="SF Mono,Menlo,Consolas,monospace" font-size="10.5" letter-spacing="1.2" fill="#ece6d8">ANSWER</text>
+      </svg>
+    </div>
+
+    <div class="cells">
+      <div class="cell"><b>What it adds</b><span>Answers that are links: who recommended what, which books mention or argue with which. A fact about a pair survives even when no chunk states it.</span></div>
+      <div class="cell"><b>What it costs</b><span>Index time is the bill: an extraction call per book, re-run on every export, plus a schema someone has to design. ~2 calls per query.</span></div>
+      <div class="cell"><b>How it fails</b><span>Only as good as the extractor. A missed edge is silently absent. Filters on node properties work until the linker misses one.</span></div>
+    </div>
+
+    <div class="run">
+      <div class="qs">
+        <button class="q"><span class="qn">Q1 <i class="dot good"></i></span>Where did I read the line about [a phrase from one of my highlights]?</button>
+        <button class="q"><span class="qn">Q2 <i class="dot partial"></i></span>What did I read in 2024, rated five stars, under 300 pages?</button>
+        <button class="q"><span class="qn">Q3 <i class="dot partial"></i></span>Why did I give [a book] two stars when everyone else loved it?</button>
+        <button class="q on"><span class="qn">Q4 <i class="dot good"></i></span>Which of my books argue with each other?</button>
+        <button class="q"><span class="qn">Q5 <i class="dot partial"></i></span>[A photographed page] Which book is this, and what did I highlight near it?</button>
+        <button class="q"><span class="qn">Q6 <i class="dot partial"></i></span>Build me a two-week holiday list from my to-read shelf: nothing over 400 pages, one recommended by a friend, nothing like the last three I abandoned.</button>
+      </div>
+      <div class="res">
+        <p class="tests"><b>Q4 tests</b>a relationship between two books, held in neither book's chunks.</p>
+        <ul class="trace">
+          <li><span class="st">link</span><span>No entity in the question; the linker falls back to the edge type: ARGUES_WITH and MENTIONS.</span></li>
+          <li><span class="st">traverse</span><span>Every Book→Book edge of those types, each carrying the highlight that produced it at index time.</span></li>
+          <li><span class="st">prompt</span><span>The pairs and their evidence.</span></li>
+          <li class="ref"><span class="st">reference</span><span>Pairs of books linked by a MENTIONS or ARGUES_WITH edge, each with the highlight that proves the link.</span></li>
+        </ul>
+        <div class="ans">
+          <div class="lab"><span>predicted answer</span><span class="badge good">good</span></div>
+          <div class="txt">The pairs, each with the highlight where one book names the other's author or idea.</div>
+        </div>
+        <p class="why"><b>This is the question the graph was built for.</b> The relationship lives in edges, not in any chunk. Caveat: a pair the extractor missed is silently absent, which is why the extracted graph is published.</p>
+      </div>
+    </div>
+  </div>
+
+  <p class="note">v0: every trace on this page is a prediction written from how the pipeline is designed and what the corpus contains. No pipeline has run. Each cell is replaced by a real trace, with the date, as the version that measures it ships; the schedule is on the <a href="#">method page</a>.</p>
+</section>
+
+<section id="scorecard">
+  <p class="sn"><b>§04</b> The scorecard</p>
+  <h2>Nobody wins every column, and the cheapest pattern wins the first one</h2>
+  <div class="scroll">
+    <table>
+      <thead>
+        <tr><th>pattern</th><th class="c">Q1</th><th class="c">Q2</th><th class="c">Q3</th><th class="c">Q4</th><th class="c">Q5</th><th class="c">Q6</th><th>calls · cost</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="name"><i style="background:var(--naive)"></i>Naive RAG</td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot wrong"></i></td><td class="c"><i class="dot wrong"></i></td><td class="c"><i class="dot partial"></i></td><td class="c"><i class="dot partial"></i></td><td class="c"><i class="dot partial"></i></td><td class="cost">1 · 1x</td></tr>
+        <tr><td class="name"><i style="background:var(--rerank)"></i>Retrieve and rerank</td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot wrong"></i></td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot partial"></i></td><td class="c"><i class="dot partial"></i></td><td class="c"><i class="dot partial"></i></td><td class="cost">1 + reranker · 1.2x</td></tr>
+        <tr><td class="name"><i style="background:var(--multimodal)"></i>Multimodal RAG</td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot wrong"></i></td><td class="c"><i class="dot wrong"></i></td><td class="c"><i class="dot partial"></i></td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot partial"></i></td><td class="cost">1 (image tokens) · 2.5x</td></tr>
+        <tr><td class="name"><i style="background:var(--graph)"></i>Graph RAG</td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot partial"></i></td><td class="c"><i class="dot partial"></i></td><td class="c sel"><i class="dot good"></i></td><td class="c"><i class="dot partial"></i></td><td class="c"><i class="dot partial"></i></td><td class="cost">2 + indexing · 1.5x</td></tr>
+        <tr><td class="name"><i style="background:var(--hybrid)"></i>Hybrid RAG</td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot partial"></i></td><td class="c"><i class="dot partial"></i></td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot partial"></i></td><td class="c"><i class="dot partial"></i></td><td class="cost">2–3 · 1.8x</td></tr>
+        <tr><td class="name"><i style="background:var(--agentic)"></i>Agentic RAG (router)</td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot partial"></i></td><td class="cost">2–3 · 1.5x</td></tr>
+        <tr><td class="name"><i style="background:var(--multiagent)"></i>Multi-agent RAG</td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot good"></i></td><td class="c"><i class="dot good"></i></td><td class="cost">5–8 · 8x</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="legend"><span><i class="dot good"></i> predicted correct</span><span><i class="dot partial"></i> partial or generic</span><span><i class="dot wrong"></i> wrong or invented</span><span>· click a cell to open its trace</span></div>
+  <p style="margin-top:22px">Three things to read off the grid. Every pattern gets the easy question right, so the easy question tells you nothing about which pattern to use. The Q2 column splits the table cleanly into patterns with a tool and patterns without one, and no amount of embedding quality moves a pattern across that line. And reranking fixes the most common failure for the price of one extra call, which is why it should be the first upgrade, not the graph.</p>
+  <p>The prediction I most expect to be wrong is naive on Q1. Kindle highlights are short, so the nearest chunk is sometimes a different book quoting the same author. If that happens, Q1 stops being a control and reranking earns its call one column earlier.</p>
+</section>
+
+<div class="pf">
+  <span><i class="lamp"></i>Built by Shirley · AI-assisted · v0, 9 September 2026</span>
+  <a href="#">How it's built, and what gets measured next</a>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How I'm building a RAG comparison I can actually grade — Seven RAGs, one shelf</title>
+<meta name="description" content="The method behind the seven-pattern RAG comparison on my own bookshelf: one curated corpus, six fixed questions, reference answers written first, the same generation model everywhere, and a version plan that replaces predictions with measurements.">
+<style>
+  :root{--bg:#fbfaf7;--ink:#1a1a1a;--ink2:#3d3a33;--mute:#7a7568;--line:#e5e2da;--soft:#f3f1ea;--acc:#1f5e4e}
+  body{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;max-width:720px;margin:0 auto;padding:40px 22px 60px;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.6}
+  a{color:var(--ink)}
+  .top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:36px;font-family:-apple-system,Inter,Arial,sans-serif;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+  .vnav{display:flex;gap:16px;flex-wrap:wrap}.vnav a{text-decoration:none;border-bottom:2px solid var(--acc);padding-bottom:2px}
+  .tool{text-decoration:none;font-weight:600}
+  .kicker{font-family:-apple-system,Inter,Arial,sans-serif;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin:0}
+  h1{font-weight:500;font-size:38px;line-height:1.15;margin:10px 0 16px;letter-spacing:-.01em}
+  .lede{font-size:18px;color:var(--ink2)}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);margin:30px 0;border-top:1px solid var(--ink);border-bottom:1px solid var(--line)}
+  .stat{padding:14px 10px 12px;border-right:1px solid var(--line)}.stat:last-child{border-right:0}
+  .stat b{display:block;font-size:28px;font-weight:500;letter-spacing:-.02em}.stat span{font-family:-apple-system,Inter,Arial,sans-serif;font-size:11.5px;color:var(--mute);line-height:1.3;display:block}
+  section{margin-top:52px}
+  h2{font-weight:500;font-size:27px;margin:10px 0 12px;letter-spacing:-.01em}
+  h3{font-family:-apple-system,Inter,Arial,sans-serif;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin:28px 0 10px}
+  p,li{font-size:16.5px}
+  .tw{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-family:-apple-system,Inter,Arial,sans-serif;font-size:14px;margin:8px 0 4px}
+  th{text-align:left;font-weight:600;padding:8px 6px;border-bottom:1px solid var(--ink);vertical-align:bottom}td{padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+  code{font-family:"SF Mono",Menlo,monospace;font-size:.88em;background:var(--soft);padding:1px 5px}
+  .small{font-family:-apple-system,Inter,Arial,sans-serif;font-size:13px;color:var(--mute)}
+  .note{font-family:-apple-system,Inter,Arial,sans-serif;font-size:13px;color:var(--mute);border:1px dashed #d9d5cb;padding:8px 12px;margin:10px 0}
+  .diag{margin:18px 0;font-family:-apple-system,Inter,Arial,sans-serif}.diag svg{width:100%;height:auto;display:block}
+  .tri{border-top:1px solid var(--ink);padding-top:22px;margin-top:60px}
+  .tri h2{font-size:19px;font-weight:400;color:var(--ink2);margin:0 0 16px;line-height:1.35;letter-spacing:0}
+  .tri h2 .n{font-size:40px;font-weight:500;letter-spacing:-.015em;color:var(--ink);display:block;margin-bottom:8px;line-height:1.1}
+  .tri.core h2 .n::before{content:"";display:block;width:40px;height:6px;background:var(--acc);margin-bottom:16px}
+  .versions{border-top:1px solid var(--ink);margin-top:10px}
+  .ver{display:grid;grid-template-columns:70px 1fr;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .ver .v{font-family:-apple-system,Inter,Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+  .ver .v span{display:block;font-weight:400;color:var(--mute);font-size:11.5px;letter-spacing:0;text-transform:none;margin-top:3px}
+  .ver.done .v{color:var(--acc)}
+  .ver.soon .v{color:#a8a49c}
+  .ver p{margin:0;font-size:15.5px}
+  .pf{margin-top:56px;padding-top:18px;border-top:1px solid var(--ink);font-family:-apple-system,Inter,Arial,sans-serif;font-size:13.5px;color:var(--mute);line-height:1.7}
+  @media (max-width:560px){.tri h2 .n{font-size:30px}.stats{grid-template-columns:repeat(2,1fr)}.stat:nth-child(2){border-right:0}.stat:nth-child(-n+2){border-bottom:1px solid var(--line)}h1{font-size:30px}}
+</style>
+</head>
+<body>
+<div class="top">
+  <nav class="vnav">
+    <a href="#problem">problem</a>
+    <a href="#usecase">why books</a>
+    <a href="#tradeoffs">trade-offs</a>
+    <a href="#corpus">corpus</a>
+    <a href="#questions">questions</a>
+    <a href="#judged">judging</a>
+    <a href="#versions">versions</a>
+    <a href="#stack">stack</a>
+  </nav>
+  <a class="tool" href="index.html">← The comparison</a>
+</div>
+
+<p class="kicker">Case study · method</p>
+<h1>How I'm building a RAG comparison I can actually grade</h1>
+<p class="lede">Seven retrieval patterns, one corpus that happens to be my own bookshelf, six fixed questions with reference answers written before any pipeline runs, the same generation model everywhere. This page is the lab notebook: what I decided, what I turned down, and what replaces prediction with measurement as each version ships.</p>
+<p>I build the way I learn: make the thing, then find out where it breaks, and publish the finding-out. Version 0 is the design and the predicted traces. The measurements start at v1. Every claim on the comparison page that is currently a prediction is labelled as one, and gets a date here when it becomes a measurement.</p>
+
+<div class="stats">
+  <div class="stat"><b>7</b><span>patterns, from the same seven-diagram picture everyone shares</span></div>
+  <div class="stat"><b>3</b><span>files in the corpus: a Goodreads export, Kindle highlights, a list of recommendations</span></div>
+  <div class="stat"><b>6</b><span>fixed questions, one per failure mode, graded by hand</span></div>
+  <div class="stat"><b>0</b><span>measured runs so far. That number is the roadmap.</span></div>
+</div>
+
+<section id="problem" class="tri core">
+  <h2><span class="n">1 · The problem</span>Seven diagrams and no way to tell them apart</h2>
+  <p>The seven-pattern RAG picture is everywhere in 2026, and it is right that these are different designs. What it does not give you is a way to choose. Every pattern is shown on its own demo, so any comparison is really a comparison of demos: different data, different questions, different models, different definitions of "worked".</p>
+  <p>The question I wanted to answer is the one a team asks before they build: <i>which of these do we actually need, and how would we know?</i> Answering that means holding everything still except the pattern.</p>
+  <ul>
+    <li><b>Same corpus.</b> Every pattern indexes the same exports.</li>
+    <li><b>Same questions.</b> Six, fixed, with reference answers written first.</li>
+    <li><b>Same generation model, same prompt template.</b> So the only variable is what reaches the model.</li>
+    <li><b>Same grader.</b> Me, reading every answer against the reference, before any metric. Plus one check code can do: a title that is not in my library is an invented book.</li>
+  </ul>
+</section>
+
+<section id="usecase" class="tri core">
+  <h2><span class="n">2 · Why books, and why mine</span>You can't evaluate retrieval in a domain where you can't tell right from plausible</h2>
+  <p>The corpus is my reading life: what I read and when, what I rated it, the lines I highlighted, who told me to read it. Not because the world needs another chat-with-your-highlights app, but because evaluation is the hard part of RAG and I can only grade answers in a domain I know cold. When a pipeline says I read a book in 2023 that I read in 2021, or quotes a line back from the wrong book, or recommends something already on my read shelf, I know in one second. In an enterprise-docs demo I would have had to guess, or pay a model to guess for me.</p>
+  <p>The second reason is that the data has, naturally, the properties that separate the seven patterns. I did not have to invent them; I had to make sure the export kept them.</p>
+  <div class="tw"><table>
+    <tr><th>property</th><th>where it comes from</th><th>which pattern it separates</th></tr>
+    <tr><td>Numbers in a ledger, not in text</td><td>dates read, ratings, page counts in the Goodreads export</td><td>patterns with a tool from patterns without</td></tr>
+    <tr><td>Sources that disagree</td><td>my review, my own highlights from the same book, and the crowd's average rating</td><td>naive from reranked</td></tr>
+    <tr><td>Knowledge in relationships</td><td>a highlight in one book naming the author of another; who recommended what</td><td>vector from graph</td></tr>
+    <tr><td>Answers only in images</td><td>photographed pages and covers</td><td>text from multimodal</td></tr>
+    <tr><td>Questions needing several sources</td><td>a reading list built from shelf, page counts, recommendations and abandoned books</td><td>single-path from multi-agent</td></tr>
+  </table></div>
+  <p>The earlier draft of this site used a handstand-coaching notebook I would have had to write from scratch. Real, exported data won on every count: it took an afternoon instead of a week, it cannot be accused of being built to flatter a pattern, and its failures are legible to anyone who has ever kept a reading list.</p>
+</section>
+
+<section id="tradeoffs" class="tri core">
+  <h2><span class="n">3 · The trade-offs</span>Decisions, the alternative, and what each one costs</h2>
+  <div class="tw"><table>
+    <tr><th>decision</th><th>chose</th><th>instead of</th><th>why</th></tr>
+    <tr><td>Corpus</td><td>My own exports, curated</td><td>A fabricated corpus, or scraped reviews</td><td>I know every fact in it, and it is real. Cost: it is small, and small corpora flatter naive RAG; the question set compensates.</td></tr>
+    <tr><td>Full text</td><td>Highlights only</td><td>Whole books</td><td>A short quotation with attribution can be published; a book cannot. Highlights are also the more personal signal.</td></tr>
+    <tr><td>Recommenders</td><td>Initials, from a hand-written CSV</td><td>Full names, or nothing</td><td>The people edges make the graph interesting. The people themselves stay off a public page.</td></tr>
+    <tr><td>The ledger</td><td>Kept as rows in SQLite, queried by a tool</td><td>Embedding every row as text</td><td>Embedding a ledger is how a system invents a book. Keeping it as rows is what makes the Q2 column an honest test of "do you have a tool or not".</td></tr>
+    <tr><td>Question set</td><td>6 fixed questions, one per failure mode</td><td>50 random questions</td><td>Each question is a diagnostic: it should turn one pattern from wrong to right. Random questions average that out. More questions come at v5, once the pipelines run.</td></tr>
+    <tr><td>v0 as predictions</td><td>Predicted traces, labelled as such</td><td>Waiting for live pipelines</td><td>The design thinking is the product; the numbers are the proof. Shipping the thinking first, honestly labelled, beats shipping nothing. Cost: a reader who skips the label will think these are results.</td></tr>
+    <tr><td>Graph construction</td><td>LLM extraction with a fixed schema (Book, Author, Person, Theme; WROTE, RECOMMENDED, ABOUT, MENTIONS, ARGUES_WITH, READ_AFTER)</td><td>A hand-built graph</td><td>A hand-built graph hides the real failure mode of Graph RAG, which is the extractor missing an edge. I want that failure to be possible, visible, and published as JSON.</td></tr>
+    <tr><td>Reranker</td><td>A local cross-encoder</td><td>An LLM reranking call</td><td>Cheaper per query, and a second LLM in the loop makes it harder to attribute a fix to retrieval rather than to more model.</td></tr>
+    <tr><td>Generation model</td><td>One model, one prompt template, every pattern</td><td>The "natural" model for each pattern</td><td>Change one thing at a time. If the model varies, the comparison is of models.</td></tr>
+    <tr><td>Grading</td><td>Hand labels against a written reference, plus an automatic invented-book count</td><td>An LLM judge</td><td>6 questions × 7 patterns × 5 runs is 210 answers. I can read 210 answers. A judge needs its own validation set, which at this size costs more than reading.</td></tr>
+    <tr><td>Hosting</td><td>Static pages now; a small Python service for the pipelines</td><td>A full app from day one</td><td>Static pages deploy in seconds and cannot go down. The service only needs to exist for the eval runs and, at v5, the demo box.</td></tr>
+  </table></div>
+</section>
+
+<section id="corpus" class="tri core">
+  <h2><span class="n">4 · The corpus</span>Three files, a few photos, and a graph extracted from them</h2>
+  <div class="tw"><table>
+    <tr><th>source</th><th>what is used</th><th>what is never used</th></tr>
+    <tr><td>Goodreads export</td><td>title, author, ISBN, pages, publication year, date read, date added, my rating, average rating, shelves, my review, read count</td><td>private notes, and any title I remove before ingest</td></tr>
+    <tr><td>Kindle highlights</td><td>the highlight text, its book, location, and date; my notes on it</td><td>bookmarks; clippings under 20 characters</td></tr>
+    <tr><td>Recommendations</td><td>title, who (initials), where, when. Written by hand.</td><td>the mapping from initials to people, which stays on my machine</td></tr>
+    <tr><td>Photos</td><td>covers from Open Library, a few pages I photograph, one shelf</td><td></td></tr>
+    <tr><td>Extracted graph</td><td>edges from the files (who wrote what, who recommended what, what I read after what) and edges a model extracts from highlights and reviews (themes; which books mention or argue with which)</td><td>nothing; the whole graph is committed as JSON</td></tr>
+  </table></div>
+  <p>The highlights are the semantic index and the ledger is a table. That split is the single most important design decision on this site: it is what makes the "numbers" question an honest test rather than a trick.</p>
+  <p class="note">Exact counts (books, highlights, match rate between the two exports) are published here at v1, after ingest. The curated exports themselves stay out of the repo; the photos, the graph JSON, the question set and every result CSV go in.</p>
+</section>
+
+<section id="questions" class="tri core">
+  <h2><span class="n">5 · The question set</span>Six questions, each built to break one pattern and be fixed by the next</h2>
+  <div class="tw"><table>
+    <tr><th></th><th>question</th><th>tests</th><th>expected to separate</th></tr>
+    <tr><td>Q1</td><td>Where did I read the line about …?</td><td>a quotation in the index</td><td>nothing. A control, unless a same-author highlight from another book outranks it</td></tr>
+    <tr><td>Q2</td><td>What did I read in 2024, rated five stars, under 300 pages?</td><td>a filter over the ledger</td><td>patterns with a tool (right) from patterns without (invented titles)</td></tr>
+    <tr><td>Q3</td><td>Why did I give [book] two stars when everyone else loved it?</td><td>my review vs my highlights vs the crowd</td><td>naive (wrong) from reranked (right)</td></tr>
+    <tr><td>Q4</td><td>Which of my books argue with each other?</td><td>a relationship between two books</td><td>vector (partial) from graph and hybrid (right)</td></tr>
+    <tr><td>Q5</td><td>[photo] Which book is this, and what did I highlight near it?</td><td>an answer that starts from pixels</td><td>text-only (partial) from multimodal (right)</td></tr>
+    <tr><td>Q6</td><td>A two-week holiday list from my to-read shelf, under 400 pages, one from a friend, nothing like the last three I abandoned</td><td>composing four sources into a deliverable</td><td>every single-path pattern (partial) from multi-agent (right)</td></tr>
+  </table></div>
+  <p>Reference answers are written before I trace a single pipeline and are shown on the comparison page next to each question. The bracketed titles get fixed once the export is inspected. A second reader grades a sample before v5; the agreement rate gets published as the ceiling, as I did for fixmybanana.</p>
+</section>
+
+<section id="judged" class="tri core">
+  <h2><span class="n">6 · How every version is judged</span>Read every answer first, then count</h2>
+  <div class="diag"><svg viewBox="0 0 720 150" role="img" aria-label="The eval loop">
+    <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1a1a1a"/></marker></defs>
+    <g font-size="12" fill="#1a1a1a" font-family="-apple-system,Inter,Arial,sans-serif">
+      <rect x="10" y="45" width="120" height="60" fill="#f3f1ea" stroke="#1a1a1a"/><text x="70" y="70" text-anchor="middle">fixed question set</text><text x="70" y="88" text-anchor="middle" fill="#7a7568">6 questions, referenced</text>
+      <line x1="132" y1="75" x2="168" y2="75" stroke="#1a1a1a" marker-end="url(#ar)"/>
+      <rect x="172" y="45" width="120" height="60" fill="#f3f1ea" stroke="#1a1a1a"/><text x="232" y="70" text-anchor="middle">run 5× per pattern</text><text x="232" y="88" text-anchor="middle" fill="#7a7568">same model, same prompt</text>
+      <line x1="294" y1="75" x2="330" y2="75" stroke="#1a1a1a" marker-end="url(#ar)"/>
+      <rect x="334" y="45" width="120" height="60" fill="#f3f1ea" stroke="#1a1a1a"/><text x="394" y="70" text-anchor="middle">read every answer</text><text x="394" y="88" text-anchor="middle" fill="#7a7568">before any metric</text>
+      <line x1="456" y1="75" x2="492" y2="75" stroke="#1a1a1a" marker-end="url(#ar)"/>
+      <rect x="496" y="45" width="120" height="60" fill="#1a1a1a"/><text x="556" y="70" text-anchor="middle" fill="#fff">publish the grid</text><text x="556" y="88" text-anchor="middle" fill="#c9c5bb">bad cells included</text>
+      <path d="M616 75 h60 v60 H70 v-28" fill="none" stroke="#1f5e4e" stroke-width="2" marker-end="url(#ar)"/><text x="360" y="128" text-anchor="middle" fill="#7a7568">same questions, same grid, every version</text>
+    </g></svg></div>
+  <h3>What gets recorded per answer</h3>
+  <div class="tw"><table>
+    <tr><th>measure</th><th>how</th><th>why it matters</th></tr>
+    <tr><td>Verdict</td><td>correct / partial / wrong against the reference, by hand</td><td>the headline cell in the grid</td></tr>
+    <tr><td>Invented books</td><td>any title in the answer that is not in the library, counted by code</td><td>the failure a reader can feel; the check that catches what I miss</td></tr>
+    <tr><td>Retrieval hit</td><td>did the chunk or row holding the reference answer reach the model?</td><td>separates "retrieval failed" from "the model ignored it"</td></tr>
+    <tr><td>Consistency</td><td>same verdict on all 5 runs?</td><td>a pattern that is right 3 times in 5 is not right</td></tr>
+    <tr><td>Model calls</td><td>counted by the code</td><td>structural cost, independent of vendor pricing</td></tr>
+    <tr><td>Latency and $</td><td>wall clock and token usage per run</td><td>the columns that decide what ships</td></tr>
+  </table></div>
+  <p>The eval calls the same function the site's demo box will call, so what is measured is what a visitor gets. The question set does not change between versions, so the only thing that moves the grid is the change I made.</p>
+</section>
+
+<section id="versions" class="tri core">
+  <h2><span class="n">7 · Versions</span>What exists, what is measured, and when</h2>
+  <div class="versions">
+    <div class="ver done"><div class="v">v0<span>9 Sep 2026</span></div><p><b>Predicted traces.</b> Corpus chosen and its rules written, six question shapes fixed, seven pipelines traced by prediction on all six, the scorecard and decision guide published. No code has run. Every score on the comparison page is a design argument, not a measurement.</p></div>
+    <div class="ver soon"><div class="v">v1<span>next</span></div><p><b>Ingest, naive, reranked, and the ledger tool, live.</b> Parse both exports, build the tables, embed the highlights, add the cross-encoder and the SQL tool. Fix the real titles in the questions. Run 5× each. The first two rows of the grid become measurements, and Q2 gets its first real answer through the tool so the number exists early.</p></div>
+    <div class="ver soon"><div class="v">v2</div><p><b>Graph and hybrid.</b> LLM extraction over highlights and reviews with the fixed schema, then traversal. Publish the extracted graph so a missed edge is visible. The Q4 column becomes real.</p></div>
+    <div class="ver soon"><div class="v">v3</div><p><b>Multimodal.</b> Multimodal embeddings for the photos, vision-language generation. The Q5 column becomes real.</p></div>
+    <div class="ver soon"><div class="v">v4</div><p><b>Router and multi-agent.</b> A small routing model over the five retrievers; then a planner, sub-agents and a synthesizer. The Q6 column, and the cost column, become real.</p></div>
+    <div class="ver soon"><div class="v">v5</div><p><b>The numbers.</b> Full grid with latency and cost per cell, consistency across runs, invented-book counts, a second reader's agreement rate, ten more questions drawn from how people actually ask, and a live "ask the librarian" box with the trace panel. The "predicted" label comes off the comparison page.</p></div>
+  </div>
+</section>
+
+<section id="stack" class="tri core">
+  <h2><span class="n">8 · The stack</span>Small on purpose</h2>
+  <div class="tw"><table>
+    <tr><th>part</th><th>choice</th><th>note</th></tr>
+    <tr><td>These pages</td><td>Plain HTML, inline CSS, no build step</td><td>Cloudflare Pages, deploys on push. Same as my other sites.</td></tr>
+    <tr><td>Pipelines (v1+)</td><td>Python service, five retrievers, seven patterns behind one interface: <code>answer(question, pattern, image) → {answer, context, route, calls, ms, usage}</code></td><td>the eval imports the same function the demo box calls</td></tr>
+    <tr><td>Ledger</td><td>SQLite, queried by the SQL tool</td><td>a few hundred rows; never embedded</td></tr>
+    <tr><td>Embeddings</td><td>Voyage text embeddings; the multimodal model for v3; vectors stored in the same SQLite file</td><td>one file, no vector database to run</td></tr>
+    <tr><td>Reranker</td><td>A local cross-encoder</td><td>no API call, so its cost shows up as milliseconds, not dollars</td></tr>
+    <tr><td>Graph</td><td>NetworkX in memory, extracted by Claude with a fixed schema, committed as JSON</td><td>a graph database would be a fourth thing to run for a graph with under a thousand nodes</td></tr>
+    <tr><td>Generation</td><td>Claude Opus 5 with adaptive thinking, one prompt template for every pattern</td><td>the router uses Claude Haiku 4.5: it is a classifier and should cost like one</td></tr>
+    <tr><td>Hosting the service</td><td>Railway, Cloudflare in front</td><td>the setup I already run for fixmybanana</td></tr>
+  </table></div>
+  <h3>Ops</h3>
+  <p>Static pages: push to main, live in about twenty seconds, nothing to roll back. The service follows the fixmybanana rule: main is production, behaviour changes go through a pull request, and the eval scripts read the API keys from a git-ignored file that is never printed. The curated exports are git-ignored too; the photos, the graph, the questions and every result CSV are committed.</p>
+</section>
+
+<div class="pf">
+  Built by Shirley · AI-assisted · this page is updated when a version ships · <a href="index.html">Back to the comparison</a> · <a href="docs/plan.html">The build plan</a>
+</div>
+</body>
+</html>

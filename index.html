@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seven RAGs, one shelf — the pattern is the product</title>
+<meta name="description" content="Seven RAG design patterns run on one real bookshelf: a Goodreads export, Kindle highlights, and the same six questions, so the only thing that changes is the architecture.">
+<style>
+  :root{--bg:#fbfaf7;--ink:#1a1a1a;--ink2:#3d3a33;--mute:#7a7568;--line:#e5e2da;--soft:#f3f1ea;
+        --naive:#b8741a;--rerank:#3b6bb0;--multimodal:#8a2f7a;--graph:#2f8a6a;--hybrid:#c2621a;--agentic:#2f6f9f;--multiagent:#6b2f8a;--acc:#1f5e4e}
+  *{box-sizing:border-box}
+  body{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;max-width:860px;margin:0 auto;padding:40px 22px 60px;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.6}
+  a{color:var(--ink)}
+  .top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:36px;font-family:-apple-system,Inter,Arial,sans-serif;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+  .vnav{display:flex;gap:16px;flex-wrap:wrap}.vnav a{text-decoration:none;border-bottom:2px solid var(--acc);padding-bottom:2px}
+  .tool{text-decoration:none;font-weight:600}
+  .kicker{font-family:-apple-system,Inter,Arial,sans-serif;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin:0}
+  h1{font-weight:500;font-size:40px;line-height:1.12;margin:10px 0 16px;letter-spacing:-.01em;max-width:760px}
+  .lede{font-size:19px;color:var(--ink2);max-width:720px}
+  p,li{font-size:16.5px}
+  p{max-width:720px}
+  .small{font-family:-apple-system,Inter,Arial,sans-serif;font-size:13px;color:var(--mute)}
+  section{margin-top:60px}
+  .tri{border-top:1px solid var(--ink);padding-top:22px}
+  .tri h2{font-size:19px;font-weight:400;color:var(--ink2);margin:0 0 16px;line-height:1.35;letter-spacing:0;max-width:720px}
+  .tri h2 .n{font-size:38px;font-weight:500;letter-spacing:-.015em;color:var(--ink);display:block;margin-bottom:8px;line-height:1.1}
+  .tri.core h2 .n::before{content:"";display:block;width:40px;height:6px;background:var(--acc);margin-bottom:16px}
+  h3{font-family:-apple-system,Inter,Arial,sans-serif;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin:28px 0 10px}
+  table{width:100%;border-collapse:collapse;font-family:-apple-system,Inter,Arial,sans-serif;font-size:14px;margin:8px 0 4px}
+  th{text-align:left;font-weight:600;padding:8px 6px;border-bottom:1px solid var(--ink);vertical-align:bottom}
+  td{padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+  code{font-family:"SF Mono",Menlo,monospace;font-size:.86em;background:var(--soft);padding:1px 5px}
+  .props{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:18px 0}
+  .prop{border:1px solid var(--line);padding:14px 16px;background:#fff}
+  .prop b{display:block;font-family:-apple-system,Inter,Arial,sans-serif;font-size:14px;margin-bottom:4px}
+  .prop span{font-family:-apple-system,Inter,Arial,sans-serif;font-size:13.5px;color:var(--ink2);line-height:1.5}
+  .prop i{display:block;font-style:normal;font-family:-apple-system,Inter,Arial,sans-serif;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);margin-top:8px}
+
+  .ex{margin-top:22px;border:1px solid var(--line);background:#fff}
+  .tabs{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+  .tab{flex:1 1 auto;font-family:-apple-system,Inter,Arial,sans-serif;font-size:12.5px;font-weight:600;padding:12px 10px;border:0;background:transparent;cursor:pointer;color:var(--mute);border-bottom:3px solid transparent;letter-spacing:.02em;white-space:nowrap}
+  .tab:hover{color:var(--ink)}
+  .tab.on{color:var(--ink);border-bottom-color:var(--pc)}
+  .head{padding:22px 22px 6px}
+  .head .pname{font-size:26px;font-weight:500;margin:0;letter-spacing:-.01em}
+  .head .pname small{font-family:-apple-system,Inter,Arial,sans-serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--pc);margin-left:10px;font-weight:600}
+  .head p{margin:6px 0 0;color:var(--ink2);font-size:16px}
+  .diag{padding:8px 22px 0;overflow-x:auto}
+  .diag svg{display:block;min-width:640px;width:100%;height:auto;font-family:-apple-system,Inter,Arial,sans-serif}
+  .cells{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:14px}
+  .cell{padding:12px 18px;border-right:1px solid var(--line);font-family:-apple-system,Inter,Arial,sans-serif;font-size:13.5px;line-height:1.5;color:var(--ink2)}
+  .cell:last-child{border-right:0}
+  .cell b{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin-bottom:4px}
+  .run{display:grid;grid-template-columns:280px minmax(0,1fr)}
+  .qs{border-right:1px solid var(--line);padding:16px 0}
+  .q{display:block;width:100%;text-align:left;border:0;background:transparent;cursor:pointer;padding:10px 18px;font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:15px;line-height:1.4;color:var(--ink2);border-left:3px solid transparent}
+  .q:hover{background:var(--soft)}
+  .q.on{border-left-color:var(--ink);color:var(--ink);background:var(--soft)}
+  .q .qn{display:block;font-family:-apple-system,Inter,Arial,sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin-bottom:2px}
+  .q .qd{display:inline-block;width:9px;height:9px;border-radius:50%;margin-left:6px;vertical-align:middle}
+  .res{padding:18px 22px 22px}
+  .tests{font-family:-apple-system,Inter,Arial,sans-serif;font-size:13px;color:var(--mute);margin:0 0 14px}
+  .tests b{color:var(--ink);font-weight:600}
+  .trace{margin:0;padding:0;list-style:none;border-top:1px solid var(--line)}
+  .trace li{display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-family:-apple-system,Inter,Arial,sans-serif;font-size:13.5px;line-height:1.5}
+  .trace li .st{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);padding-top:3px}
+  .ans{margin:16px 0 0;padding:16px 18px;background:var(--soft);border-left:3px solid var(--pc)}
+  .ans .lab{font-family:-apple-system,Inter,Arial,sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  .ans .txt{font-size:15.5px;line-height:1.55;white-space:pre-line}
+  .badge{font-family:-apple-system,Inter,Arial,sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;padding:3px 9px;border-radius:2px;color:#fff;background:#999}
+  .badge.good{background:#1f5e4e}.badge.partial{background:#b8741a}.badge.wrong{background:#9c2f2f}
+  .why{font-family:-apple-system,Inter,Arial,sans-serif;font-size:13.5px;color:var(--ink2);margin:14px 0 0;line-height:1.55}
+  .why b{color:var(--ink)}
+  .dot{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:middle}
+  .dot.good{background:#1f5e4e}.dot.partial{background:linear-gradient(90deg,#b8741a 50%,#fff 50%);border:1.5px solid #b8741a}.dot.wrong{background:#fff;border:1.5px solid #9c2f2f}
+  .scroll{overflow-x:auto}
+  .matrix td.c{text-align:center;cursor:pointer}
+  .matrix td.c:hover{background:var(--soft)}
+  .matrix td.c.sel{background:var(--soft);outline:1px solid var(--ink)}
+  .matrix th.c{text-align:center}
+  .matrix td.name{white-space:nowrap;font-weight:600}
+  .matrix td.name i{display:inline-block;width:10px;height:10px;margin-right:8px;vertical-align:middle;border-radius:1px}
+  .legend{display:flex;gap:18px;align-items:center;color:var(--mute);margin:10px 0 0;font-family:-apple-system,Inter,Arial,sans-serif;font-size:12px;flex-wrap:wrap}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .guide{display:grid;grid-template-columns:1fr;gap:0;border-top:1px solid var(--ink);margin-top:16px}
+  .g{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .g .ask{font-size:18px;line-height:1.35}
+  .g .then{font-family:-apple-system,Inter,Arial,sans-serif;font-size:14px;color:var(--ink2);line-height:1.55}
+  .g .then b{color:var(--ink)}
+  .note{font-family:-apple-system,Inter,Arial,sans-serif;font-size:13px;color:var(--mute);border:1px dashed #d9d5cb;padding:8px 12px;margin:14px 0;max-width:720px}
+  .pf{margin-top:56px;padding-top:18px;border-top:1px solid var(--ink);font-family:-apple-system,Inter,Arial,sans-serif;font-size:13.5px;color:var(--mute);line-height:1.7}
+  blockquote{margin:22px 0;padding:0 0 0 18px;border-left:3px solid var(--acc);font-size:20px;line-height:1.4;color:var(--ink);max-width:680px}
+  @media (max-width:700px){
+    h1{font-size:31px}.tri h2 .n{font-size:30px}
+    .props{grid-template-columns:1fr}
+    .cells{grid-template-columns:1fr}.cell{border-right:0;border-bottom:1px solid var(--line)}.cell:last-child{border-bottom:0}
+    .run{grid-template-columns:1fr}.qs{border-right:0;border-bottom:1px solid var(--line)}
+    .trace li{grid-template-columns:1fr;gap:2px}
+    .g{grid-template-columns:1fr;gap:6px}
+    .tab{flex:1 1 33%}
+  }
+</style>
+</head>
+<body>
+<div class="top">
+  <nav class="vnav">
+    <a href="#thesis">thesis</a>
+    <a href="#usecase">the shelf</a>
+    <a href="#compare">compare</a>
+    <a href="#scorecard">scorecard</a>
+    <a href="#choose">choose</a>
+  </nav>
+  <a class="tool" href="how-its-built.html">How it's built →</a>
+</div>
+
+<p class="kicker">Project · v0 · predicted, not yet measured</p>
+<h1>Seven RAGs, one shelf. The pattern is the product.</h1>
+<p class="lede">Retrieval-augmented generation is not one technique any more. It is seven designs that solve seven different problems, and most teams pick one by accident. This page runs all seven on the same small, real knowledge base and the same six questions, so the only thing that changes between columns is the architecture.</p>
+<p>The knowledge base is my own bookshelf: a Goodreads export, my Kindle highlights, a list of who recommended what, and a few photographed pages. I chose it because I can tell a right answer from a plausible one in a second, which is the whole job when you evaluate retrieval, and because "it invented a book I never read" is the most legible failure a RAG system can have. Every trace below is a prediction of how each pipeline handles the question. Nothing is measured yet. <a href="how-its-built.html">The method page</a> says what gets measured and when.</p>
+
+<section id="thesis" class="tri core">
+  <h2><span class="n">§01 · The thesis</span>Most RAG systems don't break on the model. They break on the pattern.</h2>
+  <p>Teams upgrade the embedding model, switch to a stronger LLM, add more chunks to the prompt, and still get shallow or wrong answers. The reason is usually upstream of the model: the retrieval design cannot reach the information the question needs. Similarity search has no idea what "2024" or "under 300 pages" means. A text index cannot look at a photograph. A single retriever cannot see that two books argue with each other, because that fact lives in neither book. And no retrieval at all can compose four constraints into a reading list.</p>
+  <blockquote>The real skill isn't building RAG. It's choosing the right pattern for the problem, and being able to show why.</blockquote>
+  <p>Comparing patterns on different demos measures the demos. To compare the patterns you need to hold everything else still: same corpus, same questions, same generation model, and answers you can grade. That is what this page does.</p>
+</section>
+
+<section id="usecase" class="tri core">
+  <h2><span class="n">§02 · One shelf</span>A real reading life, exported in an afternoon, messy in exactly the ways that matter</h2>
+  <p>Three files and a handful of photos. The Goodreads export is the ledger: every book, when I read it, what I rated it, how long it is, what everyone else rated it, and the review I wrote. The Kindle clippings are the quotes: one short highlight per block, hundreds of them. A hand-written list says who recommended what. Nothing is fabricated, private notes are never ingested, and the export is curated before it goes anywhere near a public page.</p>
+  <div class="props">
+    <div class="prop"><b>Numbers live in a ledger, not in text</b><span>"What did I read in 2024, rated five stars, under 300 pages?" is a filter, not a similarity. A text index answers it with plausible titles, some of which I never read.</span><i>breaks every pattern without a tool · fixed by a query</i></div>
+    <div class="prop"><b>Sources contradict each other</b><span>My two-star review, my own admiring highlights from the same book, and the crowd's 4.3 average all describe one book. Similarity finds the highlights first.</span><i>breaks naive · fixed by reranking</i></div>
+    <div class="prop"><b>Knowledge lives in relationships</b><span>Which of my books argue with each other is a fact about a pair, extracted from a highlight in one that names the author of the other. No single chunk contains it.</span><i>breaks vector search · fixed by graph</i></div>
+    <div class="prop"><b>Some answers are only in pictures</b><span>A photographed page has no text to match. Which book it is, and what I marked nearby, starts from pixels.</span><i>breaks text-only · fixed by multimodal</i></div>
+    <div class="prop"><b>Some questions need several sources</b><span>A holiday reading list needs the to-read shelf, page counts, who recommended what, and the themes of the last three books I gave up on.</span><i>breaks single-path · fixed by multi-agent</i></div>
+    <div class="prop"><b>I can grade every answer</b><span>It is my shelf. A wrong date, a misattributed quote, a book I never read: I see it in one second, and the invented-book count can be checked by code.</span><i>why this corpus and not an enterprise demo</i></div>
+  </div>
+  <h3>The corpus</h3>
+  <table>
+    <tr><th>source</th><th>what it holds</th><th>what it contributes</th></tr>
+    <tr><td>Goodreads export</td><td>one row per book: title, author, ISBN, pages, date read, my rating, the average rating, shelves, my review</td><td>the ledger. Queried, never embedded.</td></tr>
+    <tr><td>Kindle highlights</td><td>one short quotation per block, with book, location and date</td><td>the semantic index, and the misattribution trap: a highlight in one book quoting another author</td></tr>
+    <tr><td>Recommendations</td><td>title, who (initials), where, when</td><td>the people edges in the graph</td></tr>
+    <tr><td>Photos</td><td>covers, a few photographed pages, one shelf</td><td>answers with no text form</td></tr>
+    <tr><td>Extracted graph</td><td>who wrote what, who recommended what, which books mention or argue with which, themes</td><td>built once by a model with a fixed schema, published as JSON so a missed edge is visible</td></tr>
+  </table>
+  <h3>The six questions</h3>
+  <p>One per failure mode, plus one that everything should get right. Each has a reference answer written before any pipeline runs. The exact titles get fixed once the export is inspected; the shape of each question does not change. The graded predictions are in the explorer below.</p>
+</section>
+
+<section id="compare" class="tri core">
+  <h2><span class="n">§03 · Same question, seven pipelines</span>Pick a pattern, pick a question, read what the pipeline is expected to do</h2>
+  <p>Each trace shows what gets retrieved, in what order, what the model is given, and the answer it is likely to produce, graded against the reference. The "why" line under each answer is the point of the page.</p>
+  <div class="ex" id="ex">
+    <div class="tabs" id="tabs"></div>
+    <div class="head"><p class="pname" id="pname"></p><p id="ptag"></p></div>
+    <div class="diag" id="diag"></div>
+    <div class="cells">
+      <div class="cell"><b>What it adds</b><span id="padds"></span></div>
+      <div class="cell"><b>What it costs</b><span id="pcost"></span></div>
+      <div class="cell"><b>How it fails</b><span id="pfail"></span></div>
+    </div>
+    <div class="run">
+      <div class="qs" id="qs"></div>
+      <div class="res">
+        <p class="tests" id="tests"></p>
+        <ul class="trace" id="trace"></ul>
+        <div class="ans"><div class="lab"><span>predicted answer</span><span class="badge" id="badge"></span></div><div class="txt" id="atxt"></div></div>
+        <p class="why" id="why"></p>
+      </div>
+    </div>
+  </div>
+  <p class="note">v0: every trace on this page is a prediction written from how the pipeline is designed and what the corpus contains. No pipeline has run. Each cell is replaced by a real trace, with the date, as the version that measures it ships; the schedule is on the <a href="how-its-built.html#versions">method page</a>.</p>
+</section>
+
+<section id="scorecard" class="tri core">
+  <h2><span class="n">§04 · The scorecard</span>Nobody wins every column, and the cheapest pattern wins the first one</h2>
+  <div class="scroll"><table class="matrix" id="matrix"></table></div>
+  <div class="legend"><span><i class="dot good"></i> predicted correct</span><span><i class="dot partial"></i> partial or generic</span><span><i class="dot wrong"></i> wrong or invented</span><span>· click a cell to open its trace</span></div>
+  <p style="margin-top:18px">Three things to read off the grid. Every pattern gets the easy question right, so the easy question tells you nothing about which pattern to use. The Q2 column splits the table cleanly into patterns with a tool and patterns without one, and no amount of embedding quality moves a pattern across that line. And reranking fixes the most common failure for the price of one extra call, which is why it should be the first upgrade, not the graph.</p>
+  <p>The prediction I most expect to be wrong is naive on Q1. Kindle highlights are short, so the nearest chunk is sometimes a different book quoting the same author. If that happens, Q1 stops being a control and reranking earns its call one column earlier.</p>
+</section>
+
+<section id="choose" class="tri core">
+  <h2><span class="n">§05 · Choosing</span>Five questions to ask about the problem before you pick a pattern</h2>
+  <div class="guide">
+    <div class="g"><div class="ask">Are people asking for numbers, dates, counts, or filters?</div><div class="then">Then the answer is a query, not a similarity. <b>Give the model a tool</b> over the structured data and route those questions to it. Embedding a ledger is how a system invents a book you never read.</div></div>
+    <div class="g"><div class="ask">Do the sources disagree with each other about the same thing?</div><div class="then">They almost always do once a corpus is bigger than a demo. <b>Start naive, add reranking early.</b> It is the cheapest fix for the noisiest failure and it costs one extra model call.</div></div>
+    <div class="g"><div class="ask">Is the answer a relationship between things, rather than a fact about one thing?</div><div class="then">Who recommended what, which books argue, what depends on what. <b>Graph RAG</b>, or hybrid if you also need the prose around each node. Budget for building and maintaining the graph; that is where the cost is.</div></div>
+    <div class="g"><div class="ask">Does the answer only exist in an image, diagram, or chart?</div><div class="then">Then no amount of text retrieval will find it. <b>Multimodal RAG</b>, composed with reranking, because it inherits every text-ranking problem it does not fix.</div></div>
+    <div class="g"><div class="ask">Do users ask for a deliverable that needs several sources combined?</div><div class="then">A plan, a list, a comparison. <b>An agentic router</b> chooses the right single path per query. Only <b>multi-agent</b> composes several. It is the slowest and most expensive row for a reason.</div></div>
+  </div>
+  <p style="margin-top:22px">Don't start complex. Start naive, add reranking, give the model a tool for the numbers, and evolve only when a fixed question set shows you the failure the next pattern fixes. A design space is only useful if you can say which point in it you are standing on, and why.</p>
+</section>
+
+<div class="pf">
+  Built by Shirley · AI-assisted · v0, 9 September 2026 · <a href="how-its-built.html">How it's built, and what gets measured next</a>
+</div>
+
+<script>
+const P = [
+ {id:'naive',name:'Naive RAG',tag:'Embed the highlights, retrieve the nearest chunks, generate. The pattern every tutorial teaches.',color:'#b8741a',
+  adds:'One index, one call. Correct on any question whose answer is a quotation that sits in the index, worded like the question.',
+  cost:'1 model call per query. The cheapest row on this page, and the one every other row should be compared against.',
+  fail:'Similarity finds the topic, not the answer. It has no idea what a year or a page count means, and it will name a book you never read to fill the gap.',
+  stages:[[{l:'Query',k:'in'}],[{l:'Embedding model',k:'model'}],[{l:'Vector index',s:'highlights',k:'store'}],[{l:'Top-4 chunks',k:'doc'}],[{l:'Generative model',k:'model'}],[{l:'Answer',k:'out'}]]},
+ {id:'rerank',name:'Retrieve and rerank',tag:'Retrieve wide, then a second model scores each chunk against the question before generation.',color:'#3b6bb0',
+  adds:'A cross-encoder reads question and chunk together, so "why two stars" beats a dozen admiring highlights that merely share words.',
+  cost:'1 model call plus a reranker pass over ~20 chunks. Roughly +400 ms. Where production should usually start.',
+  fail:'Scores chunks one at a time. Cannot rank rows it never retrieved, cannot see a link between two chunks, cannot look at a photo.',
+  stages:[[{l:'Query',k:'in'}],[{l:'Embedding model',k:'model'}],[{l:'Vector index',s:'top-20',k:'store'}],[{l:'Reranker',s:'cross-encoder',k:'model'}],[{l:'Top-4 chunks',k:'doc'}],[{l:'Generative model',k:'model'}],[{l:'Answer',k:'out'}]]},
+ {id:'multimodal',name:'Multimodal RAG',tag:'Highlights and photos share one embedding space; a vision-language model reads whatever comes back.',color:'#8a2f7a',
+  adds:'Retrieves a photographed page or a cover by what it looks like, with no caption, and can point at it in the answer.',
+  cost:'Image embeddings at index time; image tokens at query time (roughly 3x the input). Slower, pricier generation.',
+  fail:'Inherits every ranking problem of naive retrieval. Adding pictures to a noisy top-k makes it a noisier top-k.',
+  stages:[[{l:'Query',s:'text or photo',k:'in'}],[{l:'Multimodal embedding',k:'model'}],[{l:'Vector index',s:'highlights + photos',k:'store'}],[{l:'Top-4',s:'chunks and images',k:'doc'}],[{l:'Vision-language model',k:'model'}],[{l:'Answer',s:'with images',k:'out'}]]},
+ {id:'graph',name:'Graph RAG',tag:'A model extracts people, books, themes and the links between them at index time; queries traverse edges instead of matching text.',color:'#2f8a6a',
+  adds:'Answers that are links: who recommended what, which books mention or argue with which. A fact about a pair survives even when no chunk states it.',
+  cost:'Index time is the bill: an extraction call per book, re-run on every export, plus a schema someone has to design. ~2 calls per query.',
+  fail:'Only as good as the extractor. A missed edge is silently absent. Filters on node properties work until the linker misses one.',
+  stages:[[{l:'Query',k:'in'}],[{l:'Entity linking',s:'model',k:'model'}],[{l:'Graph database',s:'traverse edges',k:'store'}],[{l:'Chunks for nodes touched',k:'doc'}],[{l:'Generative model',k:'model'}],[{l:'Answer',k:'out'}]]},
+ {id:'hybrid',name:'Hybrid RAG',tag:'Vector search and graph traversal run in parallel; the union goes to the model.',color:'#c2621a',
+  adds:'The graph gives the links; the vector chunks give the highlights around each node. Best answer on the page for the "which books argue" question.',
+  cost:'Two retrievers to run, tune, and keep in sync. Twice the retrieval work on questions where both return the same thing.',
+  fail:'Union means more context, including the noise. Without reranking, hybrid still hands the model my highlights next to my review and lets it average them.',
+  stages:[[{l:'Query',k:'in'}],[{l:'Embedding model',k:'model'},{l:'Entity linking',k:'model'}],[{l:'Vector index',k:'store'},{l:'Graph database',k:'store'}],[{l:'Merged context',k:'doc'}],[{l:'Generative model',k:'model'}],[{l:'Answer',k:'out'}]]},
+ {id:'agentic',name:'Agentic RAG (router)',tag:'A small model reads the query and chooses which retriever to run, including a query over the ledger. One path per question.',color:'#2f6f9f',
+  adds:'Not every query pays for the expensive path. Quotes go to the index; numbers go to the ledger; "which book is this" goes to the photos.',
+  cost:'One extra routing call (small model, ~300 ms). Each retriever still has to exist and be maintained.',
+  fail:'Picks one path. Cannot compose. And a misroute is a full failure with no fallback unless you build one.',
+  stages:[[{l:'Query',k:'in'}],[{l:'Router agent',s:'small model',k:'model'}],[{l:'Vector index',k:'store'},{l:'Vector + reranker',k:'store'},{l:'SQL tool',s:'the ledger',k:'store'},{l:'Graph database',k:'store'},{l:'Image index',k:'store'}],[{l:'Generative model',k:'model'}],[{l:'Answer',k:'out'}]]},
+ {id:'multiagent',name:'Multi-agent RAG',tag:'A planner decomposes the question; sub-agents retrieve from different sources and tools; a synthesizer writes the answer.',color:'#6b2f8a',
+  adds:'The only pattern that composes several sources into a deliverable: a reading list, a comparison, a report. And a second agent can check every title against the ledger.',
+  cost:'5 to 8 model calls, 10 to 15 seconds, roughly 8x naive. Plus orchestration code and a debugging story for each agent.',
+  fail:'Spends the full budget on trivial questions unless the planner is disciplined. Errors compound across agents.',
+  stages:[[{l:'Query',k:'in'}],[{l:'Planner agent',k:'model'}],[{l:'Agent A',k:'model'},{l:'Agent B',k:'model'},{l:'Agent C',k:'model'}],[{l:'Vector + reranker',k:'store'},{l:'SQL tool',s:'the ledger',k:'store'},{l:'Graph database',k:'store'},{l:'Image index',k:'store'}],[{l:'Synthesizer',k:'model'}],[{l:'Answer',k:'out'}]]}
+];
+
+const Q = [
+ {n:'Q1',t:'Where did I read the line about [a phrase from one of my highlights]?',tests:'a single quotation that sits in the index. Every pattern should get this right; what differs is what it costs.'},
+ {n:'Q2',t:'What did I read in 2024, rated five stars, under 300 pages?',tests:'a filter over the ledger. Numbers and dates have no meaning to a similarity search.'},
+ {n:'Q3',t:'Why did I give [a book] two stars when everyone else loved it?',tests:'contradicting sources: my review, my own admiring highlights from the same book, and the crowd\'s 4.3 average.'},
+ {n:'Q4',t:'Which of my books argue with each other?',tests:'a relationship between two books, held in neither book\'s chunks.'},
+ {n:'Q5',t:'[A photographed page] Which book is this, and what did I highlight near it?',tests:'an answer that starts from pixels, then needs the ledger and the highlights.'},
+ {n:'Q6',t:'Build me a two-week holiday list from my to-read shelf: nothing over 400 pages, one recommended by a friend, nothing like the last three I abandoned.',tests:'a deliverable that needs the ledger, the recommendation edges, the abandoned books\' themes, and a plan.'}
+];
+
+const REF = {
+ Q1:'The book and the highlight, with its location, quoted back. Nothing else.',
+ Q2:'Exactly the ledger rows with date read in 2024, my rating 5, pages under 300. Zero titles from outside the ledger.',
+ Q3:'The reason from my own review, ranked above my highlights and above the crowd\'s average.',
+ Q4:'Pairs of books linked by a MENTIONS or ARGUES_WITH edge, each with the highlight that proves the link.',
+ Q5:'The correct title from the photo, then the highlights nearest that page.',
+ Q6:'Only to-read books, every one under 400 pages, at least one with a recommendation edge, none sharing a theme with the last three abandoned, arranged over two weeks.'
+};
+
+const R = {
+naive:{
+ Q1:{v:'good',tr:[['embed','Question embedded as one vector.'],['retrieve','Top-4 by cosine over highlight chunks: the highlight itself, two neighbours from the same book, and one from a different book that quotes the same author.'],['prompt','Four chunks and the question. One call.']],
+  a:'Quotes the line back with the book and its Kindle location. Right, because the highlight is in the index verbatim.',
+  w:'<b>Predicted correct, one call, about a second.</b> Also the prediction most likely to be wrong on this page: if the other book\'s highlight outranks the real one, naive misattributes the quote and Q1 stops being a control.'},
+ Q2:{v:'wrong',tr:[['embed','"2024", "five stars" and "300 pages" carry no meaning for a similarity search; the query lands near highlights that happen to mention years or stars.'],['retrieve','Top-4: highlights whose text contains a year, a rating word, or "pages". None is a ledger row, because the ledger is not embedded.'],['prompt','Four unrelated highlights and the question.']],
+  a:'A confident list of five or six titles with dates. Prediction: at least two read in a different year, one still on the to-read shelf, and one that is not in the library at all.',
+  w:'<b>Predicted wrong, and invented.</b> Numbers need a query, not a similarity. This is the column that separates the patterns with a tool from the patterns without one, and no embedding upgrade moves a pattern across that line.'},
+ Q3:{v:'wrong',tr:[['embed','Question embedded as one vector.'],['retrieve','Top-4: three of my own highlights from that book, which are exactly the passages I liked enough to mark, and one sentence of my review.'],['prompt','Three admiring quotes, one critical sentence, the question.']],
+  a:'Explains that I clearly enjoyed the book, quoting the highlighted lines, and speculates that the rating must reflect the ending or the pacing.',
+  w:'<b>Predicted wrong.</b> My highlights share more words with the question than the one review that answers it. Similarity found what I marked, not what I thought.'},
+ Q4:{v:'partial',tr:[['embed','Question embedded as one vector.'],['retrieve','Top-4: highlights that contain "argue", "disagree", or name another author.'],['prompt','Four chunks and the question.']],
+  a:'Names one or two books whose highlights mention another writer, without knowing whether that writer\'s book is on my shelf.',
+  w:'<b>Partial.</b> A relationship between two books lives in neither book\'s chunks. The pipeline can see one end of the edge at a time.'},
+ Q5:{v:'partial',tr:[['embed','There is nothing to embed: the pipeline takes text, so the best it gets is the user describing the page in words.'],['retrieve','Top-4 highlights nearest that description.'],['prompt','Four chunks and the description.']],
+  a:'Guesses a book from the description and lists highlights from it. Cannot see the page.',
+  w:'<b>Partial at best.</b> Nothing in a text index can look at a photograph.'},
+ Q6:{v:'partial',tr:[['embed','Question embedded as one vector.'],['retrieve','Top-4: highlights near "holiday", "recommend", "gave up". Nothing from the to-read shelf, no page counts, no recommendation list.'],['prompt','Four chunks and the question.']],
+  a:'A friendly list of books, some already read, page counts unknown, recommendations unverified, abandoned books ignored.',
+  w:'<b>Partial.</b> Four constraints, four sources, one retrieval. It cannot compose, so it improvises.'}},
+rerank:{
+ Q1:{v:'good',tr:[['retrieve','Top-20 by cosine, including the same-author highlight from another book.'],['rerank','Cross-encoder scores each chunk against the question: the exact highlight first, the other book\'s highlight drops to the bottom.'],['prompt','Top-4 after reranking.']],
+  a:'Quotes the line back with book and location.',
+  w:'<b>Same answer, one more call.</b> If naive misattributes on this question, this is the row that fixes it, for about 400 ms.'},
+ Q2:{v:'wrong',tr:[['retrieve','Top-20 by cosine: twenty highlights.'],['rerank','Every candidate is a highlight. The reranker cannot rank rows that were never retrieved, and the ledger is not in the index.'],['prompt','Top-4 after reranking, all irrelevant.']],
+  a:'A shorter, hedged list of titles with guessed dates.',
+  w:'<b>Predicted wrong, less confidently.</b> A reranker cleans a list; it cannot create the ledger.'},
+ Q3:{v:'good',tr:[['retrieve','Top-20: my highlights from the book, my review in two chunks, the ledger row rendered as text with both ratings.'],['rerank','Question and chunk read together: "why two stars" matches the review, not the admiring quotes. Review first, the ratings row second, highlights below the cut.'],['prompt','Top-4 after reranking.']],
+  a:'Quotes the reason from my review and notes the gap between my rating and the crowd\'s average.',
+  w:'<b>Predicted correct by one extra call.</b> The cheapest fix for the most common failure: the reranker knows the difference between what I marked and what I said.'},
+ Q4:{v:'partial',tr:[['retrieve','Top-20 highlights that mention other authors.'],['rerank','Scores each chunk alone. A link between two chunks is not a property of either.'],['prompt','Top-4 after reranking.']],
+  a:'Names a few books whose highlights mention other writers. Same answer as naive, cleaner.',
+  w:'<b>Partial.</b> Reranking sharpens relevance to the words in the question. The edge between two books is not in any chunk to rank.'},
+ Q5:{v:'partial',tr:[['retrieve','Text only: highlights near the user\'s description of the page.'],['rerank','Reorders text. Still no image.'],['prompt','Top-4 chunks.']],
+  a:'A guess from the description.',
+  w:'<b>Same as naive.</b> Reranking text does not create images.'},
+ Q6:{v:'partial',tr:[['retrieve','Top-20 highlights near the question\'s words.'],['rerank','Sharper highlights, same missing sources: no shelf, no page counts, no recommendations, no abandoned list.'],['prompt','Top-4 after reranking.']],
+  a:'A list with better-chosen books and the same unverified constraints.',
+  w:'<b>Partial.</b> The sources this question needs are not mentioned in the question, so they cannot win a relevance contest.'}},
+multimodal:{
+ Q1:{v:'good',tr:[['embed','Question embedded in the shared text-image space.'],['retrieve','Top-4: the highlight, two neighbours, and the cover image of that book (image-to-text match).'],['prompt','Three chunks and one image go to the vision-language model.']],
+  a:'Quotes the line back and shows the cover.',
+  w:'<b>Correct, with a cover as a bonus nobody asked for.</b> The image tokens roughly tripled the input to say what naive said in text.'},
+ Q2:{v:'wrong',tr:[['embed','Question embedded in the shared space.'],['retrieve','Same ranking problem as naive: highlights that mention years or stars. No image is relevant.'],['prompt','Four chunks to the vision-language model.']],
+  a:'A confident list of titles with guessed dates, some never read.',
+  w:'<b>Same wrong answer as naive.</b> Multimodal retrieval inherits naive\'s ranking. Patterns compose; they do not replace each other.'},
+ Q3:{v:'wrong',tr:[['embed','Question embedded in the shared space.'],['retrieve','My highlights from the book, plus its cover. The review still ranks below the highlights.'],['prompt','Three chunks and one image.']],
+  a:'Explains how much I enjoyed the book, with the cover.',
+  w:'<b>Predicted wrong.</b> A picture of the book does not tell the model which of my sources to believe.'},
+ Q4:{v:'partial',tr:[['embed','Question embedded in the shared space.'],['retrieve','Highlights that name other authors; no images help.'],['prompt','Four chunks.']],
+  a:'Same partial answer as naive.',
+  w:'<b>Partial.</b> The edge between two books is still in neither book.'},
+ Q5:{v:'good',tr:[['embed','The photo itself is embedded.'],['retrieve','Nearest neighbours: the indexed page photo of the same book, then that book\'s cover, then the ledger row and the highlights nearest the page number.'],['prompt','Two images, the ledger row, and three highlights to the vision-language model.']],
+  a:'Names the book, shows the matched page, lists the highlights I made near it.',
+  w:'<b>Predicted correct. The only top-row pattern that can look at a picture.</b> Everything after the match is ordinary retrieval.'},
+ Q6:{v:'partial',tr:[['embed','Question embedded in the shared space.'],['retrieve','Highlights near the question\'s words and a few covers.'],['prompt','Chunks and covers.']],
+  a:'A list with pictures and the same unverified constraints.',
+  w:'<b>Partial.</b> Same composition problem as every single-retrieval pattern, now with covers.'}},
+graph:{
+ Q1:{v:'good',tr:[['link','Entity linker finds the author or book named in the question and lands on its Book node.'],['traverse','Chunks attached to that node: its highlights. Neighbours via WROTE and ABOUT come along.'],['prompt','The highlights plus the edge list.']],
+  a:'Quotes the line, then adds related books by the same author and on the same theme.',
+  w:'<b>Correct, plus "related" material nobody asked for.</b> Building the graph cost more than every query on this page will. Over-engineered for a quotation.'},
+ Q2:{v:'partial',tr:[['link','"2024" and "five stars" match properties on Book nodes: the linker filters by year of date_read and my_rating.'],['traverse','Returns the matching nodes with their properties. Page count is a property too, but the linker only applies the filters it recognised, and "under 300 pages" is the one it is likeliest to drop.'],['prompt','The matching nodes as text.']],
+  a:'Lists the 2024 five-star books, all real. Likely includes one over 300 pages.',
+  w:'<b>Partial.</b> Properties on nodes get you most of the way, and nothing is invented. But a filter is still a query, and an entity linker is a worse query planner than SQL.'},
+ Q3:{v:'partial',tr:[['link','Book node for the title.'],['traverse','Everything attached to the node: my_rating, avg_rating, the review, and every highlight.'],['prompt','All of it, unranked.']],
+  a:'Mentions the review\'s reason and the highlights in the same breath; may still conclude I liked it.',
+  w:'<b>Partial.</b> The graph fetches the right node; nothing ranks what hangs off it. Fetching is not the same as prioritising.'},
+ Q4:{v:'good',tr:[['link','No entity in the question; the linker falls back to the edge type: ARGUES_WITH and MENTIONS.'],['traverse','Every Book→Book edge of those types, each carrying the highlight that produced it at index time.'],['prompt','The pairs and their evidence.']],
+  a:'The pairs, each with the highlight where one book names the other\'s author or idea.',
+  w:'<b>This is the question the graph was built for.</b> The relationship lives in edges, not in any chunk. Caveat: a pair the extractor missed is silently absent, which is why the extracted graph is published.'},
+ Q5:{v:'partial',tr:[['link','A photo has no entities to link.'],['traverse','Nothing.'],['prompt','The user\'s description, if any.']],
+  a:'Cannot identify the page.',
+  w:'<b>Partial at best.</b> A text-built graph has no image nodes.'},
+ Q6:{v:'partial',tr:[['link','Entities: the to-read shelf, "friend", the abandoned books.'],['traverse','RECOMMENDED edges give the friend\'s picks; ABOUT edges of the abandoned books give themes to avoid; shelf and pages are node properties.'],['prompt','A lot of useful nodes, no plan.']],
+  a:'A good candidate set with the right exclusions, not arranged into two weeks.',
+  w:'<b>Partial, and the best single-retriever answer on this column.</b> The graph holds three of the four sources. It still does not compose a deliverable.'}},
+hybrid:{
+ Q1:{v:'good',tr:[['parallel','Vector: the highlight and its neighbours. Graph: the same highlights via the Book node.'],['merge','Union, deduplicated: the same four chunks.'],['prompt','Four chunks plus edges.']],
+  a:'Quotes the line back.',
+  w:'<b>Both retrievers return the same chunks.</b> Twice the retrieval work for one answer.'},
+ Q2:{v:'partial',tr:[['parallel','Vector: highlights that mention years, all noise. Graph: Book nodes filtered by year and rating, all real.'],['merge','Real nodes next to noisy highlights.'],['prompt','The model is not told which half to trust.']],
+  a:'Mostly the real 2024 five-star list, with a chance of a stray title from the noisy half.',
+  w:'<b>Partial.</b> The graph half does the work; the vector half adds the risk. Hybrid without a reranker is a union of a good answer and a bad one.'},
+ Q3:{v:'partial',tr:[['parallel','Vector: my admiring highlights. Graph: the whole node, review included.'],['merge','Everything, unranked.'],['prompt','Highlights and review side by side.']],
+  a:'The review\'s reason is in there, diluted by the quotes.',
+  w:'<b>Partial.</b> More context does not solve ranking. This is the cell that shows hybrid needs reranking underneath it.'},
+ Q4:{v:'good',tr:[['parallel','Graph: the ARGUES_WITH and MENTIONS pairs with their evidence highlight. Vector: the surrounding highlights from both books in each pair.'],['merge','Pairs from the graph, context from the index.'],['prompt','Pairs plus surrounding quotes.']],
+  a:'The pairs, each with the evidence highlight and a sentence on what the disagreement is about, quoted from both sides.',
+  w:'<b>Best answer on the page for this question.</b> The graph supplies the link, the vector chunks supply the argument. This is what hybrid is for.'},
+ Q5:{v:'partial',tr:[['parallel','Two text retrievers.'],['merge','Text.'],['prompt','Text.']],
+  a:'Cannot see the page.',
+  w:'<b>Two text retrievers are still text.</b> Same as naive at twice the cost.'},
+ Q6:{v:'partial',tr:[['parallel','Graph: to-read nodes, RECOMMENDED edges, themes of the abandoned. Vector: highlights near the question.'],['merge','A good candidate set plus noise.'],['prompt','Candidates and constraints, no planner.']],
+  a:'A candidate list with the right exclusions, not arranged into two weeks.',
+  w:'<b>Partial.</b> Richer context does not solve composition. Nothing here decides what week 1 and week 2 look like.'}},
+agentic:{
+ Q1:{v:'good',tr:[['route','Router (small model, ~300 ms): "quotation lookup" → <b>vector index</b>.'],['retrieve','Naive path: the highlight and its neighbours.'],['prompt','Four chunks, one generation call.']],
+  a:'Quotes the line back.',
+  w:'<b>The router made the cheap choice.</b> That is the point of a router: not every query pays for the expensive path. One small extra call.'},
+ Q2:{v:'good',tr:[['route','Router: "a filter over dates, ratings and pages" → <b>SQL tool</b>.'],['retrieve','<code>SELECT title, author, pages FROM books WHERE strftime(\'%Y\', date_read) = \'2024\' AND my_rating = 5 AND pages < 300</code>. Rows, not chunks.'],['prompt','The rows and the question.']],
+  a:'Exactly the ledger rows. Zero invented titles, by construction.',
+  w:'<b>Predicted correct, and the first cell in the Q2 column that is.</b> The router did not make the model smarter; it gave it a query instead of a similarity.'},
+ Q3:{v:'good',tr:[['route','Router: "opinion question, sources likely disagree" → <b>vector + reranker</b>.'],['retrieve','Rerank path: the review first, the ratings row second.'],['prompt','Top-4 after reranking.']],
+  a:'The reason from my review, and the gap to the crowd\'s average.',
+  w:'<b>Right path, right answer.</b> The router earned its call by not sending a contradiction-prone question down the naive path.'},
+ Q4:{v:'good',tr:[['route','Router: "relationship between books" → <b>graph</b>.'],['retrieve','ARGUES_WITH and MENTIONS edges with their evidence.'],['prompt','Pairs plus evidence.']],
+  a:'The pairs with the highlight that proves each.',
+  w:'<b>Right, because the graph exists.</b> The router is only as good as the retrievers it can choose between.'},
+ Q5:{v:'good',tr:[['route','Router: "input is a photo" → <b>image index</b>.'],['retrieve','The matched page photo, the cover, the ledger row, the nearby highlights.'],['prompt','Images and rows to the vision-language model.']],
+  a:'Names the book, shows the page, lists the nearby highlights.',
+  w:'<b>Right. Remove the image retriever from the router\'s options and this cell turns partial.</b> Routing does not add capability; it selects among what you built.'},
+ Q6:{v:'partial',tr:[['route','Router: "shelf filter" → <b>SQL tool</b>. One path.'],['retrieve','To-read books under 400 pages. Correct, and only one of four constraints.'],['prompt','The rows and the question.']],
+  a:'A well-filtered list that ignores who recommended what and what I abandoned.',
+  w:'<b>A router picks one path.</b> This question needs three sources and a plan. No single retriever holds all of them, so the best route is still partial.'}},
+multiagent:{
+ Q1:{v:'good',tr:[['plan','Planner: one sub-task, "find the highlight".'],['agents','Agent A → vector index → the highlight.'],['synthesize','Synthesizer writes one line from one agent\'s result.']],
+  a:'Quotes the line back.',
+  w:'<b>Three model calls and about four seconds for a quotation.</b> Worst cost-to-value on the page. A disciplined planner should short-circuit this; most do not.'},
+ Q2:{v:'good',tr:[['plan','Planner: (1) filter the ledger, (2) verify every title returned exists in the ledger.'],['agents','Agent A → SQL tool → the rows. Agent B → SQL tool → confirms each title, flags none.'],['synthesize','The verified rows.']],
+  a:'Exactly the ledger rows, with a note that all were verified against the library.',
+  w:'<b>Right, with a check the router did not have.</b> The verification agent is the invented-book counter running inside the answer instead of in the eval. Nice, and twice the cost of the router.'},
+ Q3:{v:'good',tr:[['plan','Planner: (1) my stated reason, (2) the crowd\'s view, (3) what I highlighted anyway.'],['agents','A → reranked review. B → SQL tool → avg_rating and my_rating. C → vector → the highlights.'],['synthesize','Three results, correctly labelled as three different sources.']],
+  a:'The reason from my review; the crowd\'s average; and a note that I still marked several lines, so the objection is to the whole, not the sentences.',
+  w:'<b>Right, and the most complete answer in the column.</b> Nobody asked for the third part. About five times the cost of the reranked answer.'},
+ Q4:{v:'good',tr:[['plan','Planner: (1) the pairs, (2) the argument in each.'],['agents','A → graph → pairs with evidence. B → vector → surrounding highlights from both sides.'],['synthesize','Pairs with both sides quoted.']],
+  a:'The pairs, each with the disagreement summarised from both books\' highlights.',
+  w:'<b>Same answer as hybrid, more calls.</b> Multi-agent reproduces hybrid here by paying for it at query time instead of design time.'},
+ Q5:{v:'good',tr:[['plan','Planner: "identify, then look up".'],['agents','A → image index → the book. B → SQL tool and vector → the row and the nearby highlights.'],['synthesize','Book, page, highlights.']],
+  a:'Names the book, shows the page, lists the nearby highlights.',
+  w:'<b>Right, at the router\'s answer plus one call.</b> Nothing to compose, so nothing gained over agentic.'},
+ Q6:{v:'good',tr:[['plan','Planner splits into four: (1) candidates, (2) a friend\'s pick, (3) what to avoid, (4) the plan.'],['agents','A → SQL tool → to-read books under 400 pages. B → graph → RECOMMENDED edges among them. C → graph → ABOUT themes of the three abandoned books, then excludes candidates sharing one. D → synthesizer arranges the survivors across two weeks by length.'],['synthesize','Two-week plan from four results.']],
+  a:'Week 1: three shorter books, one of them the friend\'s recommendation.\nWeek 2: two longer ones, saved for the flights home.\nExcluded: everything sharing a theme with the last three I gave up on, listed so I can override.',
+  w:'<b>The only pattern that produces the deliverable.</b> Seven model calls, roughly twelve seconds, about eight times the cost of naive. That is what the expense is for, and it is only worth it on this column.'}}
+};
+
+const COST = {naive:['1','~1.5 s','1x'],rerank:['1 + reranker','~2 s','1.2x'],multimodal:['1 (image tokens)','~2.5 s','2.5x'],graph:['2 + indexing','~2.2 s','1.5x'],hybrid:['2–3','~2.5 s','1.8x'],agentic:['2–3','~2.5 s','1.5x'],multiagent:['5–8','~12 s','8x']};
+
+let pi=0, qi=0;
+const $=id=>document.getElementById(id);
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+function diagram(p){
+  const cw=120,ch=46,gx=150,gy=12,pad=16;
+  const cols=p.stages, maxn=Math.max(...cols.map(c=>c.length));
+  const H=maxn*ch+(maxn-1)*gy+pad*2, W=pad*2+cols.length*cw+(cols.length-1)*(gx-cw);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(p.name)} pipeline"><defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1a1a1a"/></marker></defs>`;
+  const pos=cols.map((c,i)=>{const total=c.length*ch+(c.length-1)*gy;const y0=(H-total)/2;return c.map((n,j)=>({x:pad+i*gx,y:y0+j*(ch+gy),n}));});
+  for(let i=0;i<pos.length-1;i++)for(const a of pos[i])for(const b of pos[i+1]){
+    const x1=a.x+cw,y1=a.y+ch/2,x2=b.x,y2=b.y+ch/2;
+    s+=`<path d="M${x1} ${y1} C ${x1+16} ${y1}, ${x2-16} ${y2}, ${x2-2} ${y2}" fill="none" stroke="#1a1a1a" stroke-width="1" marker-end="url(#ar)" opacity="${pos[i].length*pos[i+1].length>3?0.55:1}"/>`;}
+  for(const col of pos)for(const {x,y,n} of col){
+    const fill=n.k==='model'?'#1a1a1a':n.k==='store'?p.color:n.k==='out'?'#fff':'#f3f1ea';
+    const stroke=n.k==='out'?p.color:'#1a1a1a';
+    const tc=(n.k==='model'||n.k==='store')?'#fff':'#1a1a1a';
+    const sub=(n.k==='model'||n.k==='store')?'#e5e2da':'#7a7568';
+    s+=`<rect x="${x}" y="${y}" width="${cw}" height="${ch}" fill="${fill}" stroke="${stroke}" stroke-width="${n.k==='out'?1.5:1}"/>`;
+    s+=`<text x="${x+cw/2}" y="${y+(n.s?20:27)}" text-anchor="middle" font-size="12" font-weight="600" fill="${tc}">${esc(n.l)}</text>`;
+    if(n.s)s+=`<text x="${x+cw/2}" y="${y+35}" text-anchor="middle" font-size="10.5" fill="${sub}">${esc(n.s)}</text>`;
+  }
+  return s+'</svg>';
+}
+
+function render(){
+  const p=P[pi], q=Q[qi], r=R[p.id][q.n];
+  $('ex').style.setProperty('--pc',p.color);
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on',i===pi));
+  $('pname').innerHTML=esc(p.name)+`<small>${pi+1} of 7</small>`;
+  $('ptag').textContent=p.tag;
+  $('diag').innerHTML=diagram(p);
+  $('padds').textContent=p.adds;$('pcost').textContent=p.cost;$('pfail').textContent=p.fail;
+  $('qs').innerHTML=Q.map((qq,i)=>{const v=R[p.id][qq.n].v;return `<button class="q${i===qi?' on':''}" data-i="${i}"><span class="qn">${qq.n} <i class="qd dot ${v}"></i></span>${esc(qq.t)}</button>`}).join('');
+  $('tests').innerHTML=`<b>${q.n} tests</b> ${esc(q.tests)} <br><b>Reference answer</b> ${esc(REF[q.n])}`;
+  $('trace').innerHTML=r.tr.map(([s,t])=>`<li><span class="st">${s}</span><span>${t}</span></li>`).join('');
+  $('badge').className='badge '+r.v;$('badge').textContent={good:'correct',partial:'partial',wrong:'wrong'}[r.v];
+  $('atxt').textContent=r.a;
+  $('why').innerHTML=r.w;
+  document.querySelectorAll('.matrix td.c').forEach(td=>td.classList.toggle('sel',+td.dataset.p===pi&&+td.dataset.q===qi));
+  history.replaceState(null,'',`#compare/${p.id}/${q.n}`);
+}
+
+function matrix(){
+  let h=`<tr><th>pattern</th>${Q.map(q=>`<th class="c">${q.n}</th>`).join('')}<th>calls / query</th><th>latency*</th><th>cost*</th></tr>`;
+  P.forEach((p,i)=>{h+=`<tr><td class="name"><i style="background:${p.color}"></i>${esc(p.name)}</td>${Q.map((q,j)=>`<td class="c" data-p="${i}" data-q="${j}" title="${esc(p.name)} · ${q.n}"><i class="dot ${R[p.id][q.n].v}"></i></td>`).join('')}<td>${COST[p.id][0]}</td><td>${COST[p.id][1]}</td><td>${COST[p.id][2]}</td></tr>`;});
+  $('matrix').innerHTML=h;
+  $('matrix').parentNode.insertAdjacentHTML('afterend','<p class="small">* call counts are structural and real; latency and relative cost are estimates for the planned v1 stack, replaced by measurements in v5.</p>');
+}
+
+$('tabs').innerHTML=P.map((p,i)=>`<button class="tab" data-i="${i}" style="--pc:${p.color}">${esc(p.name)}</button>`).join('');
+$('tabs').addEventListener('click',e=>{const t=e.target.closest('.tab');if(!t)return;pi=+t.dataset.i;render();});
+$('qs').addEventListener('click',e=>{const t=e.target.closest('.q');if(!t)return;qi=+t.dataset.i;render();});
+matrix();
+$('matrix').addEventListener('click',e=>{const td=e.target.closest('td.c');if(!td)return;pi=+td.dataset.p;qi=+td.dataset.q;render();$('ex').scrollIntoView({behavior:'smooth',block:'start'});});
+(function(){const m=location.hash.match(/#compare\/(\w+)\/(Q\d)/);if(m){const a=P.findIndex(p=>p.id===m[1]),b=Q.findIndex(q=>q.n===m[2]);if(a>=0)pi=a;if(b>=0)qi=b;}})();
+render();
+</script>
+</body>
+</html>
