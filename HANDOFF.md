@@ -147,7 +147,7 @@ Each entry: what was decided, what was rejected, why. Dated 9 Sep 2026 unless no
 
 ## 6. Where to start (first build session)
 
-1. Ask Shirley to drop the two exports into `corpus/` (git-ignored) and confirm the five open decisions in §7.
+1. Goodreads export and photos are in `corpus/` (see §9). Ask for the Kindle `My Clippings.txt`, and confirm the open decisions in §7.
 2. Inspect: row counts, how many highlights match a ledger row, date formats, what the abandoned shelf is called. Print the numbers; they get published.
 3. Propose the six questions with **real titles** from her data and write the six reference answers. Show her. She approves before anything is built.
 4. Build `service/ingest/` (goodreads.py, kindle.py, recommendations.py, photos.py) → `service/data/library.sqlite`.
@@ -202,4 +202,8 @@ Memory for the Claude sessions on this machine lives outside the repo (`~/.claud
 - **Shelf fills the width (later):** spines now grow with `flex: var(--w) 1 0`, so width stays proportional to cost but the seven books span the whole shelf. Footer: "AI-assisted" removed, method link renamed "The Librarian: how it's built".
 - **Naming settled (later still):** three names, one job each: ragpatterns.com (site, nav brand only), Seven RAGs, one shelf (project + main page, all back-links), How it's built (method page, everywhere). "The Librarian" is reserved for the v5 ask box and removed from the footer. `/docs/*` is hidden on the live site via `_redirects` (302 to `/`); the plan and mockups stay in the repo. The tool stays inside the main page's explorer (Shirley confirmed).
 - **Dates and no Ops (later):** Shirley first asked for a 2025 frame, then reverted: 2026 stays, but the pages never show an exact day. Footers and the versions list now read "September 2026" / "Sep 2026" (rule in `CLAUDE.md`). The "Ops" subsection at the end of the stack section on the method page was removed; the PR flow is documented in `DEPLOY.md` instead.
+- **Corpus status (9 Sep 2026, late evening):** Shirley dropped `corpus/goodreads_library_export.csv` (479 rows, git-ignored) and five photos into `corpus/photos/` (IMG_2386/2389/2390/2391.JPG, IMG_8279.jpeg; 3–4 MB each, not yet committed).
+  - **Kindle highlights: still to do.** No `My Clippings.txt` yet; she did not have time to plug the Kindle in. v1 ingest can start on the ledger, the SQL tool and Q2; the vector index, naive and rerank, and Q1/Q3 need the highlights. Ask for the file at the start of the next session, or offer the read.amazon.com/notebook route if she reads in the app.
+  - **The export has no `Average Rating` column** (header checked: `Book Id, Title, Author, Author l-f, Additional Authors, ISBN, ISBN13, My Rating, Publisher, Binding, Number of Pages, Year Published, Original Publication Year, Date Read, Date Added, Bookshelves, Bookshelves with positions, Exclusive Shelf, My Review, Spoiler, Private Notes, Read Count, Owned Copies`). §5 assumed it. Q3 ("why two stars when everyone else loved it") needs the crowd average from somewhere else: fetch it once at ingest by ISBN (Open Library has `ratings_average`) and store it in `books.avg_rating`, and say so on the method page. Decide in the first build session.
+  - Photos must be downscaled (~1600 px long edge, ~300 KB) before they are committed; the originals stay out of git. `.DS_Store` added to `.gitignore`.
 - **Next session starts at §6** (first build session: exports into `corpus/`, inspect, real titles, v1), after Shirley has merged the design PR and connected Pages.
