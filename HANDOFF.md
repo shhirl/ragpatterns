@@ -34,7 +34,7 @@ Working name: **Seven RAGs, one shelf**. Intended domain: **ragpatterns.com** (n
 | All 42 explorer cells (7 patterns × 6 questions) traced *by prediction*, labelled as predictions | Any measurement, latency, cost, or verdict from a real run |
 | Six question *shapes* with reference-answer shapes | The real book titles in Q1, Q3, Q5 (bracketed placeholders until the export is inspected) |
 | The build plan with diagrams | The corpus files in the repo (Shirley has them; they go in `corpus/`, git-ignored) |
-| `.gitignore`, `README.md`, `CLAUDE.md`, `DEPLOY.md`, `.claude/launch.json`, the GitHub repo with protected `main`, the domain | The Cloudflare Pages project (Shirley connects it; steps in `DEPLOY.md`) |
+| `.gitignore`, `README.md`, `CLAUDE.md`, `DEPLOY.md`, `.claude/launch.json`, the GitHub repo with protected `main`, the domain | Nothing on the hosting side. Everything from here is v1 work. |
 
 ---
 
@@ -198,4 +198,5 @@ Memory for the Claude sessions on this machine lives outside the repo (`~/.claud
 - **Design decided:** A + C blend, see §3.1. Applied to both pages on branch `design/shelf`, opened as the first pull request. Unchosen mockups stay in `docs/design-options/`.
 - **Diagrams (later the same evening):** Shirley asked for option D's inked-icon naive diagram across all seven pipelines. `diagram()` now draws marginalia-style icons (see `CLAUDE.md`), numbered stages, mono labels, italic asides, a figure caption, and a slow ink-flow animation; stacked columns (hybrid, router, multi-agent) label to the right so a five-way fan-out stays short.
 - **Docs added:** `DEPLOY.md`, `.github/PULL_REQUEST_TEMPLATE.md`; `CLAUDE.md`, `README.md` and this file updated.
+- **Live (9 Sep 2026, ~18:20 UK):** PR #1 merged by Shirley; Cloudflare Pages project `ragpatterns` created from the repo; ragpatterns.com and www both serve the site. Go-live is the merge of PR #1. `DEPLOY.md` has the details and the clean-URL note.
 - **Next session starts at §6** (first build session: exports into `corpus/`, inspect, real titles, v1), after Shirley has merged the design PR and connected Pages.

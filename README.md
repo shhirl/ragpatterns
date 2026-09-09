@@ -25,7 +25,7 @@ Then open http://localhost:8787/. A `.claude/launch.json` config named `static` 
 
 ## Deploy
 
-Cloudflare Pages from the `main` branch of https://github.com/shhirl/ragpatterns, live at **ragpatterns.com**. `main` is protected: changes arrive as pull requests, each with its own preview URL, and merging deploys in about twenty seconds. The full story, including what happens when the v1 service arrives, is in `DEPLOY.md`.
+Cloudflare Pages from the `main` branch of https://github.com/shhirl/ragpatterns, live at **https://ragpatterns.com** since 9 September 2026. `main` is protected: changes arrive as pull requests, each with its own preview URL, and merging deploys in about twenty seconds. The full story, including what happens when the v1 service arrives, is in `DEPLOY.md`.
 
 ## Design
 
