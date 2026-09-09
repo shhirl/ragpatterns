@@ -34,6 +34,8 @@ Static site comparing seven RAG design patterns on Shirley's own bookshelf (Good
 
 ## Honesty rule
 
+- **Public dates on the pages are set in 2025** (Shirley's instruction, 9 Sep 2026): the site tells the story as if built in 2025, so "v0 · 9 September 2025" and "everywhere in 2025". Repo docs (`HANDOFF.md`, `DEPLOY.md`, commits) keep real dates. When a version ships, date it on the pages in the same 2025 frame, one year behind the real date.
+
 v0 traces are predictions, not measurements. Keep the "predicted" labels (kicker, `.note` under the explorer, legend and footnote under the scorecard) until a live pipeline has produced the numbers. Never present an estimate as a result. When a cell becomes measured, say so with the date.
 
 ## Working on it
