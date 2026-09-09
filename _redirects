@@ -1,0 +1,2 @@
+# Cloudflare Pages: the docs folder (build plan, design mockups) is for the repo, not the site.
+/docs/* / 302
