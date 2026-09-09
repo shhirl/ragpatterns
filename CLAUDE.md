@@ -17,7 +17,14 @@ Static site comparing seven RAG design patterns on Shirley's own bookshelf (Good
 
 - `index.html` — thesis + explorer. All explorer content is in the `<script>` at the bottom: `P` (patterns, with pipeline `stages` that drive the SVG), `Q` (six questions), `REF` (reference answers), `R[pattern][Qn]` (trace rows, answer, verdict `good|partial|wrong`, why), `COST`. Edit data there; do not fork the renderer.
 - `how-its-built.html` — the method page. Section 7 (`#versions`) is the source of truth for what is measured vs. predicted. When a version ships, update it there **and** the `v0` kicker/footer on both pages.
-- `docs/plan.html` — the build plan. Published as a Claude artifact too; republish after edits.
+- `docs/plan.html` — the build plan. Published as a Claude artifact too; republish after edits. The whole `docs/` folder is hidden on the live site by `_redirects` (`/docs/* → /`); it is for the repo.
+
+## Names (use exactly these)
+
+- **ragpatterns.com** — the site. Appears only as the nav brand.
+- **Seven RAGs, one shelf** — the project and the main page. Every link back to the main page says "← Seven RAGs, one shelf".
+- **How it's built** — the method page, in the nav, in body links, in the footer, in its own kicker and `<title>`. Never "the method page", "the comparison", "case study".
+- **The Librarian** — reserved for the live ask box that ships at v5. Not used on the pages until then.
 
 ## Data and privacy rules (non-negotiable)
 
