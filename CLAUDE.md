@@ -8,7 +8,9 @@ Static site comparing seven RAG design patterns on Shirley's own bookshelf (Good
 
 - **Plain HTML + inline CSS/JS. No framework, no npm, no external requests** (no CDN fonts, no analytics) unless the owner asks.
 - One self-contained file per page. Styles and the explorer data live inside that page.
-- Palette and voice match the owner's other sites (fixmybanana, shhirl.com): cream background, serif body, small uppercase sans labels, numbered "§" sections, honest version tags.
+- Palette and voice match the owner's other sites (fixmybanana, shhirl.com): cream background with a faint ruled-paper line, serif body, small uppercase sans labels, monospace for numbers and verdicts, numbered "§" sections, honest version tags.
+- Design direction chosen 9 Sep 2026: **option A "the shelf" with option C's explorer** (see `docs/design-options/`). Text sits in `.wrap` (900px); the explorer and scorecard sit in `.wide` (1180px). Verdicts are squares (`.vc`), not dots, everywhere.
+- **The shelf hero is a chart.** `shelf()` in `index.html` builds the seven spines from `R` and `COST`: height = predicted score out of 6 (correct 1, partial ½), width = cost vs naive. Do not hard-code spine sizes; change the data and the shelf follows. Same for the mini spines in the footer of `index.html`; the ones in `how-its-built.html` are static copies of the same numbers.
 
 ## Pages
 
@@ -29,6 +31,7 @@ v0 traces are predictions, not measurements. Keep the "predicted" labels (kicker
 ## Working on it
 
 - Shirley's rule: present the plan, let her decide, then build. Do not start files off an open brief.
+- **Git:** repo is https://github.com/shhirl/ragpatterns (public). `main` is protected; every change is a branch + pull request with the template checklist, and Shirley merges. An AI session never merges, never pushes to main, never force-pushes. Merging deploys ragpatterns.com through Cloudflare Pages; see `DEPLOY.md`.
 - Preview: `python3 -m http.server 8787`, or the `static` launch config. The browser caches aggressively; add `?v=N` when checking a CSS change.
 - Check desktop and ~375px mobile: the explorer collapses to one column under 700px; the pipeline diagram and the scorecard scroll horizontally inside their own containers.
 - Deep links: `#compare/<patternId>/<Qn>` selects a cell on load.

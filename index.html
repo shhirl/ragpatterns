@@ -6,118 +6,201 @@
 <title>Seven RAGs, one shelf — the pattern is the product</title>
 <meta name="description" content="Seven RAG design patterns run on one real bookshelf: a Goodreads export, Kindle highlights, and the same six questions, so the only thing that changes is the architecture.">
 <style>
-  :root{--bg:#fbfaf7;--ink:#1a1a1a;--ink2:#3d3a33;--mute:#7a7568;--line:#e5e2da;--soft:#f3f1ea;
-        --naive:#b8741a;--rerank:#3b6bb0;--multimodal:#8a2f7a;--graph:#2f8a6a;--hybrid:#c2621a;--agentic:#2f6f9f;--multiagent:#6b2f8a;--acc:#1f5e4e}
+  :root{--bg:#fbfaf7;--ink:#1a1a1a;--ink2:#3d3a33;--mute:#7a7568;--line:#e5e2da;--soft:#f3f1ea;--rule:#ece9e0;
+        --naive:#b8741a;--rerank:#3b6bb0;--multimodal:#8a2f7a;--graph:#2f8a6a;--hybrid:#c2621a;--agentic:#2f6f9f;--multiagent:#6b2f8a;--acc:#1f5e4e;
+        --good:#1f5e4e;--partial:#b8741a;--wrong:#9c2f2f;
+        --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+        --sans:-apple-system,"Helvetica Neue",Inter,Arial,sans-serif;
+        --mono:"SF Mono",Menlo,Consolas,monospace;
+        --sq:44px}
   *{box-sizing:border-box}
-  body{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;max-width:860px;margin:0 auto;padding:40px 22px 60px;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.6}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:var(--serif);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.6;overflow-x:clip;
+       background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 31px,var(--rule) 31px,var(--rule) 32px)}
   a{color:var(--ink)}
-  .top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:36px;font-family:-apple-system,Inter,Arial,sans-serif;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
-  .vnav{display:flex;gap:16px;flex-wrap:wrap}.vnav a{text-decoration:none;border-bottom:2px solid var(--acc);padding-bottom:2px}
-  .tool{text-decoration:none;font-weight:600}
-  .kicker{font-family:-apple-system,Inter,Arial,sans-serif;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin:0}
-  h1{font-weight:500;font-size:40px;line-height:1.12;margin:10px 0 16px;letter-spacing:-.01em;max-width:760px}
-  .lede{font-size:19px;color:var(--ink2);max-width:720px}
+  .wrap{max-width:900px;margin:0 auto;padding:0 22px}
+  .wide{max-width:1180px;margin:0 auto;padding:0 22px}
+  /* nav */
+  .nav{position:sticky;top:0;z-index:40;background:rgba(251,250,247,.94);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+  .nav .wide{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px;font-family:var(--sans);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase}
+  .nav a{text-decoration:none;color:var(--ink2);border-bottom:2px solid transparent;padding-bottom:2px}
+  .nav a:hover{color:var(--ink);border-bottom-color:var(--acc)}
+  .nav .brand{font-family:var(--mono);letter-spacing:.04em;text-transform:none;font-size:12px;border:0;color:var(--ink)}
+  .nav .tool{margin-left:auto;font-weight:600;border:0}
+  /* hero */
+  .hero{padding-top:56px}
+  .kicker{font-family:var(--sans);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin:0}
+  .kicker i{font-style:normal;font-family:var(--mono);color:var(--acc);letter-spacing:.04em;text-transform:none}
+  h1{font-weight:500;font-size:46px;line-height:1.1;margin:12px 0 18px;letter-spacing:-.015em;max-width:780px}
+  .lede{font-size:19.5px;color:var(--ink2);max-width:720px;margin:0 0 14px}
   p,li{font-size:16.5px}
   p{max-width:720px}
-  .small{font-family:-apple-system,Inter,Arial,sans-serif;font-size:13px;color:var(--mute)}
-  section{margin-top:60px}
+  .small{font-family:var(--sans);font-size:13px;color:var(--mute)}
+  /* the shelf: height = predicted score, width = cost. Built by shelf() from R and COST. */
+  .shelf{margin:44px 0 0;position:relative}
+  .books{display:flex;align-items:flex-end;gap:10px;padding:0 24px;height:290px}
+  .spine{position:relative;display:flex;flex-direction:column;justify-content:space-between;align-items:center;flex:0 0 auto;
+         height:calc(var(--h)*1px);width:calc(var(--w)*1px);background:var(--c);color:#fbfaf7;border:0;cursor:pointer;font:inherit;
+         border-radius:2px 3px 3px 2px;box-shadow:inset 3px 0 0 rgba(255,255,255,.18),inset -4px 0 0 rgba(0,0,0,.18),0 1px 0 rgba(0,0,0,.25);
+         transition:transform .22s ease,box-shadow .22s ease;padding:16px 0 12px;overflow:hidden}
+  .spine::before,.spine::after{content:"";position:absolute;left:8px;right:8px;height:1px;background:rgba(251,250,247,.45)}
+  .spine::before{top:10px}.spine::after{bottom:8px}
+  .spine:hover,.spine.on{transform:translateY(-12px);box-shadow:inset 3px 0 0 rgba(255,255,255,.18),inset -4px 0 0 rgba(0,0,0,.18),0 14px 22px -10px rgba(0,0,0,.45)}
+  .spine .short{display:none}
+  .spine .t{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--serif);font-size:15px;letter-spacing:.02em;white-space:nowrap;line-height:1}
+  .spine .num{font-family:var(--mono);font-size:10px;letter-spacing:.08em;opacity:.85;margin-top:8px;white-space:nowrap;text-align:center}
+  .spine .num em{display:block;font-style:normal;font-size:8.5px;letter-spacing:0;opacity:.9;margin-top:2px}
+  .plank{height:7px;background:var(--ink);border-radius:1px;box-shadow:0 6px 0 -3px rgba(26,26,26,.18),0 10px 14px -8px rgba(0,0,0,.35)}
+  .shelfcap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px;color:var(--mute);margin:12px 24px 0;letter-spacing:.02em}
+  /* sections */
+  section{margin-top:72px}
   .tri{border-top:1px solid var(--ink);padding-top:22px}
   .tri h2{font-size:19px;font-weight:400;color:var(--ink2);margin:0 0 16px;line-height:1.35;letter-spacing:0;max-width:720px}
-  .tri h2 .n{font-size:38px;font-weight:500;letter-spacing:-.015em;color:var(--ink);display:block;margin-bottom:8px;line-height:1.1}
+  .tri h2 .n{font-size:44px;font-weight:500;letter-spacing:-.02em;color:var(--ink);display:block;margin-bottom:8px;line-height:1.05}
+  .tri h2 .n b{font-weight:500;color:var(--acc)}
   .tri.core h2 .n::before{content:"";display:block;width:40px;height:6px;background:var(--acc);margin-bottom:16px}
-  h3{font-family:-apple-system,Inter,Arial,sans-serif;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin:28px 0 10px}
-  table{width:100%;border-collapse:collapse;font-family:-apple-system,Inter,Arial,sans-serif;font-size:14px;margin:8px 0 4px}
+  h3{font-family:var(--sans);font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin:28px 0 10px}
+  table{width:100%;border-collapse:collapse;font-family:var(--sans);font-size:14px;margin:8px 0 4px}
   th{text-align:left;font-weight:600;padding:8px 6px;border-bottom:1px solid var(--ink);vertical-align:bottom}
   td{padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
-  code{font-family:"SF Mono",Menlo,monospace;font-size:.86em;background:var(--soft);padding:1px 5px}
+  code{font-family:var(--mono);font-size:.86em;background:var(--soft);padding:1px 5px}
+  blockquote{margin:24px 0;padding:0 0 0 20px;border-left:3px solid var(--acc);font-size:21px;line-height:1.4;color:var(--ink);max-width:680px}
   .props{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:18px 0}
   .prop{border:1px solid var(--line);padding:14px 16px;background:#fff}
-  .prop b{display:block;font-family:-apple-system,Inter,Arial,sans-serif;font-size:14px;margin-bottom:4px}
-  .prop span{font-family:-apple-system,Inter,Arial,sans-serif;font-size:13.5px;color:var(--ink2);line-height:1.5}
-  .prop i{display:block;font-style:normal;font-family:-apple-system,Inter,Arial,sans-serif;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);margin-top:8px}
-
-  .ex{margin-top:22px;border:1px solid var(--line);background:#fff}
-  .tabs{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--line)}
-  .tab{flex:1 1 auto;font-family:-apple-system,Inter,Arial,sans-serif;font-size:12.5px;font-weight:600;padding:12px 10px;border:0;background:transparent;cursor:pointer;color:var(--mute);border-bottom:3px solid transparent;letter-spacing:.02em;white-space:nowrap}
-  .tab:hover{color:var(--ink)}
-  .tab.on{color:var(--ink);border-bottom-color:var(--pc)}
-  .head{padding:22px 22px 6px}
-  .head .pname{font-size:26px;font-weight:500;margin:0;letter-spacing:-.01em}
-  .head .pname small{font-family:-apple-system,Inter,Arial,sans-serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--pc);margin-left:10px;font-weight:600}
-  .head p{margin:6px 0 0;color:var(--ink2);font-size:16px}
-  .diag{padding:8px 22px 0;overflow-x:auto}
-  .diag svg{display:block;min-width:640px;width:100%;height:auto;font-family:-apple-system,Inter,Arial,sans-serif}
-  .cells{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:14px}
-  .cell{padding:12px 18px;border-right:1px solid var(--line);font-family:-apple-system,Inter,Arial,sans-serif;font-size:13.5px;line-height:1.5;color:var(--ink2)}
+  .prop b{display:block;font-family:var(--sans);font-size:14px;margin-bottom:4px}
+  .prop span{font-family:var(--sans);font-size:13.5px;color:var(--ink2);line-height:1.5}
+  .prop i{display:block;font-style:normal;font-family:var(--sans);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);margin-top:8px}
+  /* verdict squares, shared by questions, scorecard, legend */
+  .vc{display:inline-block;width:var(--sq);height:var(--sq);vertical-align:middle;flex:none}
+  .vc.good{background:var(--good)}
+  .vc.partial{background:linear-gradient(90deg,var(--partial) 50%,#fff 50%);box-shadow:inset 0 0 0 1.5px var(--partial)}
+  .vc.wrong{background:#fff;box-shadow:inset 0 0 0 1.5px var(--wrong)}
+  /* explorer (wide) */
+  .ex{margin-top:26px;border:1px solid var(--ink);background:#fff}
+  .tabs{display:flex;border-bottom:1px solid var(--ink);overflow-x:auto}
+  .tab{flex:1 1 auto;display:flex;align-items:center;justify-content:center;gap:9px;padding:13px 12px;border:0;background:transparent;cursor:pointer;
+       font-family:var(--sans);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--mute);border-right:1px solid var(--line);white-space:nowrap;position:relative}
+  .tab:last-child{border-right:0}
+  .tab i{display:inline-block;width:7px;height:22px;background:var(--pc);border-radius:1px;box-shadow:inset -2px 0 0 rgba(0,0,0,.2);transition:transform .15s}
+  .tab:hover{color:var(--ink)}.tab:hover i{transform:translateY(-2px)}
+  .tab.on{color:var(--ink)}
+  .tab.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:var(--pc)}
+  .head{padding:24px 24px 6px;display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap}
+  .head .pname{font-size:28px;font-weight:500;margin:0;letter-spacing:-.01em}
+  .head .pname small{font-family:var(--sans);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--pc);margin-left:10px;font-weight:600;vertical-align:middle}
+  .head p{margin:6px 0 0;color:var(--ink2);font-size:16px;max-width:640px}
+  .ledger{font-family:var(--mono);font-size:11.5px;color:var(--mute);line-height:1.8;border:1px solid var(--line);padding:6px 12px;background:var(--bg);min-width:200px}
+  .ledger b{color:var(--ink);font-weight:600;float:right;margin-left:14px}
+  .diag{padding:16px 24px 8px;overflow-x:auto}
+  .diag svg{display:block;min-width:860px;width:100%;height:auto;font-family:var(--sans)}
+  .cells{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);margin-top:14px}
+  .cell{padding:14px 20px 16px;border-right:1px solid var(--line);font-family:var(--sans);font-size:13.5px;line-height:1.5;color:var(--ink2)}
   .cell:last-child{border-right:0}
-  .cell b{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin-bottom:4px}
-  .run{display:grid;grid-template-columns:280px minmax(0,1fr)}
-  .qs{border-right:1px solid var(--line);padding:16px 0}
-  .q{display:block;width:100%;text-align:left;border:0;background:transparent;cursor:pointer;padding:10px 18px;font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:15px;line-height:1.4;color:var(--ink2);border-left:3px solid transparent}
+  .cell b{display:block;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);margin-bottom:6px}
+  .run{display:grid;grid-template-columns:330px minmax(0,1fr)}
+  .qs{border-right:1px solid var(--ink);padding:10px 0}
+  .q{display:grid;grid-template-columns:30px 14px minmax(0,1fr);gap:10px;align-items:start;width:100%;text-align:left;border:0;background:transparent;cursor:pointer;
+     padding:12px 18px 12px 18px;border-left:3px solid transparent;font-family:var(--serif);font-size:14.5px;line-height:1.4;color:var(--ink2)}
   .q:hover{background:var(--soft)}
-  .q.on{border-left-color:var(--ink);color:var(--ink);background:var(--soft)}
-  .q .qn{display:block;font-family:-apple-system,Inter,Arial,sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin-bottom:2px}
-  .q .qd{display:inline-block;width:9px;height:9px;border-radius:50%;margin-left:6px;vertical-align:middle}
-  .res{padding:18px 22px 22px}
-  .tests{font-family:-apple-system,Inter,Arial,sans-serif;font-size:13px;color:var(--mute);margin:0 0 14px}
-  .tests b{color:var(--ink);font-weight:600}
-  .trace{margin:0;padding:0;list-style:none;border-top:1px solid var(--line)}
-  .trace li{display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-family:-apple-system,Inter,Arial,sans-serif;font-size:13.5px;line-height:1.5}
-  .trace li .st{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);padding-top:3px}
-  .ans{margin:16px 0 0;padding:16px 18px;background:var(--soft);border-left:3px solid var(--pc)}
-  .ans .lab{font-family:-apple-system,Inter,Arial,sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-  .ans .txt{font-size:15.5px;line-height:1.55;white-space:pre-line}
-  .badge{font-family:-apple-system,Inter,Arial,sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;padding:3px 9px;border-radius:2px;color:#fff;background:#999}
-  .badge.good{background:#1f5e4e}.badge.partial{background:#b8741a}.badge.wrong{background:#9c2f2f}
-  .why{font-family:-apple-system,Inter,Arial,sans-serif;font-size:13.5px;color:var(--ink2);margin:14px 0 0;line-height:1.55}
+  .q.on{border-left-color:var(--pc);background:var(--soft);color:var(--ink)}
+  .q .qn{font-family:var(--sans);font-size:11px;letter-spacing:.1em;font-weight:600;color:var(--ink);padding-top:2px}
+  .q .vc{--sq:12px;margin-top:4px}
+  .res{padding:18px 24px 24px}
+  .tests{font-family:var(--sans);font-size:13px;color:var(--mute);margin:0 0 16px;line-height:1.5}
+  .tests b{color:var(--ink);letter-spacing:.1em;text-transform:uppercase;font-size:10.5px;margin-right:8px}
+  table.trace{margin:0;font-family:var(--sans)}
+  .trace th{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);padding:6px 8px 8px 0}
+  .trace td{padding:10px 8px 10px 0;font-size:13.5px;line-height:1.5}
+  .trace td.st{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);padding-top:12px;width:120px;white-space:nowrap}
+  .trace td.st em{font-style:normal;color:var(--pc);margin-right:6px}
+  .trace tr.ref td{background:var(--bg)}.trace tr.ref td.st{color:var(--acc)}
+  .ans{margin:22px 0 0;border:1px solid var(--ink);padding:16px 18px 18px;background:#fff}
+  .ans .lab{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;font-family:var(--sans);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+  .ans .lab .r{display:flex;gap:8px;align-items:center}
+  .ans .txt{font-size:16px;line-height:1.5;white-space:pre-line}
+  .badge{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;padding:4px 10px;color:#fff;background:#999}
+  .badge.good{background:var(--good)}.badge.partial{background:var(--partial)}.badge.wrong{background:var(--wrong)}
+  .badge.ghost{background:transparent;color:var(--mute);border:1px dashed #cfcabd;font-weight:500}
+  .why{font-family:var(--sans);font-size:13.5px;color:var(--ink2);margin:16px 0 0;line-height:1.55}
   .why b{color:var(--ink)}
-  .dot{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:middle}
-  .dot.good{background:#1f5e4e}.dot.partial{background:linear-gradient(90deg,#b8741a 50%,#fff 50%);border:1.5px solid #b8741a}.dot.wrong{background:#fff;border:1.5px solid #9c2f2f}
-  .scroll{overflow-x:auto}
-  .matrix td.c{text-align:center;cursor:pointer}
-  .matrix td.c:hover{background:var(--soft)}
-  .matrix td.c.sel{background:var(--soft);outline:1px solid var(--ink)}
-  .matrix th.c{text-align:center}
-  .matrix td.name{white-space:nowrap;font-weight:600}
-  .matrix td.name i{display:inline-block;width:10px;height:10px;margin-right:8px;vertical-align:middle;border-radius:1px}
-  .legend{display:flex;gap:18px;align-items:center;color:var(--mute);margin:10px 0 0;font-family:-apple-system,Inter,Arial,sans-serif;font-size:12px;flex-wrap:wrap}
-  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .note{font-family:var(--sans);font-size:13px;color:var(--mute);border:1px dashed #d9d5cb;padding:8px 12px;margin:16px 0;max-width:720px}
+  /* scorecard (wide) */
+  .scroll{overflow-x:auto;background:#fff;border:1px solid var(--ink);margin-top:22px}
+  table.matrix{width:100%;min-width:760px;border-collapse:collapse;font-family:var(--sans);font-size:14px;margin:0}
+  .matrix th{text-align:left;font-weight:600;padding:12px 10px;border-bottom:1px solid var(--ink);vertical-align:bottom;font-family:var(--sans);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink)}
+  .matrix th.c,.matrix td.c{text-align:center;padding:5px 3px;width:calc(var(--sq) + 6px)}
+  .matrix td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .matrix tr:last-child td{border-bottom:0}
+  .matrix td.c{cursor:pointer}
+  .matrix td.c .vc{display:block;margin:0 auto}
+  .matrix td.c:hover .vc{outline:2px solid var(--ink);outline-offset:1px}
+  .matrix td.c.sel .vc{outline:2px solid var(--ink);outline-offset:1px}
+  .matrix th:first-child,.matrix td.name{width:1%}
+  .matrix td.name{white-space:nowrap;font-weight:600;padding-left:16px;padding-right:26px}
+  .matrix td.name i{display:inline-block;width:7px;height:22px;margin-right:10px;vertical-align:middle;border-radius:1px;background:var(--c);box-shadow:inset -2px 0 0 rgba(0,0,0,.2)}
+  .matrix td.m{font-family:var(--mono);font-size:12px;color:var(--ink2);white-space:nowrap;text-align:right}
+  .matrix th.m{text-align:right;color:var(--mute)}
+  .matrix td.gap,.matrix th.gap{border-left:1px solid var(--line);padding-left:22px}
+  .legend{display:flex;gap:20px;align-items:center;color:var(--mute);margin:14px 0 0;font-family:var(--sans);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;flex-wrap:wrap}
+  .legend span{display:inline-flex;align-items:center;gap:8px}
+  .legend .vc{--sq:12px}
   .guide{display:grid;grid-template-columns:1fr;gap:0;border-top:1px solid var(--ink);margin-top:16px}
   .g{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:16px 0;border-bottom:1px solid var(--line)}
   .g .ask{font-size:18px;line-height:1.35}
-  .g .then{font-family:-apple-system,Inter,Arial,sans-serif;font-size:14px;color:var(--ink2);line-height:1.55}
+  .g .then{font-family:var(--sans);font-size:14px;color:var(--ink2);line-height:1.55}
   .g .then b{color:var(--ink)}
-  .note{font-family:-apple-system,Inter,Arial,sans-serif;font-size:13px;color:var(--mute);border:1px dashed #d9d5cb;padding:8px 12px;margin:14px 0;max-width:720px}
-  .pf{margin-top:56px;padding-top:18px;border-top:1px solid var(--ink);font-family:-apple-system,Inter,Arial,sans-serif;font-size:13.5px;color:var(--mute);line-height:1.7}
-  blockquote{margin:22px 0;padding:0 0 0 18px;border-left:3px solid var(--acc);font-size:20px;line-height:1.4;color:var(--ink);max-width:680px}
-  @media (max-width:700px){
-    h1{font-size:31px}.tri h2 .n{font-size:30px}
+  .pf{margin-top:64px;padding:18px 0 60px;border-top:1px solid var(--ink);font-family:var(--sans);font-size:13.5px;color:var(--mute);line-height:1.7;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+  .pf .mini{display:flex;gap:3px;align-items:flex-end}
+  .pf .mini i{display:inline-block;width:5px;background:var(--c);border-radius:1px;height:calc(var(--h)*0.08px)}
+  @media (max-width:760px){
+    .nav .wide{gap:10px;font-size:10.5px;letter-spacing:.08em}
+    .nav .brand{display:none}
+    .nav .tool{margin-left:0;flex-basis:100%}
+    h1{font-size:31px}.tri h2 .n{font-size:32px}
+    .hero{padding-top:36px}
+    .books{gap:5px;padding:0 8px;height:150px}
+    .spine{width:auto;flex:1 1 0;min-width:0;padding:8px 0 6px;border-radius:1px 2px 2px 1px;height:calc(var(--h)*0.5px)}
+    .spine .t{font-size:11.5px}.spine .long{display:none}.spine .short{display:block}
+    .spine .num{font-size:9px;margin-top:4px}.spine .num em{display:none}
+    .spine::before{top:5px}.spine::after{bottom:4px}
+    .spine:hover,.spine.on{transform:translateY(-5px)}
+    .shelfcap{margin:10px 8px 0}
     .props{grid-template-columns:1fr}
+    .tab{padding:11px 10px;font-size:10.5px}
     .cells{grid-template-columns:1fr}.cell{border-right:0;border-bottom:1px solid var(--line)}.cell:last-child{border-bottom:0}
-    .run{grid-template-columns:1fr}.qs{border-right:0;border-bottom:1px solid var(--line)}
-    .trace li{grid-template-columns:1fr;gap:2px}
+    .run{grid-template-columns:1fr}.qs{border-right:0;border-bottom:1px solid var(--ink)}
+    .head{display:block}.ledger{margin-top:12px}
+    .trace td.st{width:96px}
+    :root{--sq:34px}
     .g{grid-template-columns:1fr;gap:6px}
-    .tab{flex:1 1 33%}
+    .pf{display:block}
   }
 </style>
 </head>
 <body>
-<div class="top">
-  <nav class="vnav">
-    <a href="#thesis">thesis</a>
-    <a href="#usecase">the shelf</a>
-    <a href="#compare">compare</a>
-    <a href="#scorecard">scorecard</a>
-    <a href="#choose">choose</a>
-  </nav>
+<div class="nav"><div class="wide">
+  <a class="brand" href="./">ragpatterns.com</a>
+  <a href="#thesis">thesis</a>
+  <a href="#usecase">the shelf</a>
+  <a href="#compare">compare</a>
+  <a href="#scorecard">scorecard</a>
+  <a href="#choose">choose</a>
   <a class="tool" href="how-its-built.html">How it's built →</a>
+</div></div>
+
+<div class="wrap hero">
+  <p class="kicker">Project · <i>v0</i> · predicted, not yet measured</p>
+  <h1>Seven RAGs, one shelf. The pattern is the product.</h1>
+  <p class="lede">Retrieval-augmented generation is not one technique any more. It is seven designs that solve seven different problems, and most teams pick one by accident. This page runs all seven on the same small, real knowledge base and the same six questions, so the only thing that changes between columns is the architecture.</p>
+  <p>The knowledge base is my own bookshelf: a Goodreads export, my Kindle highlights, a list of who recommended what, and a few photographed pages. I chose it because I can tell a right answer from a plausible one in a second, which is the whole job when you evaluate retrieval, and because "it invented a book I never read" is the most legible failure a RAG system can have. Every trace below is a prediction of how each pipeline handles the question. Nothing is measured yet. <a href="how-its-built.html">The method page</a> says what gets measured and when.</p>
+  <div class="shelf">
+    <div class="books" id="books"></div>
+    <div class="plank"></div>
+    <div class="shelfcap"><span>height = predicted score out of 6 (correct 1, partial ½) · width = cost vs naive · both predicted, not measured</span><span>pick a spine to open its trace ↓</span></div>
+  </div>
 </div>
 
-<p class="kicker">Project · v0 · predicted, not yet measured</p>
-<h1>Seven RAGs, one shelf. The pattern is the product.</h1>
-<p class="lede">Retrieval-augmented generation is not one technique any more. It is seven designs that solve seven different problems, and most teams pick one by accident. This page runs all seven on the same small, real knowledge base and the same six questions, so the only thing that changes between columns is the architecture.</p>
-<p>The knowledge base is my own bookshelf: a Goodreads export, my Kindle highlights, a list of who recommended what, and a few photographed pages. I chose it because I can tell a right answer from a plausible one in a second, which is the whole job when you evaluate retrieval, and because "it invented a book I never read" is the most legible failure a RAG system can have. Every trace below is a prediction of how each pipeline handles the question. Nothing is measured yet. <a href="how-its-built.html">The method page</a> says what gets measured and when.</p>
-
+<div class="wrap">
 <section id="thesis" class="tri core">
   <h2><span class="n">§01 · The thesis</span>Most RAG systems don't break on the model. They break on the pattern.</h2>
   <p>Teams upgrade the embedding model, switch to a stronger LLM, add more chunks to the prompt, and still get shallow or wrong answers. The reason is usually upstream of the model: the retrieval design cannot reach the information the question needs. Similarity search has no idea what "2024" or "under 300 pages" means. A text index cannot look at a photograph. A single retriever cannot see that two books argue with each other, because that fact lives in neither book. And no retrieval at all can compose four constraints into a reading list.</p>
@@ -148,13 +231,18 @@
   <h3>The six questions</h3>
   <p>One per failure mode, plus one that everything should get right. Each has a reference answer written before any pipeline runs. The exact titles get fixed once the export is inspected; the shape of each question does not change. The graded predictions are in the explorer below.</p>
 </section>
+</div>
 
+<div class="wide">
 <section id="compare" class="tri core">
   <h2><span class="n">§03 · Same question, seven pipelines</span>Pick a pattern, pick a question, read what the pipeline is expected to do</h2>
   <p>Each trace shows what gets retrieved, in what order, what the model is given, and the answer it is likely to produce, graded against the reference. The "why" line under each answer is the point of the page.</p>
   <div class="ex" id="ex">
     <div class="tabs" id="tabs"></div>
-    <div class="head"><p class="pname" id="pname"></p><p id="ptag"></p></div>
+    <div class="head">
+      <div><p class="pname" id="pname"></p><p id="ptag"></p></div>
+      <div class="ledger" id="ledger"></div>
+    </div>
     <div class="diag" id="diag"></div>
     <div class="cells">
       <div class="cell"><b>What it adds</b><span id="padds"></span></div>
@@ -165,8 +253,8 @@
       <div class="qs" id="qs"></div>
       <div class="res">
         <p class="tests" id="tests"></p>
-        <ul class="trace" id="trace"></ul>
-        <div class="ans"><div class="lab"><span>predicted answer</span><span class="badge" id="badge"></span></div><div class="txt" id="atxt"></div></div>
+        <table class="trace"><thead><tr><th>step</th><th>what the pipeline is expected to do</th></tr></thead><tbody id="trace"></tbody></table>
+        <div class="ans"><div class="lab"><span id="alab">predicted answer</span><span class="r"><span class="badge ghost">predicted</span><span class="badge" id="badge"></span></span></div><div class="txt" id="atxt"></div></div>
         <p class="why" id="why"></p>
       </div>
     </div>
@@ -177,11 +265,13 @@
 <section id="scorecard" class="tri core">
   <h2><span class="n">§04 · The scorecard</span>Nobody wins every column, and the cheapest pattern wins the first one</h2>
   <div class="scroll"><table class="matrix" id="matrix"></table></div>
-  <div class="legend"><span><i class="dot good"></i> predicted correct</span><span><i class="dot partial"></i> partial or generic</span><span><i class="dot wrong"></i> wrong or invented</span><span>· click a cell to open its trace</span></div>
+  <div class="legend"><span><i class="vc good"></i> predicted correct</span><span><i class="vc partial"></i> partial or generic</span><span><i class="vc wrong"></i> wrong or invented</span><span style="text-transform:none;letter-spacing:0">· click a square to open its trace</span></div>
   <p style="margin-top:18px">Three things to read off the grid. Every pattern gets the easy question right, so the easy question tells you nothing about which pattern to use. The Q2 column splits the table cleanly into patterns with a tool and patterns without one, and no amount of embedding quality moves a pattern across that line. And reranking fixes the most common failure for the price of one extra call, which is why it should be the first upgrade, not the graph.</p>
   <p>The prediction I most expect to be wrong is naive on Q1. Kindle highlights are short, so the nearest chunk is sometimes a different book quoting the same author. If that happens, Q1 stops being a control and reranking earns its call one column earlier.</p>
 </section>
+</div>
 
+<div class="wrap">
 <section id="choose" class="tri core">
   <h2><span class="n">§05 · Choosing</span>Five questions to ask about the problem before you pick a pattern</h2>
   <div class="guide">
@@ -195,7 +285,9 @@
 </section>
 
 <div class="pf">
-  Built by Shirley · AI-assisted · v0, 9 September 2026 · <a href="how-its-built.html">How it's built, and what gets measured next</a>
+  <span>Built by Shirley · AI-assisted · v0, 9 September 2026 · <a href="how-its-built.html">How it's built, and what gets measured next</a></span>
+  <span class="mini" id="mini" aria-hidden="true"></span>
+</div>
 </div>
 
 <script>
@@ -396,24 +488,38 @@ const COST = {naive:['1','~1.5 s','1x'],rerank:['1 + reranker','~2 s','1.2x'],mu
 let pi=0, qi=0;
 const $=id=>document.getElementById(id);
 const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const VL={good:'correct',partial:'partial',wrong:'wrong'};
+
+// Predicted score out of 6 (correct 1, partial ½) and the cost multiplier, both read from the data above.
+const score=id=>Q.reduce((s,q)=>s+({good:1,partial:.5,wrong:0}[R[id][q.n].v]),0);
+const costx=id=>parseFloat(COST[id][2])||1;
+
+function shelf(){
+  // height 140–280px for 0–6; width 40px at 1x, +14px per doubling of cost. Mobile scales in CSS.
+  const SHORT={naive:'Naive',rerank:'Rerank',multimodal:'Multimodal',graph:'Graph',hybrid:'Hybrid',agentic:'Agentic',multiagent:'Multi-agent'};
+  const fmt=n=>Number.isInteger(n)?String(n):n.toFixed(1);
+  $('books').innerHTML=P.map((p,i)=>{const sc=score(p.id),h=Math.round(140+sc*140/6),w=Math.round(40+14*Math.log2(costx(p.id)));
+    return `<button class="spine" data-i="${i}" style="--c:${p.color};--h:${h};--w:${w}" title="${esc(p.name)} · predicted ${fmt(sc)} of 6 · ${COST[p.id][2]} cost of naive"><span class="t long">${esc(p.name)}</span><span class="t short">${SHORT[p.id]}</span><span class="num">0${i+1}<em>${fmt(sc)}/6</em></span></button>`;}).join('');
+  $('mini').innerHTML=P.map(p=>`<i style="--c:${p.color};--h:${Math.round(140+score(p.id)*140/6)}"></i>`).join('');
+}
 
 function diagram(p){
-  const cw=120,ch=46,gx=150,gy=12,pad=16;
+  const cw=150,ch=56,gx=188,gy=14,pad=16;
   const cols=p.stages, maxn=Math.max(...cols.map(c=>c.length));
   const H=maxn*ch+(maxn-1)*gy+pad*2, W=pad*2+cols.length*cw+(cols.length-1)*(gx-cw);
   let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(p.name)} pipeline"><defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1a1a1a"/></marker></defs>`;
   const pos=cols.map((c,i)=>{const total=c.length*ch+(c.length-1)*gy;const y0=(H-total)/2;return c.map((n,j)=>({x:pad+i*gx,y:y0+j*(ch+gy),n}));});
   for(let i=0;i<pos.length-1;i++)for(const a of pos[i])for(const b of pos[i+1]){
-    const x1=a.x+cw,y1=a.y+ch/2,x2=b.x,y2=b.y+ch/2;
-    s+=`<path d="M${x1} ${y1} C ${x1+16} ${y1}, ${x2-16} ${y2}, ${x2-2} ${y2}" fill="none" stroke="#1a1a1a" stroke-width="1" marker-end="url(#ar)" opacity="${pos[i].length*pos[i+1].length>3?0.55:1}"/>`;}
+    const x1=a.x+cw,y1=a.y+ch/2,x2=b.x,y2=b.y+ch/2,mx=(x1+x2)/2;
+    s+=`<path d="M${x1} ${y1} H${mx} V${y2} H${x2-2}" fill="none" stroke="#1a1a1a" stroke-width="1.2" marker-end="url(#ar)" opacity="${pos[i].length*pos[i+1].length>3?0.55:1}"/>`;}
   for(const col of pos)for(const {x,y,n} of col){
     const fill=n.k==='model'?'#1a1a1a':n.k==='store'?p.color:n.k==='out'?'#fff':'#f3f1ea';
     const stroke=n.k==='out'?p.color:'#1a1a1a';
     const tc=(n.k==='model'||n.k==='store')?'#fff':'#1a1a1a';
     const sub=(n.k==='model'||n.k==='store')?'#e5e2da':'#7a7568';
-    s+=`<rect x="${x}" y="${y}" width="${cw}" height="${ch}" fill="${fill}" stroke="${stroke}" stroke-width="${n.k==='out'?1.5:1}"/>`;
-    s+=`<text x="${x+cw/2}" y="${y+(n.s?20:27)}" text-anchor="middle" font-size="12" font-weight="600" fill="${tc}">${esc(n.l)}</text>`;
-    if(n.s)s+=`<text x="${x+cw/2}" y="${y+35}" text-anchor="middle" font-size="10.5" fill="${sub}">${esc(n.s)}</text>`;
+    s+=`<rect x="${x}" y="${y}" width="${cw}" height="${ch}" fill="${fill}" stroke="${stroke}" stroke-width="${n.k==='out'?1.5:1.2}"/>`;
+    s+=`<text x="${x+cw/2}" y="${y+(n.s?24:33)}" text-anchor="middle" font-size="13.5" font-weight="600" fill="${tc}">${esc(n.l)}</text>`;
+    if(n.s)s+=`<text x="${x+cw/2}" y="${y+41}" text-anchor="middle" font-size="11.5" fill="${sub}">${esc(n.s)}</text>`;
   }
   return s+'</svg>';
 }
@@ -422,14 +528,17 @@ function render(){
   const p=P[pi], q=Q[qi], r=R[p.id][q.n];
   $('ex').style.setProperty('--pc',p.color);
   document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on',i===pi));
-  $('pname').innerHTML=esc(p.name)+`<small>${pi+1} of 7</small>`;
+  document.querySelectorAll('.spine').forEach((t,i)=>t.classList.toggle('on',i===pi));
+  $('pname').innerHTML=esc(p.name)+`<small>pattern 0${pi+1} of 7</small>`;
   $('ptag').textContent=p.tag;
+  $('ledger').innerHTML=`calls<b>${esc(COST[p.id][0])}</b><br>latency<b>${esc(COST[p.id][1])}</b><br>cost vs naive<b>${esc(COST[p.id][2])}</b>`;
   $('diag').innerHTML=diagram(p);
   $('padds').textContent=p.adds;$('pcost').textContent=p.cost;$('pfail').textContent=p.fail;
-  $('qs').innerHTML=Q.map((qq,i)=>{const v=R[p.id][qq.n].v;return `<button class="q${i===qi?' on':''}" data-i="${i}"><span class="qn">${qq.n} <i class="qd dot ${v}"></i></span>${esc(qq.t)}</button>`}).join('');
-  $('tests').innerHTML=`<b>${q.n} tests</b> ${esc(q.tests)} <br><b>Reference answer</b> ${esc(REF[q.n])}`;
-  $('trace').innerHTML=r.tr.map(([s,t])=>`<li><span class="st">${s}</span><span>${t}</span></li>`).join('');
-  $('badge').className='badge '+r.v;$('badge').textContent={good:'correct',partial:'partial',wrong:'wrong'}[r.v];
+  $('qs').innerHTML=Q.map((qq,i)=>{const v=R[p.id][qq.n].v;return `<button class="q${i===qi?' on':''}" data-i="${i}"><span class="qn">${qq.n}</span><i class="vc ${v}" title="predicted ${VL[v]}"></i><span>${esc(qq.t)}</span></button>`}).join('');
+  $('tests').innerHTML=`<b>${q.n} tests</b> ${esc(q.tests)}`;
+  $('trace').innerHTML=r.tr.map(([s,t],i)=>`<tr><td class="st"><em>0${i+1}</em>${esc(s)}</td><td>${t}</td></tr>`).join('')+`<tr class="ref"><td class="st">reference</td><td>${esc(REF[q.n])}</td></tr>`;
+  $('alab').textContent=`predicted answer · ${q.n}`;
+  $('badge').className='badge '+r.v;$('badge').textContent=VL[r.v];
   $('atxt').textContent=r.a;
   $('why').innerHTML=r.w;
   document.querySelectorAll('.matrix td.c').forEach(td=>td.classList.toggle('sel',+td.dataset.p===pi&&+td.dataset.q===qi));
@@ -437,17 +546,20 @@ function render(){
 }
 
 function matrix(){
-  let h=`<tr><th>pattern</th>${Q.map(q=>`<th class="c">${q.n}</th>`).join('')}<th>calls / query</th><th>latency*</th><th>cost*</th></tr>`;
-  P.forEach((p,i)=>{h+=`<tr><td class="name"><i style="background:${p.color}"></i>${esc(p.name)}</td>${Q.map((q,j)=>`<td class="c" data-p="${i}" data-q="${j}" title="${esc(p.name)} · ${q.n}"><i class="dot ${R[p.id][q.n].v}"></i></td>`).join('')}<td>${COST[p.id][0]}</td><td>${COST[p.id][1]}</td><td>${COST[p.id][2]}</td></tr>`;});
+  let h=`<tr><th>pattern</th>${Q.map(q=>`<th class="c">${q.n}</th>`).join('')}<th class="m gap">calls / query</th><th class="m">latency*</th><th class="m">cost*</th></tr>`;
+  P.forEach((p,i)=>{h+=`<tr><td class="name" style="--c:${p.color}"><i></i>${esc(p.name)}</td>${Q.map((q,j)=>`<td class="c" data-p="${i}" data-q="${j}" title="${esc(p.name)} · ${q.n} · predicted ${VL[R[p.id][q.n].v]}"><i class="vc ${R[p.id][q.n].v}"></i></td>`).join('')}<td class="m gap">${COST[p.id][0]}</td><td class="m">${COST[p.id][1]}</td><td class="m">${COST[p.id][2]}</td></tr>`;});
   $('matrix').innerHTML=h;
-  $('matrix').parentNode.insertAdjacentHTML('afterend','<p class="small">* call counts are structural and real; latency and relative cost are estimates for the planned v1 stack, replaced by measurements in v5.</p>');
+  document.querySelector('.legend').insertAdjacentHTML('afterend','<p class="small" style="margin-top:10px">* call counts are structural and real; latency and relative cost are estimates for the planned v1 stack, replaced by measurements in v5.</p>');
 }
 
-$('tabs').innerHTML=P.map((p,i)=>`<button class="tab" data-i="${i}" style="--pc:${p.color}">${esc(p.name)}</button>`).join('');
+const goEx=()=>$('ex').scrollIntoView({behavior:'smooth',block:'start'});
+$('tabs').innerHTML=P.map((p,i)=>`<button class="tab" data-i="${i}" style="--pc:${p.color}"><i></i>${esc(p.name)}</button>`).join('');
 $('tabs').addEventListener('click',e=>{const t=e.target.closest('.tab');if(!t)return;pi=+t.dataset.i;render();});
 $('qs').addEventListener('click',e=>{const t=e.target.closest('.q');if(!t)return;qi=+t.dataset.i;render();});
+shelf();
+$('books').addEventListener('click',e=>{const t=e.target.closest('.spine');if(!t)return;pi=+t.dataset.i;render();goEx();});
 matrix();
-$('matrix').addEventListener('click',e=>{const td=e.target.closest('td.c');if(!td)return;pi=+td.dataset.p;qi=+td.dataset.q;render();$('ex').scrollIntoView({behavior:'smooth',block:'start'});});
+$('matrix').addEventListener('click',e=>{const td=e.target.closest('td.c');if(!td)return;pi=+td.dataset.p;qi=+td.dataset.q;render();goEx();});
 (function(){const m=location.hash.match(/#compare\/(\w+)\/(Q\d)/);if(m){const a=P.findIndex(p=>p.id===m[1]),b=Q.findIndex(q=>q.n===m[2]);if(a>=0)pi=a;if(b>=0)qi=b;}})();
 render();
 </script>
