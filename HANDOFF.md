@@ -34,7 +34,7 @@ Working name: **Seven RAGs, one shelf**. Intended domain: **ragpatterns.com** (n
 | All 42 explorer cells (7 patterns × 6 questions) traced *by prediction*, labelled as predictions | Any measurement, latency, cost, or verdict from a real run |
 | Six question *shapes* with reference-answer shapes | The real book titles in Q1, Q3, Q5 (bracketed placeholders until the export is inspected) |
 | The build plan with diagrams | The corpus files in the repo (Shirley has them; they go in `corpus/`, git-ignored) |
-| `.gitignore`, `README.md`, `CLAUDE.md`, `.claude/launch.json` | A git repository (not initialised: Shirley said commit only when asked), a GitHub remote, a Cloudflare Pages project, the domain |
+| `.gitignore`, `README.md`, `CLAUDE.md`, `DEPLOY.md`, `.claude/launch.json`, the GitHub repo with protected `main`, the domain | The Cloudflare Pages project (Shirley connects it; steps in `DEPLOY.md`) |
 
 ---
 
@@ -43,6 +43,8 @@ Working name: **Seven RAGs, one shelf**. Intended domain: **ragpatterns.com** (n
 Each entry: what was decided, what was rejected, why. Dated 9 Sep 2026 unless noted.
 
 ### 3.1 The site's shape
+
+- **Decided (9 Sep 2026, evening):** design direction **A "the shelf"**, blended with **C "the grid"** for the explorer. Shirley chose A ("I like the visual, the hovering") on condition the spine heights mean something, and took from C the wider, clearer explorer and question layout. Result: the spines are a chart (height = predicted score out of 6, width = cost vs naive, built from `R` and `COST` by `shelf()`), the explorer and scorecard sit in a 1180px `.wide` column with C's full-width tab strip, big rectangular pipeline diagram, question list with square verdict markers, trace as a headed table, boxed answer card, and a solid-square scorecard. Rejected: B "reading room" (dark; tables read worse), D "marginalia" (sidenotes collapse on mobile). Mockups kept in `docs/design-options/`.
 
 - **Decided:** one site per project, Miessler format. Thesis headline, numbered "§" argument sections, the comparison in the middle, a "how it's built" method page written as a lab notebook with versions. Footer "Built by Shirley · AI-assisted". Inspirations Shirley gave: danielmiessler.com/projects, thevulnequation.ai, oursafe.ai, ispalantirtrustworthy.io.
 - **Decided:** plain HTML, inline CSS and JS, no build step, no external requests, one self-contained file per page. This is Shirley's house rule from shhirl.com and it is not negotiable.
@@ -126,7 +128,7 @@ Each entry: what was decided, what was rejected, why. Dated 9 Sep 2026 unless no
 2. **Honesty.** Predicted stays labelled predicted. Bad numbers get published. Dates on everything that becomes measured.
 3. **Privacy.** See §3.4. If in doubt, leave it out of the repo.
 4. **Style.** Match `CLAUDE.md`. Edit the explorer's data object; do not fork the renderer.
-5. **Git.** Commit or push only when Shirley asks. Static pages: main deploys. Service: behaviour changes via pull request, she merges.
+5. **Git.** Repo https://github.com/shhirl/ragpatterns (public, created 9 Sep 2026). `main` is protected: pull requests only, no force push, rules apply to admins. Every change is a branch + PR with the template checklist; Shirley merges; an AI never merges. Merging deploys ragpatterns.com through Cloudflare Pages (`DEPLOY.md`). The v1 service will follow the same rule.
 6. **Verify before declaring done.** For the pages: open in a browser at desktop and 375px, no console errors, no horizontal page scroll (the browser preview caches hard; add `?v=N`). For the service: the eval runner runs end to end on the real corpus.
 
 ---
@@ -162,7 +164,7 @@ Repo layout to create is in `docs/plan.html` §7.
 2. Recommendations: hand-written CSV (recommended) vs Goodreads shelf tags like `rec-ab`.
 3. Abandoned books: a Goodreads shelf (name?) or five titles she names.
 4. Which low-rated-but-loved book for Q3; which pages she is happy to photograph for Q5. After the export is inspected.
-5. Domain: buy ragpatterns.com (recommended) or use rag.shhirl.com.
+5. ~~Domain: buy ragpatterns.com (recommended) or use rag.shhirl.com.~~ Bought, 9 Sep 2026.
 
 ---
 
@@ -174,6 +176,9 @@ rag_website/
   docs/plan.html        the build plan with diagrams (also a Claude artifact)
   CLAUDE.md             working rules: style, privacy, honesty, preview, deep links
   README.md             public-facing summary and run instructions
+  DEPLOY.md             GitHub + Cloudflare Pages setup, PR rule, rollback, what changes at v1
+  .github/PULL_REQUEST_TEMPLATE.md   the PR checklist
+  docs/design-options/  the four design mockups and index; A + C was chosen
   LADDERS.md            the three-year plan (books + airline ladders); this project is rung A-2024
   index.html            v0 site: thesis, corpus, explorer (data object at bottom), scorecard, decision guide
   how-its-built.html    v0 method page; #versions is the source of truth for measured vs predicted
@@ -189,5 +194,8 @@ Memory for the Claude sessions on this machine lives outside the repo (`~/.claud
 
 - **ragpatterns.com is bought** (Cloudflare Registrar). Open decision 7.5 is closed.
 - **Design options** are in `docs/design-options/` with an `index.html` describing them: A the shelf (spines as hero and nav), B reading room (dark, amber), C the grid (Swiss, scorecard as hero), D marginalia (Tufte sidenotes, highlighter accent). All four keep the house rules and the "predicted" labels. Shirley picks one (or a blend); the chosen direction is then applied to `index.html` and `how-its-built.html` without forking the explorer renderer. Unchosen files stay as the record.
-- **Hosting proposal (not yet agreed):** static pages on Cloudflare Pages from a public GitHub repo `shhirl/ragpatterns`, same as `shhirl-site`; main is protected (PRs only, free on public repos); each PR gets a preview URL. Railway is only needed from v1 when the Python service exists, at `api.ragpatterns.com`. The exports stay git-ignored, so public is safe.
-- Nothing is committed yet. The repo is still not git-initialised.
+- **Hosting decided and set up:** public GitHub repo `shhirl/ragpatterns`, `main` protected, v0 pushed as the first commit. Cloudflare Pages is Shirley's one manual step (`DEPLOY.md`). Railway only from v1, for the service, at `api.ragpatterns.com`.
+- **Design decided:** A + C blend, see §3.1. Applied to both pages on branch `design/shelf`, opened as the first pull request. Unchosen mockups stay in `docs/design-options/`.
+- **Diagrams (later the same evening):** Shirley asked for option D's inked-icon naive diagram across all seven pipelines. `diagram()` now draws marginalia-style icons (see `CLAUDE.md`), numbered stages, mono labels, italic asides, a figure caption, and a slow ink-flow animation; stacked columns (hybrid, router, multi-agent) label to the right so a five-way fan-out stays short.
+- **Docs added:** `DEPLOY.md`, `.github/PULL_REQUEST_TEMPLATE.md`; `CLAUDE.md`, `README.md` and this file updated.
+- **Next session starts at §6** (first build session: exports into `corpus/`, inspect, real titles, v1), after Shirley has merged the design PR and connected Pages.

@@ -25,4 +25,8 @@ Then open http://localhost:8787/. A `.claude/launch.json` config named `static` 
 
 ## Deploy
 
-Cloudflare Pages (or any static host): push to `main`, done. Intended domain: ragpatterns.com.
+Cloudflare Pages from the `main` branch of https://github.com/shhirl/ragpatterns, live at **ragpatterns.com**. `main` is protected: changes arrive as pull requests, each with its own preview URL, and merging deploys in about twenty seconds. The full story, including what happens when the v1 service arrives, is in `DEPLOY.md`.
+
+## Design
+
+Direction chosen 9 Sep 2026: "the shelf". The seven patterns stand on a shelf as book spines whose height is the predicted score and whose width is the cost; the explorer and scorecard are wide and square-gridded. The four directions that were considered are kept in `docs/design-options/`.
