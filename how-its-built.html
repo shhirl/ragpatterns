@@ -198,7 +198,7 @@
 <section id="versions" class="tri core">
   <h2><span class="n">7 · Versions</span>What exists, what is measured, and when</h2>
   <div class="versions">
-    <div class="ver done"><div class="v">v0<span>9 Sep 2026</span></div><p><b>Predicted traces.</b> Corpus chosen and its rules written, six question shapes fixed, seven pipelines traced by prediction on all six, the scorecard and decision guide published. No code has run. Every score on the comparison page is a design argument, not a measurement.</p></div>
+    <div class="ver done"><div class="v">v0<span>Sep 2026</span></div><p><b>Predicted traces.</b> Corpus chosen and its rules written, six question shapes fixed, seven pipelines traced by prediction on all six, the scorecard and decision guide published. No code has run. Every score on the comparison page is a design argument, not a measurement.</p></div>
     <div class="ver soon"><div class="v">v1<span>next</span></div><p><b>Ingest, naive, reranked, and the ledger tool, live.</b> Parse both exports, build the tables, embed the highlights, add the cross-encoder and the SQL tool. Fix the real titles in the questions. Run 5× each. The first two rows of the grid become measurements, and Q2 gets its first real answer through the tool so the number exists early.</p></div>
     <div class="ver soon"><div class="v">v2</div><p><b>Graph and hybrid.</b> LLM extraction over highlights and reviews with the fixed schema, then traversal. Publish the extracted graph so a missed edge is visible. The Q4 column becomes real.</p></div>
     <div class="ver soon"><div class="v">v3</div><p><b>Multimodal.</b> Multimodal embeddings for the photos, vision-language generation. The Q5 column becomes real.</p></div>
@@ -220,12 +220,10 @@
     <tr><td>Generation</td><td>Claude Opus 5 with adaptive thinking, one prompt template for every pattern</td><td>the router uses Claude Haiku 4.5: it is a classifier and should cost like one</td></tr>
     <tr><td>Hosting the service</td><td>Railway, Cloudflare in front</td><td>the setup I already run for fixmybanana</td></tr>
   </table></div>
-  <h3>Ops</h3>
-  <p>Static pages: the repo is public at <a href="https://github.com/shhirl/ragpatterns">github.com/shhirl/ragpatterns</a>, <code>main</code> is protected, every change is a pull request with its own Cloudflare Pages preview, and merging deploys ragpatterns.com in about twenty seconds. The service, from v1, follows the fixmybanana rule: main is production, behaviour changes go through a pull request, and the eval scripts read the API keys from a git-ignored file that is never printed. The curated exports are git-ignored too; the photos, the graph, the questions and every result CSV are committed.</p>
 </section>
 
 <div class="pf">
-  <span>Built by Shirley · v0, 9 September 2026 · updated when a version ships · <a href="index.html">← Seven RAGs, one shelf</a> · <a href="https://github.com/shhirl/ragpatterns">Source</a></span>
+  <span>Built by Shirley · v0, September 2026 · updated when a version ships · <a href="index.html">← Seven RAGs, one shelf</a> · <a href="https://github.com/shhirl/ragpatterns">Source</a></span>
   <span class="mini" aria-hidden="true"><i style="--c:var(--naive);--h:198"></i><i style="--c:var(--rerank);--h:222"></i><i style="--c:var(--multimodal);--h:210"></i><i style="--c:var(--graph);--h:233"></i><i style="--c:var(--hybrid);--h:233"></i><i style="--c:var(--agentic);--h:268"></i><i style="--c:var(--multiagent);--h:280"></i></span>
 </div>
 </div>

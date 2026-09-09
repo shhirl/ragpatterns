@@ -34,7 +34,9 @@ Static site comparing seven RAG design patterns on Shirley's own bookshelf (Good
 
 ## Honesty rule
 
-v0 traces are predictions, not measurements. Keep the "predicted" labels (kicker, `.note` under the explorer, legend and footnote under the scorecard) until a live pipeline has produced the numbers. Never present an estimate as a result. When a cell becomes measured, say so with the date.
+- **Dates on the pages are month and year only** (Shirley's instruction, 9 Sep 2026): "v0, September 2026", never a day. Repo docs and commits keep exact dates. When a cell becomes measured, date it on the pages as month and year.
+
+v0 traces are predictions, not measurements. Keep the "predicted" labels (kicker, `.note` under the explorer, legend and footnote under the scorecard) until a live pipeline has produced the numbers. Never present an estimate as a result. When a cell becomes measured, say so with the month and year.
 
 ## Working on it
 
