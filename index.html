@@ -91,8 +91,12 @@
   .head p{margin:6px 0 0;color:var(--ink2);font-size:16px;max-width:640px}
   .ledger{font-family:var(--mono);font-size:11.5px;color:var(--mute);line-height:1.8;border:1px solid var(--line);padding:6px 12px;background:var(--bg);min-width:200px}
   .ledger b{color:var(--ink);font-weight:600;float:right;margin-left:14px}
-  .diag{padding:16px 24px 8px;overflow-x:auto}
-  .diag svg{display:block;min-width:860px;width:100%;height:auto;font-family:var(--sans)}
+  .diag{padding:18px 24px 6px;overflow-x:auto}
+  .diag svg{display:block;min-width:820px;max-width:1040px;width:100%;height:auto;margin:0 auto}
+  .diag .fig{font-family:var(--serif);font-style:italic;font-size:13px;color:var(--mute);margin:10px 0 0;text-align:center}
+  .diag .flow path{stroke-dasharray:3 5;animation:flow 1.6s linear infinite}
+  @keyframes flow{to{stroke-dashoffset:-16}}
+  @media (prefers-reduced-motion:reduce){.diag .flow path{animation:none;stroke-dasharray:none}}
   .cells{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);margin-top:14px}
   .cell{padding:14px 20px 16px;border-right:1px solid var(--line);font-family:var(--sans);font-size:13.5px;line-height:1.5;color:var(--ink2)}
   .cell:last-child{border-right:0}
@@ -504,24 +508,66 @@ function shelf(){
 }
 
 function diagram(p){
-  const cw=150,ch=56,gx=188,gy=14,pad=16;
-  const cols=p.stages, maxn=Math.max(...cols.map(c=>c.length));
-  const H=maxn*ch+(maxn-1)*gy+pad*2, W=pad*2+cols.length*cw+(cols.length-1)*(gx-cw);
-  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(p.name)} pipeline"><defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1a1a1a"/></marker></defs>`;
-  const pos=cols.map((c,i)=>{const total=c.length*ch+(c.length-1)*gy;const y0=(H-total)/2;return c.map((n,j)=>({x:pad+i*gx,y:y0+j*(ch+gy),n}));});
-  for(let i=0;i<pos.length-1;i++)for(const a of pos[i])for(const b of pos[i+1]){
-    const x1=a.x+cw,y1=a.y+ch/2,x2=b.x,y2=b.y+ch/2,mx=(x1+x2)/2;
-    s+=`<path d="M${x1} ${y1} H${mx} V${y2} H${x2-2}" fill="none" stroke="#1a1a1a" stroke-width="1.2" marker-end="url(#ar)" opacity="${pos[i].length*pos[i+1].length>3?0.55:1}"/>`;}
-  for(const col of pos)for(const {x,y,n} of col){
-    const fill=n.k==='model'?'#1a1a1a':n.k==='store'?p.color:n.k==='out'?'#fff':'#f3f1ea';
-    const stroke=n.k==='out'?p.color:'#1a1a1a';
-    const tc=(n.k==='model'||n.k==='store')?'#fff':'#1a1a1a';
-    const sub=(n.k==='model'||n.k==='store')?'#e5e2da':'#7a7568';
-    s+=`<rect x="${x}" y="${y}" width="${cw}" height="${ch}" fill="${fill}" stroke="${stroke}" stroke-width="${n.k==='out'?1.5:1.2}"/>`;
-    s+=`<text x="${x+cw/2}" y="${y+(n.s?24:33)}" text-anchor="middle" font-size="13.5" font-weight="600" fill="${tc}">${esc(n.l)}</text>`;
-    if(n.s)s+=`<text x="${x+cw/2}" y="${y+41}" text-anchor="middle" font-size="11.5" fill="${sub}">${esc(n.s)}</text>`;
-  }
+  // Inked-line pipeline in the marginalia vocabulary: one icon per stage, mono labels, italic asides,
+  // stage numbers along the top. Single-node columns put the label under the icon; stacked columns
+  // (hybrid, router, multi-agent) put it to the right so a five-way fan-out stays short.
+  const INK='#1a1a1a',MUTE='#7a7568',PAPER='#fbfaf7',C=p.color;
+  const pad=20,gap=74,rowH=54,iconH=44,topPad=30,labelH=46;
+  const cols=p.stages,maxn=Math.max(...cols.map(c=>c.length));
+  const hw=n=>n.k==='model'?32:n.k==='doc'?20:22;   // icon half-width, for label placement
+  const colW=c=>c.length>1?34+Math.max(...c.map(n=>hw(n)+10+Math.max(n.l.length,(n.s||'').length*.9)*6.4))+12:86; // stacked columns carry their labels to the right
+  const cx=[];let x=pad;for(const c of cols){cx.push(x);x+=colW(c)+gap;}
+  const W=x-gap+pad;
+  const body=Math.max(iconH+labelH,maxn*rowH);
+  const H=topPad+body+8;
+  const centreY=topPad+body/2;
+  // icon drawings, each centred on (0,0), 44px tall
+  const g=(n,i)=>{const l=n.l.toLowerCase(),s=(n.s||'').toLowerCase();
+    if(n.k==='in'){let d=`<circle r="15" fill="${PAPER}"/><text y="5" font-family="Iowan Old Style,Palatino,Georgia,serif" font-style="italic" font-size="15" fill="${INK}" stroke="none" text-anchor="middle">?</text>`;
+      if(s.includes('photo'))d+=`<rect x="8" y="-22" width="18" height="14" fill="${PAPER}"/><path d="M10 -10 l5 -6 l4 4 l3 -3 l4 5" stroke-width="1"/>`;return d;}
+    if(n.k==='out'){let d=`<circle r="15" fill="${INK}"/>`;if(s.includes('image'))d+=`<rect x="8" y="-22" width="18" height="14" fill="${PAPER}"/><path d="M10 -10 l5 -6 l4 4 l3 -3 l4 5" stroke-width="1"/>`;return d;}
+    if(n.k==='doc'){return `<rect x="-12" y="-20" width="30" height="30" fill="${PAPER}"/><rect x="-16" y="-16" width="30" height="30" fill="${PAPER}"/><rect x="-20" y="-12" width="30" height="30" fill="${PAPER}"/><path d="M-14 -4 H8 M-14 2 H8 M-14 8 H2" stroke-width="1"/>`;}
+    if(n.k==='store'){
+      if(l.includes('graph'))return `<circle cx="-14" cy="10" r="6" fill="${C}" fill-opacity=".18"/><circle cx="14" cy="10" r="6" fill="${C}" fill-opacity=".18"/><circle cx="0" cy="-12" r="6" fill="${C}" fill-opacity=".18"/><path d="M-9 6 L-4 -7 M9 6 L4 -7 M-8 10 H8"/>`;
+      if(l.includes('sql'))return `<rect x="-22" y="-16" width="44" height="32" fill="${C}" fill-opacity=".18"/><path d="M-22 -6 H22 M-22 5 H22 M-8 -16 V16 M7 -16 V16" stroke-width="1"/>`;
+      if(l.includes('image'))return `<rect x="-22" y="-16" width="44" height="32" fill="${C}" fill-opacity=".18"/><path d="M-18 10 l10 -12 l7 8 l5 -5 l10 9" stroke-width="1.1"/><circle cx="12" cy="-8" r="3" stroke-width="1"/>`;
+      return `<path d="M-22 -14 a22 6 0 1 1 44 0 a22 6 0 1 1 -44 0 M-22 -14 v28 a22 6 0 0 0 44 0 v-28" fill="${C}" fill-opacity=".18"/>`+(l.includes('rerank')?`<path d="M-8 -2 H8 M-8 4 H4 M-8 10 H0" stroke-width="1"/>`:'');}
+    // models: a rect with a small glyph for what kind of model it is
+    let glyph='';
+    if(l.includes('embedding'))glyph=`<path d="M-22 -6 H-14 M-22 0 H-14 M-22 6 H-14" stroke-width="1"/><circle cx="-8" cy="-6" r="1.2" fill="${INK}"/><circle cx="-8" cy="0" r="1.2" fill="${INK}"/><circle cx="-8" cy="6" r="1.2" fill="${INK}"/>`;
+    else if(l.includes('rerank'))glyph=`<path d="M-24 8 V-2 M-19 8 V-8 M-14 8 V2" stroke-width="1.4"/>`;
+    else if(l.includes('router'))glyph=`<path d="M-26 0 H-19 M-19 0 L-13 -7 M-19 0 L-13 7" stroke-width="1.1"/>`;
+    else if(l.includes('entity')||l.includes('linking'))glyph=`<path d="M-25 -2 a4 4 0 0 1 8 0 M-17 2 a4 4 0 0 1 -8 0 M-21 -1 v2" stroke-width="1.1"/>`;
+    else if(l.includes('planner'))glyph=`<path d="M-26 -7 H-14 M-26 -1 H-17 M-26 5 H-20" stroke-width="1.1"/>`;
+    else glyph=`<path d="M-20 -8 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2 l5 -2z" fill="${INK}" stroke="none"/>`;
+    return `<rect x="-32" y="-17" width="64" height="34" rx="2" fill="${PAPER}"/>${glyph}`;};
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(p.name)} pipeline"><defs><marker id="ah" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L7 4 L1 7" fill="none" stroke="${INK}" stroke-width="1.1"/></marker></defs>`;
+  // positions: icon centre (x,y); a column's right edge is where its outgoing connectors start
+  const pos=cols.map((c,i)=>{const stacked=c.length>1;const total=c.length*rowH;const y0=stacked?centreY-total/2+rowH/2:centreY-labelH/2+4;
+    return c.map((n,j)=>({x:cx[i]+(stacked?34:43),y:stacked?y0+j*rowH:y0,n,stacked,right:cx[i]+colW(c),left:cx[i]}));});
+  // stage numbers
+  s+=`<g font-family="SF Mono,Menlo,Consolas,monospace" font-size="10" fill="${MUTE}" text-anchor="middle">`+cols.map((c,i)=>`<text x="${cx[i]+colW(c)/2}" y="12">${i+1}</text>`).join('')+'</g>';
+  // connectors: leave a column at its right edge (past the label when stacked), enter the next at the icon's left edge; orthogonal when fanning
+  s+=`<g fill="none" stroke="${INK}" stroke-width="1.1" marker-end="url(#ah)" class="flow">`;
+  for(let i=0;i<pos.length-1;i++){const A=pos[i],B=pos[i+1];
+    for(const a of A)for(const b of B){const ax=a.stacked?a.right:a.x+24,x2=b.stacked?b.left+8:b.x-24,mx=(ax+x2)/2,y1=a.y,y2=b.y;
+      s+=y1===y2?`<path d="M${ax+2} ${y1} H${x2-2}"/>`:`<path d="M${ax+2} ${y1} H${mx} V${y2} H${x2-2}"/>`;}}
+  s+='</g>';
+  // nodes
+  s+=`<g fill="none" stroke="${INK}" stroke-width="1.3">`;
+  for(const col of pos)for(const {x,y,n,stacked} of col){s+=`<g transform="translate(${x} ${y})">${g(n)}</g>`;}
+  s+='</g>';
+  // labels
+  for(const col of pos)for(const {x,y,n,stacked} of col){
+    if(stacked){const lx=x+hw(n)+10;s+=`<text x="${lx}" y="${y+(n.s?-1:4)}" font-family="SF Mono,Menlo,Consolas,monospace" font-size="10.5" fill="${INK}">${esc(n.l)}</text>`;
+      if(n.s)s+=`<text x="${lx}" y="${y+12}" font-family="Iowan Old Style,Palatino,Georgia,serif" font-style="italic" font-size="11" fill="${MUTE}">${esc(n.s)}</text>`;}
+    else{s+=`<text x="${x}" y="${y+40}" font-family="SF Mono,Menlo,Consolas,monospace" font-size="10.5" fill="${INK}" text-anchor="middle">${esc(n.l)}</text>`;
+      if(n.s)s+=`<text x="${x}" y="${y+54}" font-family="Iowan Old Style,Palatino,Georgia,serif" font-style="italic" font-size="11" fill="${MUTE}" text-anchor="middle">${esc(n.s)}</text>`;}}
   return s+'</svg>';
+}
+function figcaption(p,i){
+  const models=p.stages.flat().filter(n=>n.k==='model').length,stores=p.stages.flat().filter(n=>n.k==='store').length;
+  return `Fig. ${i+1} · ${esc(p.name)}. ${p.stages.length} stages, ${models} model ${models===1?'call':'calls'} and ${stores} ${stores===1?'store':'stores'} at query time. Coloured shapes are what the pattern retrieves from; black shapes are models.`;
 }
 
 function render(){
@@ -532,7 +578,7 @@ function render(){
   $('pname').innerHTML=esc(p.name)+`<small>pattern 0${pi+1} of 7</small>`;
   $('ptag').textContent=p.tag;
   $('ledger').innerHTML=`calls<b>${esc(COST[p.id][0])}</b><br>latency<b>${esc(COST[p.id][1])}</b><br>cost vs naive<b>${esc(COST[p.id][2])}</b>`;
-  $('diag').innerHTML=diagram(p);
+  $('diag').innerHTML=diagram(p)+`<p class="fig">${figcaption(p,pi)}</p>`;
   $('padds').textContent=p.adds;$('pcost').textContent=p.cost;$('pfail').textContent=p.fail;
   $('qs').innerHTML=Q.map((qq,i)=>{const v=R[p.id][qq.n].v;return `<button class="q${i===qi?' on':''}" data-i="${i}"><span class="qn">${qq.n}</span><i class="vc ${v}" title="predicted ${VL[v]}"></i><span>${esc(qq.t)}</span></button>`}).join('');
   $('tests').innerHTML=`<b>${q.n} tests</b> ${esc(q.tests)}`;
