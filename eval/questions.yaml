@@ -1,0 +1,46 @@
+# The six fixed questions and their reference answers. Written before any pipeline runs.
+# Status per question: ready | pending (what it waits for). Shirley approves this file before v1 measures anything.
+# Dates on the site are month + year; exact dates here are fine, they are not published.
+
+- id: Q1
+  tests: a single quotation that sits in the index; the control every pattern should pass
+  status: pending Kindle highlights (next week)
+  question: "Where did I read the line about [a phrase from one of my highlights]?"
+  reference: "The book and the highlight, with its location, quoted back. Nothing else."
+
+- id: Q2
+  tests: a filter over the ledger; numbers and dates have no meaning to a similarity search
+  status: ready (Notion ratings merged 10 Sep 2026; Lifechanging counts as five stars)
+  question: "What did I read in 2024, rated five stars, under 300 pages?"
+  reference: |
+    Exactly three books, and nothing else: I Who Have Never Known Men (Jacqueline Harpman, 206 pages),
+    A Different Drummer (William Melvin Kelley, 245 pages), The Color Purple (Alice Walker, 287 pages).
+    Any other title is wrong; the four 2024 books Shirley chose not to rate can never appear.
+  sql: see service/patterns/sql_forced.py
+
+- id: Q3
+  tests: contradicting sources about one book: her low rating and notes vs the crowd's average
+  status: ready (Notion notes are the "review"; crowd average from Open Library)
+  question: "Why did I give The Fellowship of the Ring two stars when everyone else loved it?"
+  reference: |
+    Shirley's own reason, from her Notion notes on the book, stated as hers, ranked above any admiring
+    passages and above the crowd figure (Open Library average 4.34). If her notes give no reason, say so
+    rather than invent one.
+
+- id: Q4
+  tests: a relationship between two books, held in neither book's chunks
+  status: pending graph extraction (v2); reference fixed after the extraction table is reviewed
+  question: "Which of my books argue with each other?"
+  reference: "Pairs linked by a MENTIONS or ARGUES_WITH edge in graph.json, each with the highlight or note that proves the link."
+
+- id: Q5
+  tests: an answer that starts from pixels
+  status: pending photo crops (Shirley's yes on the copyright rule) and the multimodal index (v3)
+  question: "[A photographed page] Which book is this, and what did I highlight near it?"
+  reference: "The correct title from the photo, then the highlights nearest that page."
+
+- id: Q6
+  tests: a deliverable that needs the ledger, the recommendation edges, the abandoned books' themes, and a plan
+  status: pending recommendations.csv and the graph (v2); the abandoned shelf is `dnf` (one book: In Ascension) plus titles Shirley names
+  question: "Build me a two-week holiday list from my to-read shelf: nothing over 400 pages, one recommended by a friend, nothing like the last three I abandoned."
+  reference: "Only to-read books, every one under 400 pages, at least one with a recommendation edge, none sharing a theme with the last three abandoned, arranged over two weeks."

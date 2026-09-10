@@ -15,6 +15,14 @@ No framework, no build step, no external requests. Each page is one self-contain
 
 The corpus itself (the curated exports) is not in the repo and never will be. The photos, the extracted graph, the question set and every result CSV will be.
 
+## Build the ledger (v1)
+
+```bash
+python3 service/ingest/build_db.py
+```
+
+Reads the git-ignored exports in `corpus/` and writes `service/data/library.sqlite`, printing the counts that the method page publishes. `service/answer.py` is the one interface every pattern and the eval call.
+
 ## Run locally
 
 ```bash
