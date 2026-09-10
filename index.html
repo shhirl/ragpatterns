@@ -145,8 +145,8 @@
   .live .lr{padding:18px 24px 22px;min-height:180px}
   .live .lr .route{font-family:var(--mono);font-size:11.5px;color:var(--mute);margin-bottom:10px}
   .live .lr .ans{white-space:pre-line;font-size:16px;line-height:1.5;padding:12px 14px;background:var(--soft);border-left:3px solid var(--acc)}
-  .live .lr .q{font-family:var(--sans);font-size:13px;color:var(--mute);margin:0 0 10px}
-  .live .lr .q b{color:var(--ink);letter-spacing:.1em;text-transform:uppercase;font-size:10.5px;margin-right:8px}
+  .live .lr .qq{font-family:var(--sans);font-size:13px;color:var(--mute);margin:0 0 10px}
+  .live .lr .qq b{color:var(--ink);letter-spacing:.1em;text-transform:uppercase;font-size:10.5px;margin-right:8px}
   .live .lr pre{font-family:var(--mono);font-size:11px;background:var(--bg);padding:10px 12px;overflow:auto;margin:12px 0 0;border:1px solid var(--line)}
   @media (max-width:760px){.live .lb{grid-template-columns:1fr}.live .lq{border-right:0;border-bottom:1px solid var(--ink)}}
   /* scorecard (wide) */
@@ -292,7 +292,7 @@
     <div class="lh"><b>Ask the ledger</b><span class="st" id="lst"><i></i>checking the service…</span></div>
     <div class="lb">
       <div class="lq" id="lq"></div>
-      <div class="lr" id="lr"><p class="q">Pick a question. Nothing here is a prediction: the service runs the query and returns the rows.</p></div>
+      <div class="lr" id="lr"><p class="qq">Pick a question. Nothing here is a prediction: the service runs the query and returns the rows.</p></div>
     </div>
   </div>
 </section>
@@ -708,11 +708,11 @@ function live(){
   $('lq').addEventListener('click',async e=>{const b=e.target.closest('button');if(!b||b.disabled)return;
     document.querySelectorAll('#lq button').forEach(x=>x.classList.toggle('on',x===b));
     const q=b.dataset.q, t=LIVEQ.find(x=>x[0]===q)[1];
-    $('lr').innerHTML=`<p class="q"><b>${q}</b>${esc(t)}</p><div class="route">asking the service…</div>`;
+    $('lr').innerHTML=`<p class="qq"><b>${q}</b>${esc(t)}</p><div class="route">asking the service…</div>`;
     try{const r=await fetch(API+'/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({qid:q})});const d=await r.json();
       if(!r.ok)throw new Error(d.error||r.status);
-      $('lr').innerHTML=`<p class="q"><b>${q}</b>${esc(t)}</p><div class="route">route: ${esc(d.route)} · calls: ${d.calls} · ${d.ms} ms · served by ${esc(d.version)}</div><div class="ans">${esc(d.answer)}</div><pre>${esc(d.sql||'')}</pre>`;
-    }catch(err){$('lr').innerHTML=`<p class="q"><b>${q}</b>${esc(t)}</p><div class="route">could not reach the service (${esc(String(err.message||err))}). When it is deployed at api.ragpatterns.com this button returns the ledger rows.</div>`;}
+      $('lr').innerHTML=`<p class="qq"><b>${q}</b>${esc(t)}</p><div class="route">route: ${esc(d.route)} · calls: ${d.calls} · ${d.ms} ms · served by ${esc(d.version)}</div><div class="ans">${esc(d.answer)}</div><pre>${esc(d.sql||'')}</pre>`;
+    }catch(err){$('lr').innerHTML=`<p class="qq"><b>${q}</b>${esc(t)}</p><div class="route">could not reach the service (${esc(String(err.message||err))}). When it is deployed at api.ragpatterns.com this button returns the ledger rows.</div>`;}
   });
 }
 const goEx=()=>$('ex').scrollIntoView({behavior:'smooth',block:'start'});
