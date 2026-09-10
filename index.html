@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Seven RAGs, one shelf — the pattern is the product</title>
-<meta name="description" content="Seven RAG design patterns run on one real bookshelf: a Goodreads export, Kindle highlights, and the same six questions, so the only thing that changes is the architecture.">
+<meta name="description" content="Seven RAG design patterns run on one real bookshelf: a Goodreads export, Kindle highlights, and the same nine questions, so the only thing that changes is the architecture.">
 <style>
   :root{--bg:#fbfaf7;--ink:#1a1a1a;--ink2:#3d3a33;--mute:#7a7568;--line:#e5e2da;--soft:#f3f1ea;--rule:#ece9e0;
         --naive:#b8741a;--rerank:#3b6bb0;--multimodal:#8a2f7a;--graph:#2f8a6a;--hybrid:#c2621a;--agentic:#2f6f9f;--multiagent:#6b2f8a;--acc:#1f5e4e;
@@ -195,12 +195,12 @@
 <div class="wrap hero">
   <p class="kicker"><i>v0</i> · predicted, not yet measured</p>
   <h1>Seven RAGs, one shelf. The pattern is the product.</h1>
-  <p class="lede">Retrieval-augmented generation is not one technique any more. It is seven designs that solve seven different problems, and most teams pick one by accident. This page runs all seven on the same small, real knowledge base and the same six questions, so the only thing that changes between columns is the architecture.</p>
+  <p class="lede">Retrieval-augmented generation is not one technique any more. It is seven designs that solve seven different problems, and most teams pick one by accident. This page runs all seven on the same small, real knowledge base and the same nine questions, so the only thing that changes between columns is the architecture.</p>
   <p>The knowledge base is my own bookshelf: a Goodreads export, my Kindle highlights, a list of who recommended what, and a few photographed pages. I chose it because I can tell a right answer from a plausible one in a second, which is the whole job when you evaluate retrieval, and because "it invented a book I never read" is the most legible failure a RAG system can have. Every trace below is a prediction of how each pipeline handles the question. Nothing is measured yet. <a href="how-its-built.html">How it's built</a> says what gets measured and when.</p>
   <div class="shelf">
     <div class="books" id="books"></div>
     <div class="plank"></div>
-    <div class="shelfcap"><span>height = predicted score out of 6 (correct 1, partial ½) · width = cost vs naive · both predicted, not measured</span><span>pick a spine to open its trace ↓</span></div>
+    <div class="shelfcap"><span>height = predicted score out of 9 (correct 1, partial ½) · width = cost vs naive · both predicted, not measured</span><span>pick a spine to open its trace ↓</span></div>
   </div>
 </div>
 
@@ -232,8 +232,8 @@
     <tr><td>Photos</td><td>covers, a few photographed pages, one shelf</td><td>answers with no text form</td></tr>
     <tr><td>Extracted graph</td><td>who wrote what, who recommended what, which books mention or argue with which, themes</td><td>built once by a model with a fixed schema, published as JSON so a missed edge is visible</td></tr>
   </table>
-  <h3>The six questions</h3>
-  <p>One per failure mode, plus one that everything should get right. Each has a reference answer written before any pipeline runs. The exact titles get fixed once the export is inspected; the shape of each question does not change. The graded predictions are in the explorer below.</p>
+  <h3>The nine questions</h3>
+  <p>Six were planned, one per failure mode plus one that everything should get right. Three more came from asking my own shelf what I actually wanted to know: my favourites in a theme, my top themes, and my top themes by year. Each has a reference answer written before any pipeline runs, computed from the ledger where it can be. Q2 and Q3 now name real books; Q1 waits for the Kindle file. The graded predictions are in the explorer below.</p>
 </section>
 </div>
 
@@ -336,19 +336,25 @@ const P = [
 const Q = [
  {n:'Q1',t:'Where did I read the line about [a phrase from one of my highlights]?',tests:'a single quotation that sits in the index. Every pattern should get this right; what differs is what it costs.'},
  {n:'Q2',t:'What did I read in 2024, rated five stars, under 300 pages?',tests:'a filter over the ledger. Numbers and dates have no meaning to a similarity search.'},
- {n:'Q3',t:'Why did I give [a book] two stars when everyone else loved it?',tests:'contradicting sources: my review, my own admiring highlights from the same book, and the crowd\'s 4.3 average.'},
+ {n:'Q3',t:'Why did I give The Fellowship of the Ring two stars when everyone else loved it?',tests:'contradicting sources: my review, my own admiring highlights from the same book, and the crowd\'s 4.3 average.'},
  {n:'Q4',t:'Which of my books argue with each other?',tests:'a relationship between two books, held in neither book\'s chunks.'},
  {n:'Q5',t:'[A photographed page] Which book is this, and what did I highlight near it?',tests:'an answer that starts from pixels, then needs the ledger and the highlights.'},
- {n:'Q6',t:'Build me a two-week holiday list from my to-read shelf: nothing over 400 pages, one recommended by a friend, nothing like the last three I abandoned.',tests:'a deliverable that needs the ledger, the recommendation edges, the abandoned books\' themes, and a plan.'}
+ {n:'Q6',t:'Build me a two-week holiday list from my to-read shelf: nothing over 400 pages, one recommended by a friend, nothing like the last three I abandoned.',tests:'a deliverable that needs the ledger, the recommendation edges, the abandoned books\' themes, and a plan.'},
+ {n:'Q7',t:'Give me my favourite books I have read about race.',tests:'a numbers filter (my rating) joined to a meaning filter (a theme). The ledger alone cannot name the theme; the index alone cannot see the rating.'},
+ {n:'Q8',t:'What are the themes I like most?',tests:'an aggregate over the whole shelf. A similarity search cannot count, and a graph can only count what it carries.'},
+ {n:'Q9',t:'What were my top themes each year?',tests:'an aggregate grouped by time, on a shelf where my own tags stop after 2022. The right answer says which years are unknown.'}
 ];
 
 const REF = {
  Q1:'The book and the highlight, with its location, quoted back. Nothing else.',
- Q2:'Exactly the ledger rows with date read in 2024, my rating 5, pages under 300. Zero titles from outside the ledger.',
- Q3:'The reason from my own review, ranked above my highlights and above the crowd\'s average.',
+ Q2:'Exactly three: I Who Have Never Known Men, A Different Drummer, The Color Purple. Nothing else; the four 2024 books I never rated can never appear.',
+ Q3:'My own reason, from my notes on the book, ranked above any admiring passage and above the crowd\'s 4.34. If my notes give no reason, say so rather than invent one.',
  Q4:'Pairs of books linked by a MENTIONS or ARGUES_WITH edge, each with the highlight that proves the link.',
  Q5:'The correct title from the photo, then the highlights nearest that page.',
- Q6:'Only to-read books, every one under 400 pages, at least one with a recommendation edge, none sharing a theme with the last three abandoned, arranged over two weeks.'
+ Q6:'Only to-read books, every one under 400 pages, at least one with a recommendation edge, none sharing a theme with the last three abandoned, arranged over two weeks.',
+ Q7:'By my own "Race" tag and five stars: The Nickel Boys, The Underground Railroad, The Bluest Eye, Friday Black. Beloved only if the answer says it is inferred, not tagged. Nothing I rated lower or never read.',
+ Q8:'Most read: Fantasy, then Science Fiction and Classics. Most loved: Historical Fiction, ten of twenty at five stars. Said as my tags, with the extracted themes beside them from v2.',
+ Q9:'By my tags: 2019 Fantasy, Dystopia, Science Fiction · 2020 Fantasy, Contemporary, Historical Fiction · 2021 Fantasy, Thriller, Classics · 2022 Fantasy, Classics, Science Fiction. From 2023 on: too few tagged books to rank, and the answer must say so.'
 };
 
 const R = {
@@ -370,7 +376,16 @@ naive:{
   w:'<b>Partial at best.</b> Nothing in a text index can look at a photograph.'},
  Q6:{v:'partial',tr:[['embed','Question embedded as one vector.'],['retrieve','Top-4: highlights near "holiday", "recommend", "gave up". Nothing from the to-read shelf, no page counts, no recommendation list.'],['prompt','Four chunks and the question.']],
   a:'A friendly list of books, some already read, page counts unknown, recommendations unverified, abandoned books ignored.',
-  w:'<b>Partial.</b> Four constraints, four sources, one retrieval. It cannot compose, so it improvises.'}},
+  w:'<b>Partial.</b> Four constraints, four sources, one retrieval. It cannot compose, so it improvises.'},
+ Q7:{v:'partial',tr:[['embed','"favourite" and "race" embedded together as one vector.'],['retrieve','Top-4: my notes on Beloved and The Nickel Boys, a copied passage from Such a Fun Age, a highlight about class. Ratings never appear, because the ledger is not embedded.'],['prompt','Four chunks and the question.']],
+  a:'Beloved, The Nickel Boys, Such a Fun Age, and one more it half-remembers, all presented as favourites.',
+  w:'<b>Predicted partial: right theme, wrong "favourite".</b> Similarity can find what a book is about; it cannot see the rating column. Such a Fun Age was five stars, but that is luck, not retrieval.'},
+ Q8:{v:'wrong',tr:[['embed','"themes I like most" is a question about the whole shelf, embedded as if it were about one chunk.'],['retrieve','Top-4: whichever notes contain the word "theme" or "love". Four books out of two hundred.'],['prompt','Four chunks and the question.']],
+  a:'A confident ranking with counts: "you read mostly literary fiction and memoir".',
+  w:'<b>Predicted wrong.</b> An aggregate needs every row; a similarity search returns four. The counts in the answer are invented, and Fantasy, the real top tag, is not even in the context.'},
+ Q9:{v:'wrong',tr:[['embed','Years are numbers; the vector lands near notes that happen to mention a year.'],['retrieve','Top-4: three notes, one copied passage, from three different years.'],['prompt','Four chunks and the question.']],
+  a:'A theme per year for 2019 through 2024, each sounding plausible.',
+  w:'<b>Predicted wrong, twice over.</b> It cannot group, and it does not know that my tags stop after 2022, so it produces confident themes for 2024 from nothing. The trap in this question is the confident answer.'}},
 rerank:{
  Q1:{v:'good',tr:[['retrieve','Top-20 by cosine, including the same-author highlight from another book.'],['rerank','Cross-encoder scores each chunk against the question: the exact highlight first, the other book\'s highlight drops to the bottom.'],['prompt','Top-4 after reranking.']],
   a:'Quotes the line back with book and location.',
@@ -389,7 +404,16 @@ rerank:{
   w:'<b>Same as naive.</b> Reranking text does not create images.'},
  Q6:{v:'partial',tr:[['retrieve','Top-20 highlights near the question\'s words.'],['rerank','Sharper highlights, same missing sources: no shelf, no page counts, no recommendations, no abandoned list.'],['prompt','Top-4 after reranking.']],
   a:'A list with better-chosen books and the same unverified constraints.',
-  w:'<b>Partial.</b> The sources this question needs are not mentioned in the question, so they cannot win a relevance contest.'}},
+  w:'<b>Partial.</b> The sources this question needs are not mentioned in the question, so they cannot win a relevance contest.'},
+ Q7:{v:'partial',tr:[['retrieve','Top-20 by similarity: notes and passages about race, class, empire.'],['rerank','The cross-encoder promotes chunks that actually discuss race over ones that merely mention it.'],['prompt','Top-4 after reranking. Still no ratings.']],
+  a:'Beloved, The Nickel Boys, The Underground Railroad, Natives, as the books I "clearly loved".',
+  w:'<b>Predicted partial.</b> Better chunks, same blind spot: the reranker ranks text, and my rating is not text. Natives was five stars but tagged Politics and Memoir, so even the theme is a guess.'},
+ Q8:{v:'wrong',tr:[['retrieve','Top-20 by similarity.'],['rerank','Reranks twenty chunks against "themes I like most". None of them is a count.'],['prompt','Top-4.']],
+  a:'A ranking with invented proportions.',
+  w:'<b>Predicted wrong.</b> Reranking improves which four chunks the model sees. Four chunks cannot answer a question about two hundred rows.'},
+ Q9:{v:'wrong',tr:[['retrieve','Top-20.'],['rerank','Chunks that mention years rise to the top.'],['prompt','Top-4.']],
+  a:'Themes per year, confident for every year including the ones with no tags.',
+  w:'<b>Predicted wrong.</b> Same failure as naive, better dressed.'}},
 multimodal:{
  Q1:{v:'good',tr:[['embed','Question embedded in the shared text-image space.'],['retrieve','Top-4: the highlight, two neighbours, and the cover image of that book (image-to-text match).'],['prompt','Three chunks and one image go to the vision-language model.']],
   a:'Quotes the line back and shows the cover.',
@@ -408,7 +432,16 @@ multimodal:{
   w:'<b>Predicted correct. The only top-row pattern that can look at a picture.</b> Everything after the match is ordinary retrieval.'},
  Q6:{v:'partial',tr:[['embed','Question embedded in the shared space.'],['retrieve','Highlights near the question\'s words and a few covers.'],['prompt','Chunks and covers.']],
   a:'A list with pictures and the same unverified constraints.',
-  w:'<b>Partial.</b> Same composition problem as every single-retrieval pattern, now with covers.'}},
+  w:'<b>Partial.</b> Same composition problem as every single-retrieval pattern, now with covers.'},
+ Q7:{v:'partial',tr:[['embed','Text query in the shared space.'],['retrieve','Top-4: two notes about race, one cover image with a Black author\'s name on it, one unrelated photo.'],['prompt','Chunks, images and the question, to a vision-language model.']],
+  a:'Beloved and The Nickel Boys, plus the book whose cover it retrieved.',
+  w:'<b>Predicted partial.</b> Pictures add nothing to a rating filter. It inherits the text patterns\' blind spot and pays image tokens for the privilege.'},
+ Q8:{v:'wrong',tr:[['embed','Text query.'],['retrieve','Top-4 across text and images: the shelf photo scores well, because it is a picture of many books.'],['prompt','The shelf photo and three chunks.']],
+  a:'Themes read off the spines in the shelf photo, mixed with guesses.',
+  w:'<b>Predicted wrong, and the most interesting failure on this row.</b> The model will genuinely try to count the shelf photo. That is not the ledger, and it is not my tags.'},
+ Q9:{v:'wrong',tr:[['embed','Text query.'],['retrieve','Top-4 chunks that mention years.'],['prompt','Four chunks.']],
+  a:'Plausible themes per year.',
+  w:'<b>Predicted wrong.</b> No grouping, no coverage, no ledger.'}},
 graph:{
  Q1:{v:'good',tr:[['link','Entity linker finds the author or book named in the question and lands on its Book node.'],['traverse','Chunks attached to that node: its highlights. Neighbours via WROTE and ABOUT come along.'],['prompt','The highlights plus the edge list.']],
   a:'Quotes the line, then adds related books by the same author and on the same theme.',
@@ -427,7 +460,16 @@ graph:{
   w:'<b>Partial at best.</b> A text-built graph has no image nodes.'},
  Q6:{v:'partial',tr:[['link','Entities: the to-read shelf, "friend", the abandoned books.'],['traverse','RECOMMENDED edges give the friend\'s picks; ABOUT edges of the abandoned books give themes to avoid; shelf and pages are node properties.'],['prompt','A lot of useful nodes, no plan.']],
   a:'A good candidate set with the right exclusions, not arranged into two weeks.',
-  w:'<b>Partial, and the best single-retriever answer on this column.</b> The graph holds three of the four sources. It still does not compose a deliverable.'}},
+  w:'<b>Partial, and the best single-retriever answer on this column.</b> The graph holds three of the four sources. It still does not compose a deliverable.'},
+ Q7:{v:'good',tr:[['link','Entities: the theme "race and empire" (a Theme node), and "favourite" mapped to the my_rating property that Book nodes carry from the ledger.'],['traverse','Theme →ABOUT← Book, then filter Book.my_rating = 5. The edges were extracted by a model at index time; the property came from the ledger.'],['prompt','The surviving books with the note that produced each ABOUT edge.']],
+  a:'The Nickel Boys, The Underground Railroad, The Bluest Eye, Friday Black, and Beloved, flagged as an extracted theme rather than my tag.',
+  w:'<b>Predicted correct, with a visible seam.</b> The graph answers because Book nodes carry the ledger\'s rating. Beloved appears only if the extractor gave it the theme; my own tags did not. The site shows which vocabulary answered, which is the honest way to present Graph RAG.'},
+ Q8:{v:'partial',tr:[['link','No entity; the query is about all Theme nodes.'],['traverse','Count ABOUT edges per Theme node across read books.'],['prompt','The counts.']],
+  a:'The extracted themes ranked by how many books carry them: identity, race and empire, power, grief.',
+  w:'<b>Predicted partial.</b> It can count, which naive cannot. But it counts the extractor\'s themes, not my tags, and it ranks by how many books, not by how many I loved. "Most read" and "most loved" are different questions and the graph answers one.'},
+ Q9:{v:'partial',tr:[['link','Theme nodes plus the date_read property on Book nodes.'],['traverse','Group ABOUT edges by year of date_read.'],['prompt','A theme count per year.']],
+  a:'Top extracted themes per year for every year, including 2023 and 2024.',
+  w:'<b>Predicted partial.</b> Grouping works because the property is on the node. But the extracted themes cover every year evenly, so the graph does not know that my own tagging stopped in 2022, and it cannot say so. Right numbers, wrong vocabulary, no caveat.'}},
 hybrid:{
  Q1:{v:'good',tr:[['parallel','Vector: the highlight and its neighbours. Graph: the same highlights via the Book node.'],['merge','Union, deduplicated: the same four chunks.'],['prompt','Four chunks plus edges.']],
   a:'Quotes the line back.',
@@ -446,7 +488,16 @@ hybrid:{
   w:'<b>Two text retrievers are still text.</b> Same as naive at twice the cost.'},
  Q6:{v:'partial',tr:[['parallel','Graph: to-read nodes, RECOMMENDED edges, themes of the abandoned. Vector: highlights near the question.'],['merge','A good candidate set plus noise.'],['prompt','Candidates and constraints, no planner.']],
   a:'A candidate list with the right exclusions, not arranged into two weeks.',
-  w:'<b>Partial.</b> Richer context does not solve composition. Nothing here decides what week 1 and week 2 look like.'}},
+  w:'<b>Partial.</b> Richer context does not solve composition. Nothing here decides what week 1 and week 2 look like.'},
+ Q7:{v:'good',tr:[['retrieve','Vector: notes about race. Graph: Theme "race and empire" → books, filtered on my_rating = 5.'],['merge','Union: the graph\'s list plus the notes that explain each.'],['prompt','Books, ratings and the notes.']],
+  a:'The four tagged favourites and Beloved, each with a line from my notes on why.',
+  w:'<b>Predicted correct, and the best answer on the row.</b> The graph gets the list right; the vector chunks give the reasons. Two retrievers, one question that needs both.'},
+ Q8:{v:'partial',tr:[['retrieve','Vector: four chunks. Graph: ABOUT counts per theme.'],['merge','Counts plus chunks.'],['prompt','Both.']],
+  a:'The graph\'s ranking, illustrated with quotes from the four chunks.',
+  w:'<b>Predicted partial.</b> The counts come from the graph and share its limits: extracted themes, ranked by volume not by love. The vector side adds colour, not correctness.'},
+ Q9:{v:'partial',tr:[['retrieve','Vector: chunks mentioning years. Graph: themes grouped by date_read.'],['merge','Counts per year plus chunks.'],['prompt','Both.']],
+  a:'Themes per year for every year.',
+  w:'<b>Predicted partial.</b> Same as graph, with the same missing caveat about the years my tags do not cover.'}},
 agentic:{
  Q1:{v:'good',tr:[['route','Router (small model, ~300 ms): "quotation lookup" → <b>vector index</b>.'],['retrieve','Naive path: the highlight and its neighbours.'],['prompt','Four chunks, one generation call.']],
   a:'Quotes the line back.',
@@ -465,7 +516,16 @@ agentic:{
   w:'<b>Right. Remove the image retriever from the router\'s options and this cell turns partial.</b> Routing does not add capability; it selects among what you built.'},
  Q6:{v:'partial',tr:[['route','Router: "shelf filter" → <b>SQL tool</b>. One path.'],['retrieve','To-read books under 400 pages. Correct, and only one of four constraints.'],['prompt','The rows and the question.']],
   a:'A well-filtered list that ignores who recommended what and what I abandoned.',
-  w:'<b>A router picks one path.</b> This question needs three sources and a plan. No single retriever holds all of them, so the best route is still partial.'}},
+  w:'<b>A router picks one path.</b> This question needs three sources and a plan. No single retriever holds all of them, so the best route is still partial.'},
+ Q7:{v:'good',tr:[['route','Router: "a rating filter joined to a theme" → <b>SQL tool</b>, because both my rating and my tags are ledger columns.'],['retrieve','<code>SELECT title, author FROM books b JOIN tags t ON t.book_id = b.id WHERE t.tag = \'Race\' AND b.my_rating = 5 AND b.shelf = \'read\'</code>. Four rows.'],['prompt','The rows and the question.']],
+  a:'The Nickel Boys, The Underground Railroad, The Bluest Eye, Friday Black. By my own tag.',
+  w:'<b>Predicted correct.</b> One route, one query, zero invented titles. It will not mention Beloved, because I never tagged it; that is a feature of answering from the ledger and a limit the answer should state.'},
+ Q8:{v:'good',tr:[['route','Router: "count my tags" → <b>SQL tool</b>.'],['retrieve','<code>GROUP BY tag</code> over read books, with the five-star count beside each. Ten rows.'],['prompt','The rows and the question.']],
+  a:'Fantasy most read, Historical Fiction most loved, with the counts.',
+  w:'<b>Predicted correct.</b> The one question where a GROUP BY beats every embedding on the page. The model\'s job is only to notice that "most read" and "most loved" differ, and the rows make that hard to miss.'},
+ Q9:{v:'good',tr:[['route','Router: "per year" → <b>SQL tool</b>.'],['retrieve','Top three tags per year, with how many books that year had any tag at all.'],['prompt','The rows, including the coverage column.']],
+  a:'2019 to 2022 ranked; 2023 and 2024 reported as too few tagged books to rank.',
+  w:'<b>Predicted correct, if the coverage column is in the prompt.</b> The trap in this question is confidence. A query that returns "2 of 15 books tagged" makes the honest answer the easy one. Without that column, this cell drops to partial.'}},
 multiagent:{
  Q1:{v:'good',tr:[['plan','Planner: one sub-task, "find the highlight".'],['agents','Agent A → vector index → the highlight.'],['synthesize','Synthesizer writes one line from one agent\'s result.']],
   a:'Quotes the line back.',
@@ -484,7 +544,16 @@ multiagent:{
   w:'<b>Right, at the router\'s answer plus one call.</b> Nothing to compose, so nothing gained over agentic.'},
  Q6:{v:'good',tr:[['plan','Planner splits into four: (1) candidates, (2) a friend\'s pick, (3) what to avoid, (4) the plan.'],['agents','A → SQL tool → to-read books under 400 pages. B → graph → RECOMMENDED edges among them. C → graph → ABOUT themes of the three abandoned books, then excludes candidates sharing one. D → synthesizer arranges the survivors across two weeks by length.'],['synthesize','Two-week plan from four results.']],
   a:'Week 1: three shorter books, one of them the friend\'s recommendation.\nWeek 2: two longer ones, saved for the flights home.\nExcluded: everything sharing a theme with the last three I gave up on, listed so I can override.',
-  w:'<b>The only pattern that produces the deliverable.</b> Seven model calls, roughly twelve seconds, about eight times the cost of naive. That is what the expense is for, and it is only worth it on this column.'}}
+  w:'<b>The only pattern that produces the deliverable.</b> Seven model calls, roughly twelve seconds, about eight times the cost of naive. That is what the expense is for, and it is only worth it on this column.'},
+ Q7:{v:'good',tr:[['plan','Planner splits into two: (1) favourites about race by my tag, (2) the same by the extracted theme.'],['agents','A → SQL tool → four titles by tag and rating. B → graph → ABOUT "race and empire" filtered on rating → the same four plus Beloved. C → checks every title against the ledger.'],['synthesize','One list, with Beloved marked as inferred.']],
+  a:'The four tagged favourites, then Beloved as "about race by theme, not by my tag".',
+  w:'<b>Predicted correct, and the only row that shows the seam on purpose.</b> Two agents, two vocabularies, one honest answer. Five calls for a question the router answers in two.'},
+ Q8:{v:'good',tr:[['plan','Planner: (1) rank my tags, (2) rank the extracted themes, (3) compare.'],['agents','A → SQL → tags by count and by five-star count. B → graph → themes by count. C → ledger check.'],['synthesize','Two rankings side by side, with the "most read vs most loved" split.']],
+  a:'By my tags: Fantasy most read, Historical Fiction most loved. By theme: identity, race and empire, power. Both shown.',
+  w:'<b>Predicted correct.</b> The deliverable here is the comparison itself, which is why the planner earns its cost on this column and not on Q2.'},
+ Q9:{v:'good',tr:[['plan','Planner: (1) per-year tag counts with coverage, (2) per-year extracted themes, (3) reconcile.'],['agents','A → SQL → top tags per year plus "books tagged that year". B → graph → themes per year. C → flags years where A has fewer than five tagged books.'],['synthesize','Ranked years, unknown years named as unknown, extracted themes offered for the gap.']],
+  a:'2019 to 2022 by my tags; 2023 onwards "too few tags", with the extracted themes given as the model\'s best reading instead.',
+  w:'<b>Predicted correct.</b> The only pattern that can both count and say what it does not know. Eight calls, the most expensive cell on the page, and the first one where that price buys honesty rather than just coverage.'}}
 };
 
 const COST = {naive:['1','~1.5 s','1x'],rerank:['1 + reranker','~2 s','1.2x'],multimodal:['1 (image tokens)','~2.5 s','2.5x'],graph:['2 + indexing','~2.2 s','1.5x'],hybrid:['2–3','~2.5 s','1.8x'],agentic:['2–3','~2.5 s','1.5x'],multiagent:['5–8','~12 s','8x']};
@@ -494,7 +563,7 @@ const $=id=>document.getElementById(id);
 const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
 const VL={good:'correct',partial:'partial',wrong:'wrong'};
 
-// Predicted score out of 6 (correct 1, partial ½) and the cost multiplier, both read from the data above.
+// Predicted score out of 9 (correct 1, partial ½) and the cost multiplier, both read from the data above.
 const score=id=>Q.reduce((s,q)=>s+({good:1,partial:.5,wrong:0}[R[id][q.n].v]),0);
 const costx=id=>parseFloat(COST[id][2])||1;
 
@@ -502,9 +571,9 @@ function shelf(){
   // height 140–280px for 0–6; width is a flex share: 40 at 1x, +14 per doubling of cost, so the seven fill the shelf. Mobile scales in CSS.
   const SHORT={naive:'Naive',rerank:'Rerank',multimodal:'Multimodal',graph:'Graph',hybrid:'Hybrid',agentic:'Agentic',multiagent:'Multi-agent'};
   const fmt=n=>Number.isInteger(n)?String(n):n.toFixed(1);
-  $('books').innerHTML=P.map((p,i)=>{const sc=score(p.id),h=Math.round(140+sc*140/6),w=Math.round(40+14*Math.log2(costx(p.id)));
-    return `<button class="spine" data-i="${i}" style="--c:${p.color};--h:${h};--w:${w}" title="${esc(p.name)} · predicted ${fmt(sc)} of 6 · ${COST[p.id][2]} cost of naive"><span class="t long">${esc(p.name)}</span><span class="t short">${SHORT[p.id]}</span><span class="num">0${i+1}<em>${fmt(sc)}/6</em></span></button>`;}).join('');
-  $('mini').innerHTML=P.map(p=>`<i style="--c:${p.color};--h:${Math.round(140+score(p.id)*140/6)}"></i>`).join('');
+  $('books').innerHTML=P.map((p,i)=>{const sc=score(p.id),h=Math.round(140+sc*140/9),w=Math.round(40+14*Math.log2(costx(p.id)));
+    return `<button class="spine" data-i="${i}" style="--c:${p.color};--h:${h};--w:${w}" title="${esc(p.name)} · predicted ${fmt(sc)} of 9 · ${COST[p.id][2]} cost of naive"><span class="t long">${esc(p.name)}</span><span class="t short">${SHORT[p.id]}</span><span class="num">0${i+1}<em>${fmt(sc)}/9</em></span></button>`;}).join('');
+  $('mini').innerHTML=P.map(p=>`<i style="--c:${p.color};--h:${Math.round(140+score(p.id)*140/9)}"></i>`).join('');
 }
 
 function diagram(p){

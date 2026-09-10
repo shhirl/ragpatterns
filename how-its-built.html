@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>How it's built — Seven RAGs, one shelf</title>
-<meta name="description" content="The method behind the seven-pattern RAG comparison on my own bookshelf: one curated corpus, six fixed questions, reference answers written first, the same generation model everywhere, and a version plan that replaces predictions with measurements.">
+<meta name="description" content="The method behind the seven-pattern RAG comparison on my own bookshelf: one curated corpus, nine fixed questions, reference answers written first, the same generation model everywhere, and a version plan that replaces predictions with measurements.">
 <style>
   :root{--bg:#fbfaf7;--ink:#1a1a1a;--ink2:#3d3a33;--mute:#7a7568;--line:#e5e2da;--soft:#f3f1ea;--rule:#ece9e0;--acc:#1f5e4e;
         --naive:#b8741a;--rerank:#3b6bb0;--multimodal:#8a2f7a;--graph:#2f8a6a;--hybrid:#c2621a;--agentic:#2f6f9f;--multiagent:#6b2f8a;
@@ -85,13 +85,13 @@
 
 <p class="kicker">How it's built · <i>v0</i> · predicted, not yet measured</p>
 <h1>A RAG comparison I can actually grade</h1>
-<p class="lede">Seven retrieval patterns, one corpus that happens to be my own bookshelf, six fixed questions with reference answers written before any pipeline runs, the same generation model everywhere. This page is the lab notebook: what I decided, what I turned down, and what replaces prediction with measurement as each version ships.</p>
+<p class="lede">Seven retrieval patterns, one corpus that happens to be my own bookshelf, nine fixed questions with reference answers written before any pipeline runs, the same generation model everywhere. This page is the lab notebook: what I decided, what I turned down, and what replaces prediction with measurement as each version ships.</p>
 <p>I build the way I learn: make the thing, then find out where it breaks, and publish the finding-out. Version 0 is the design and the predicted traces. The measurements start at v1. Every claim on the comparison page that is currently a prediction is labelled as one, and gets a date here when it becomes a measurement.</p>
 
 <div class="stats">
   <div class="stat"><b>7</b><span>patterns, from the same seven-diagram picture everyone shares</span></div>
   <div class="stat"><b>3</b><span>files in the corpus: a Goodreads export, Kindle highlights, a list of recommendations</span></div>
-  <div class="stat"><b>6</b><span>fixed questions, one per failure mode, graded by hand</span></div>
+  <div class="stat"><b>9</b><span>fixed questions, one per failure mode, graded by hand</span></div>
   <div class="stat"><b>0</b><span>measured runs so far. That number is the roadmap.</span></div>
 </div>
 
@@ -130,12 +130,12 @@
     <tr><td>Full text</td><td>Highlights only</td><td>Whole books</td><td>A short quotation with attribution can be published; a book cannot. Highlights are also the more personal signal.</td></tr>
     <tr><td>Recommenders</td><td>Initials, from a hand-written CSV</td><td>Full names, or nothing</td><td>The people edges make the graph interesting. The people themselves stay off a public page.</td></tr>
     <tr><td>The ledger</td><td>Kept as rows in SQLite, queried by a tool</td><td>Embedding every row as text</td><td>Embedding a ledger is how a system invents a book. Keeping it as rows is what makes the Q2 column an honest test of "do you have a tool or not".</td></tr>
-    <tr><td>Question set</td><td>6 fixed questions, one per failure mode</td><td>50 random questions</td><td>Each question is a diagnostic: it should turn one pattern from wrong to right. Random questions average that out. More questions come at v5, once the pipelines run.</td></tr>
+    <tr><td>Question set</td><td>9 fixed questions, one per failure mode (six planned, three I added from my own shelf)</td><td>50 random questions</td><td>Each question is a diagnostic: it should turn one pattern from wrong to right. Random questions average that out. More questions come at v5, once the pipelines run.</td></tr>
     <tr><td>v0 as predictions</td><td>Predicted traces, labelled as such</td><td>Waiting for live pipelines</td><td>The design thinking is the product; the numbers are the proof. Shipping the thinking first, honestly labelled, beats shipping nothing. Cost: a reader who skips the label will think these are results.</td></tr>
     <tr><td>Graph construction</td><td>LLM extraction with a fixed schema (Book, Author, Person, Theme; WROTE, RECOMMENDED, ABOUT, MENTIONS, ARGUES_WITH, READ_AFTER)</td><td>A hand-built graph</td><td>A hand-built graph hides the real failure mode of Graph RAG, which is the extractor missing an edge. I want that failure to be possible, visible, and published as JSON.</td></tr>
     <tr><td>Reranker</td><td>A local cross-encoder</td><td>An LLM reranking call</td><td>Cheaper per query, and a second LLM in the loop makes it harder to attribute a fix to retrieval rather than to more model.</td></tr>
     <tr><td>Generation model</td><td>One model, one prompt template, every pattern</td><td>The "natural" model for each pattern</td><td>Change one thing at a time. If the model varies, the comparison is of models.</td></tr>
-    <tr><td>Grading</td><td>Hand labels against a written reference, plus an automatic invented-book count</td><td>An LLM judge</td><td>6 questions × 7 patterns × 5 runs is 210 answers. I can read 210 answers. A judge needs its own validation set, which at this size costs more than reading.</td></tr>
+    <tr><td>Grading</td><td>Hand labels against a written reference, plus an automatic invented-book count</td><td>An LLM judge</td><td>6 questions × 7 patterns × 5 runs is 315 answers. I can read 315 answers. A judge needs its own validation set, which at this size costs more than reading.</td></tr>
     <tr><td>Hosting</td><td>Static pages now; a small Python service for the pipelines</td><td>A full app from day one</td><td>Static pages deploy in seconds and cannot go down. The service only needs to exist for the eval runs and, at v5, the demo box.</td></tr>
   </table></div>
 </section>
@@ -155,17 +155,20 @@
 </section>
 
 <section id="questions" class="tri core">
-  <h2><span class="n">5 · The question set</span>Six questions, each built to break one pattern and be fixed by the next</h2>
+  <h2><span class="n">5 · The question set</span>Nine questions, each built to break one pattern and be fixed by the next</h2>
   <div class="tw"><table>
     <tr><th></th><th>question</th><th>tests</th><th>expected to separate</th></tr>
     <tr><td>Q1</td><td>Where did I read the line about …?</td><td>a quotation in the index</td><td>nothing. A control, unless a same-author highlight from another book outranks it</td></tr>
     <tr><td>Q2</td><td>What did I read in 2024, rated five stars, under 300 pages?</td><td>a filter over the ledger</td><td>patterns with a tool (right) from patterns without (invented titles)</td></tr>
-    <tr><td>Q3</td><td>Why did I give [book] two stars when everyone else loved it?</td><td>my review vs my highlights vs the crowd</td><td>naive (wrong) from reranked (right)</td></tr>
+    <tr><td>Q3</td><td>Why did I give The Fellowship of the Ring two stars when everyone else loved it?</td><td>my notes vs any admiring passage vs the crowd's 4.34</td><td>naive (wrong) from reranked (right)</td></tr>
     <tr><td>Q4</td><td>Which of my books argue with each other?</td><td>a relationship between two books</td><td>vector (partial) from graph and hybrid (right)</td></tr>
     <tr><td>Q5</td><td>[photo] Which book is this, and what did I highlight near it?</td><td>an answer that starts from pixels</td><td>text-only (partial) from multimodal (right)</td></tr>
     <tr><td>Q6</td><td>A two-week holiday list from my to-read shelf, under 400 pages, one from a friend, nothing like the last three I abandoned</td><td>composing four sources into a deliverable</td><td>every single-path pattern (partial) from multi-agent (right)</td></tr>
+    <tr><td>Q7</td><td>Give me my favourite books I have read about race</td><td>a rating filter joined to a theme</td><td>text-only (right theme, wrong "favourite") from anything that can see the rating column</td></tr>
+    <tr><td>Q8</td><td>What are the themes I like most?</td><td>an aggregate over the whole shelf</td><td>patterns that can count (a query, a graph) from patterns that see four chunks</td></tr>
+    <tr><td>Q9</td><td>What were my top themes each year?</td><td>an aggregate grouped by time, on tags that stop after 2022</td><td>patterns that can say "unknown" for a year from patterns that answer confidently from nothing</td></tr>
   </table></div>
-  <p>Reference answers are written before I trace a single pipeline and are shown on the comparison page next to each question. The bracketed titles get fixed once the export is inspected. A second reader grades a sample before v5; the agreement rate gets published as the ceiling, as I did for fixmybanana.</p>
+  <p>Reference answers are written before I trace a single pipeline and are shown on the comparison page next to each question. Where a reference can be computed from the ledger (Q2, Q7, Q8, Q9) it is, by a query that is published with it. Q2 and Q3 name real books; Q1 waits for the Kindle file. Three questions (Q7 to Q9) were added after the first six, because they were what I actually wanted to ask my shelf; each brings a failure mode the first six lacked. A second reader grades a sample before v5; the agreement rate gets published as the ceiling, as I did for fixmybanana.</p>
 </section>
 
 <section id="judged" class="tri core">
@@ -198,7 +201,7 @@
 <section id="versions" class="tri core">
   <h2><span class="n">7 · Versions</span>What exists, what is measured, and when</h2>
   <div class="versions">
-    <div class="ver done"><div class="v">v0<span>Sep 2026</span></div><p><b>Predicted traces.</b> Corpus chosen and its rules written, six question shapes fixed, seven pipelines traced by prediction on all six, the scorecard and decision guide published. No code has run. Every score on the comparison page is a design argument, not a measurement.</p></div>
+    <div class="ver done"><div class="v">v0<span>Sep 2026</span></div><p><b>Predicted traces.</b> Corpus chosen and its rules written, nine questions fixed (six at first, three added the next day from my own shelf), seven pipelines traced by prediction on all six, the scorecard and decision guide published. No code has run. Every score on the comparison page is a design argument, not a measurement.</p></div>
     <div class="ver soon"><div class="v">v1<span>next</span></div><p><b>Ingest, naive, reranked, and the ledger tool, live.</b> Parse both exports, build the tables, embed the highlights, add the cross-encoder and the SQL tool. Fix the real titles in the questions. Run 5× each. The first two rows of the grid become measurements, and Q2 gets its first real answer through the tool so the number exists early.</p></div>
     <div class="ver soon"><div class="v">v2</div><p><b>Graph and hybrid.</b> LLM extraction over highlights and reviews with the fixed schema, then traversal. Publish the extracted graph so a missed edge is visible. The Q4 column becomes real.</p></div>
     <div class="ver soon"><div class="v">v3</div><p><b>Multimodal.</b> Multimodal embeddings for the photos, vision-language generation. The Q5 column becomes real.</p></div>
@@ -224,7 +227,7 @@
 
 <div class="pf">
   <span>Built by Shirley · v0, September 2026 · updated when a version ships · <a href="index.html">← Seven RAGs, one shelf</a> · <a href="https://github.com/shhirl/ragpatterns">Source</a></span>
-  <span class="mini" aria-hidden="true"><i style="--c:var(--naive);--h:198"></i><i style="--c:var(--rerank);--h:222"></i><i style="--c:var(--multimodal);--h:210"></i><i style="--c:var(--graph);--h:233"></i><i style="--c:var(--hybrid);--h:233"></i><i style="--c:var(--agentic);--h:268"></i><i style="--c:var(--multiagent);--h:280"></i></span>
+  <span class="mini" aria-hidden="true"><i style="--c:var(--naive);--h:187"></i><i style="--c:var(--rerank);--h:202"></i><i style="--c:var(--multimodal);--h:194"></i><i style="--c:var(--graph);--h:233"></i><i style="--c:var(--hybrid);--h:233"></i><i style="--c:var(--agentic);--h:272"></i><i style="--c:var(--multiagent);--h:280"></i></span>
 </div>
 </div>
 </body>
