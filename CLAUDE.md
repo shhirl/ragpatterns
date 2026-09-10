@@ -28,7 +28,7 @@ Static site comparing seven RAG design patterns on Shirley's own bookshelf (Good
 
 ## Data and privacy rules (non-negotiable)
 
-- The curated exports (`corpus/*.csv`, `corpus/*.txt`) are git-ignored and never committed. Photos, `graph.json`, `eval/questions.yaml` and `eval/results/*.csv` are committed.
+- The curated exports (`corpus/*.csv`, `corpus/*.txt`, `corpus/notion/`) are git-ignored and never committed. Shirley's ratings, tags and notes come from her Notion "Book Reviews" database via its Markdown & CSV export; Goodreads is the ledger. Photos, `graph.json`, `eval/questions.yaml` and `eval/results/*.csv` are committed.
 - Goodreads "Private Notes" are never ingested. Recommenders are initials only; the initials-to-people mapping stays on Shirley's machine.
 - Highlights only, never full text. The ledger (dates, ratings, pages) is stored as rows and queried by a tool; it is never embedded.
 
