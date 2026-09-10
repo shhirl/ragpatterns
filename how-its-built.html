@@ -40,6 +40,7 @@
   table{width:100%;border-collapse:collapse;font-family:var(--sans);font-size:14px;margin:8px 0 4px}
   th{text-align:left;font-weight:600;padding:8px 6px;border-bottom:1px solid var(--ink);vertical-align:bottom}td{padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
   code{font-family:var(--mono);font-size:.88em;background:var(--soft);padding:1px 5px}
+  .prompt{font-family:var(--mono);font-size:12.5px;line-height:1.55;background:var(--soft);border-left:3px solid var(--ink);padding:12px 14px;margin:10px 0;white-space:pre-wrap;overflow-x:auto}
   .small{font-family:var(--sans);font-size:13px;color:var(--mute)}
   .note{font-family:var(--sans);font-size:13px;color:var(--mute);border:1px dashed #d9d5cb;padding:8px 12px;margin:10px 0}
   .diag{margin:18px 0;font-family:var(--sans)}.diag svg{width:100%;height:auto;display:block}
@@ -83,7 +84,7 @@
 
 <div class="wrap hero">
 
-<p class="kicker">How it's built · <i>v0</i> · every result is a prediction until a version measures it</p>
+<p class="kicker">How it's built · <i>v1</i> · naive and rerank measured September 2026 · the other five are still predictions</p>
 <h1>A RAG comparison I can actually grade</h1>
 <p class="lede">Seven retrieval patterns, one corpus that happens to be my own bookshelf, nine fixed questions with reference answers written before any pipeline runs, the same generation model everywhere. This page is the lab notebook: what I decided, what I turned down, and what replaces prediction with measurement as each version ships.</p>
 <p>I build the way I learn: make the thing, then find out where it breaks, and publish the finding-out. Version 0 is the design and the predicted traces. The measurements start at v1. Every claim on the comparison page that is currently a prediction is labelled as one, and gets a date here when it becomes a measurement.</p>
@@ -191,7 +192,7 @@
   <div class="diag"><svg viewBox="0 0 720 150" role="img" aria-label="The eval loop">
     <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1a1a1a"/></marker></defs>
     <g font-size="12" fill="#1a1a1a" font-family="-apple-system,Inter,Arial,sans-serif">
-      <rect x="10" y="45" width="120" height="60" fill="#f3f1ea" stroke="#1a1a1a"/><text x="70" y="70" text-anchor="middle">fixed question set</text><text x="70" y="88" text-anchor="middle" fill="#7a7568">6 questions, referenced</text>
+      <rect x="10" y="45" width="120" height="60" fill="#f3f1ea" stroke="#1a1a1a"/><text x="70" y="70" text-anchor="middle">fixed question set</text><text x="70" y="88" text-anchor="middle" fill="#7a7568">9 questions, referenced</text>
       <line x1="132" y1="75" x2="168" y2="75" stroke="#1a1a1a" marker-end="url(#ar)"/>
       <rect x="172" y="45" width="120" height="60" fill="#f3f1ea" stroke="#1a1a1a"/><text x="232" y="70" text-anchor="middle">run 5× per pattern</text><text x="232" y="88" text-anchor="middle" fill="#7a7568">same model, same prompt</text>
       <line x1="294" y1="75" x2="330" y2="75" stroke="#1a1a1a" marker-end="url(#ar)"/>
@@ -200,6 +201,21 @@
       <rect x="496" y="45" width="120" height="60" fill="#1a1a1a"/><text x="556" y="70" text-anchor="middle" fill="#fff">publish the grid</text><text x="556" y="88" text-anchor="middle" fill="#c9c5bb">bad cells included</text>
       <path d="M616 75 h60 v60 H70 v-28" fill="none" stroke="#1f5e4e" stroke-width="2" marker-end="url(#ar)"/><text x="360" y="128" text-anchor="middle" fill="#7a7568">same questions, same grid, every version</text>
     </g></svg></div>
+  <h3>The prompt every pattern shares</h3>
+  <p>Every pattern on this page is given the same system prompt, the same context format, the same model and the same settings. Only the chunks differ. That is the whole basis of the comparison, so here it is, verbatim:</p>
+  <div class="prompt">You answer questions about Shirley&#x27;s personal library, using only the CONTEXT below.
+
+The context holds two kinds of text: passages she highlighted in a book (the book&#x27;s words) and
+notes she wrote about a book (her words). Each is labelled with its book and author.
+
+Rules:
+- Use only the CONTEXT. Do not use anything you know about these books from elsewhere.
+- Never name a book that does not appear in the CONTEXT.
+- If the CONTEXT cannot answer the question, say so plainly and say what is missing. Do not
+  guess, and do not fill a gap with a plausible answer.
+- When you quote, quote exactly and name the book.
+- Answer in a few sentences. No preamble.</div>
+  <p>It was one sentence longer until the first pilot run. The removed line told the model that the context held no ratings, dates or page counts &mdash; which is true, but it is also most of the answer to the ledger questions, and a prompt that names the missing field is measuring itself rather than the pattern. It came out, the run was done again, and the patterns still refused rather than inventing. That refusal is theirs, not the prompt's.</p>
   <h3>What gets recorded per answer</h3>
   <div class="tw"><table>
     <tr><th>measure</th><th>how</th><th>why it matters</th></tr>
@@ -211,13 +227,16 @@
     <tr><td>Latency and $</td><td>wall clock and token usage per run</td><td>the columns that decide what ships</td></tr>
   </table></div>
   <p>The eval calls the same function the site's demo box will call, so what is measured is what a visitor gets. The question set does not change between versions, so the only thing that moves the grid is the change I made.</p>
+  <h3>What v1 cost, and what is not published</h3>
+  <p>Eighty answers came to $1.06 — about nine tenths of a cent each, against the $4–5 I estimated from the list price, because the model thinks less than I assumed on questions it decides it cannot answer. Retrieval was free: the whole index is around 100,000 tokens and Voyage's current generation carries 200 million free.</p>
+  <p><b>Latency is published in pieces, because the whole is not honest.</b> Generation ran 2.8–11.6 s, median 5.0 s. The reranker took 293–465 ms, median 361 ms, on the thirteen of forty calls that were not queued. The other twenty-seven waited: an account with no payment method gets three Voyage requests a minute, and one cell sat 58 seconds for a call that takes a third of a second. That waiting is a billing detail, not a property of retrieve-and-rerank, so it is reported separately and never as latency.</p>
 </section>
 
 <section id="versions" class="tri core">
   <h2><span class="n">7 · Versions</span>What exists, what is measured, and when</h2>
   <div class="versions">
     <div class="ver done"><div class="v">v0<span>Sep 2026</span></div><p><b>Predicted traces.</b> Corpus chosen and its rules written, nine questions fixed (six at first, three added the next day from my own shelf), seven pipelines traced by prediction on all six, the scorecard and decision guide published. No code has run. Every score on the comparison page is a design argument, not a measurement.</p></div>
-    <div class="ver soon"><div class="v">v1<span>next</span></div><p><b>Ingest, naive, reranked, and the ledger tool, live.</b> Parse both exports, build the tables, embed the highlights, add the cross-encoder and the SQL tool. Fix the real titles in the questions. Run 5× each. The first two rows of the grid become measurements, and Q2 gets its first real answer through the tool so the number exists early.</p></div>
+    <div class="ver done"><div class="v">v1<span>Sep 2026</span></div><p><b>Ingest, naive, reranked and the ledger tool, measured.</b> 479 books and 273 highlights ingested, 775 chunks embedded with <code>voyage-4</code>, the cross-encoder and the SQL tool built. Eight of the nine questions run through both patterns, five runs each: <b>80 answers, $1.06, all of them in <a href="https://github.com/shhirl/ragpatterns/tree/main/eval/results">eval/results</a></b>, graded by hand. Q5 is not among them — it needs a photograph and this pipeline takes text. Three things the run changed: no answer invented a book, in any run; naive on Q3 never retrieved the book at all, because only passage text is embedded; and reranking bought margin and better chunks without changing a single verdict. The first two rows of the grid are measurements now, and the ledger route answers Q2 live, in milliseconds, with no model call.</p></div>
     <div class="ver soon"><div class="v">v2</div><p><b>Graph and hybrid.</b> LLM extraction over highlights and reviews with the fixed schema, then traversal. Publish the extracted graph so a missed edge is visible. The Q4 column becomes real.</p></div>
     <div class="ver soon"><div class="v">v3</div><p><b>Multimodal.</b> Multimodal embeddings for the photos, vision-language generation. The Q5 column becomes real.</p></div>
     <div class="ver soon"><div class="v">v4</div><p><b>Router and multi-agent.</b> A small routing model over the five retrievers; then a planner, sub-agents and a synthesizer. The Q6 column, and the cost column, become real.</p></div>
@@ -241,8 +260,8 @@
 </section>
 
 <div class="pf">
-  <span>Built by Shirley · v0, September 2026 · updated when a version ships · <a href="index.html">← RAG patterns, side by side</a> · <a href="https://github.com/shhirl/ragpatterns">Source</a></span>
-  <span class="mini" aria-hidden="true"><i style="--c:var(--naive);--h:187"></i><i style="--c:var(--rerank);--h:202"></i><i style="--c:var(--multimodal);--h:194"></i><i style="--c:var(--graph);--h:233"></i><i style="--c:var(--hybrid);--h:233"></i><i style="--c:var(--agentic);--h:272"></i><i style="--c:var(--multiagent);--h:280"></i></span>
+  <span>Built by Shirley · v1, September 2026 · updated when a version ships · <a href="index.html">← RAG patterns, side by side</a> · <a href="https://github.com/shhirl/ragpatterns">Source</a></span>
+  <span class="mini" aria-hidden="true"><i style="--c:var(--naive);--h:218"></i><i style="--c:var(--rerank);--h:218"></i><i style="--c:var(--multimodal);--h:194"></i><i style="--c:var(--graph);--h:233"></i><i style="--c:var(--hybrid);--h:233"></i><i style="--c:var(--agentic);--h:272"></i><i style="--c:var(--multiagent);--h:280"></i></span>
 </div>
 </div>
 </body>

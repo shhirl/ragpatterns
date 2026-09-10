@@ -5,6 +5,12 @@ chunks arrive here; the model, the system prompt, the context format and the set
 identical. If a column wins, retrieval won it.
 
 Claude Opus 5 at its defaults (adaptive thinking, effort high). No pattern gets a better prompt.
+
+The prompt carries general grounding rules only. It deliberately does NOT tell the model which
+fields the index lacks: an earlier version said "the context contains no ratings, dates, page
+counts or shelf information", and the 10 Sep 2026 pilot showed that sentence was arguably
+answering the ledger questions itself. Removed on Shirley's decision so the run measures the
+pattern, not the prompt. Whatever is here is published verbatim on how-its-built.html.
 """
 import os, sys, time
 
@@ -21,8 +27,6 @@ Rules:
 - Never name a book that does not appear in the CONTEXT.
 - If the CONTEXT cannot answer the question, say so plainly and say what is missing. Do not
   guess, and do not fill a gap with a plausible answer.
-- The context contains no ratings, dates, page counts or shelf information. If the question
-  needs those, say that they are not in the context rather than estimating them.
 - When you quote, quote exactly and name the book.
 - Answer in a few sentences. No preamble."""
 

@@ -35,9 +35,9 @@ def ready(q):
 
 
 # --- automatic checks --------------------------------------------------------------------
-def _norm(t):
-    t = re.sub(r'\s*\(.*?\)\s*$', '', t or '')          # drop "(The Lord of the Rings, #1)"
-    return re.sub(r'[^a-z0-9 ]', '', t.lower()).strip()
+# They live in eval/checks.py so that grade.py computes exactly the same thing from a recorded
+# run. See that file for why the filters are what they are.
+from checks import checks, norm as _norm       # noqa: E402
 
 
 def ledger_titles(db=None):
@@ -45,34 +45,6 @@ def ledger_titles(db=None):
     out = [(r[0], _norm(r[0])) for r in con.execute('SELECT title FROM books')]
     con.close()
     return out
-
-
-QUOTED = re.compile(r'[""“]([^""”]{4,80})[""”]|\*([^*\n]{4,80})\*')
-
-
-def checks(text, context, expects, titles):
-    """Three things a machine can settle, so Shirley only has to judge the answer itself."""
-    low = ' ' + re.sub(r'[^a-z0-9 ]', ' ', (text or '').lower()) + ' '
-    named = [orig for orig, n in titles if n and len(n) > 6 and (' ' + n + ' ') in low]
-    in_context = {c.get('id') for c in (context or [])}
-    outside = sorted(set(named) - set(in_context))
-    hit = None
-    if expects:
-        want = [_norm(e) for e in expects]
-        got = [_norm(c.get('id') or '') for c in (context or [])]
-        hit = sum(1 for w in want if any(w and w in g for g in got))
-    # a title-shaped phrase in quotes that matches nothing on the shelf: a candidate invention
-    invented = []
-    for m in QUOTED.finditer(text or ''):
-        cand = _norm(m.group(1) or m.group(2) or '')
-        if cand and len(cand.split()) <= 8 and not any(cand in n or n in cand for _, n in titles if n):
-            invented.append((m.group(1) or m.group(2)).strip())
-    abstained = bool(re.search(r"\b(not in the context|cannot answer|does not contain|no (?:ratings|dates|page)"
-                               r"|isn't in the context|is not in the context|nothing (?:was )?retrieved)\b",
-                               (text or '').lower()))
-    return {'books_named': named, 'named_outside_context': outside,
-            'retrieval_hit': hit, 'retrieval_expected': len(expects or []),
-            'quoted_not_on_shelf': invented, 'abstained': abstained}
 
 
 # --- the run -----------------------------------------------------------------------------
@@ -89,6 +61,8 @@ def main():
     ap.add_argument('--q', default='')
     ap.add_argument('--tag', default='v1')
     ap.add_argument('--all-questions', action='store_true', help='include the ones still pending')
+    ap.add_argument('--merge', action='store_true',
+                    help='keep the rows already in this tag\'s files and replace only the cells re-run now')
     a = ap.parse_args()
 
     qs = questions()
@@ -116,7 +90,7 @@ def main():
                 rec = {'pattern': pattern, 'qid': q['id'], 'run': run, 'verdict': '', 'error': ''}
                 try:
                     r = answer(q['question'], pattern=pattern, cache_query=(run > 1))
-                    ch = checks(r['answer'], r.get('context'), q.get('expects'), titles)
+                    ch = checks(r['answer'], r.get('context'), q.get('expects'), titles, q['question'])
                     u = r.get('usage') or {}
                     rec.update({
                         'ok': 1, 'answer': r['answer'], 'route': r.get('route', ''),
@@ -148,11 +122,45 @@ def main():
                     print('  [%d/%d] %-7s %s run %d  FAILED %s' % (n, total, pattern, q['id'], run, e), flush=True)
                 rows.append(rec)
 
+    if not rows:
+        # An empty run must never touch the files: `--runs 0` once wrote a 0-row CSV over a
+        # measurement that had cost an hour and a dollar. It was in git; that was luck.
+        print('nothing was run, so nothing was written')
+        return
+
+    if a.merge and os.path.exists(json_path):
+        # Voyage's free tier can take a cell out mid-run. Re-running just that cell and merging
+        # keeps the rest of the measurement, which cost real money, instead of paying for it
+        # twice. A cell present in this run replaces the old one entirely; everything else stays.
+        redone = {(r['pattern'], r['qid']) for r in rows}
+        old_json = json.load(open(json_path, encoding='utf-8'))
+        kept_traces = [t for t in old_json.get('traces', []) if (t['pattern'], t['qid']) not in redone]
+        kept_rows = []
+        if os.path.exists(csv_path):
+            kept_rows = [r for r in csv.DictReader(open(csv_path, encoding='utf-8'))
+                         if (r['pattern'], r['qid']) not in redone]
+        print('merging: %d rows kept, %d cells replaced' % (len(kept_rows), len(redone)))
+        rows = kept_rows + rows
+        traces = kept_traces + traces
+        rows.sort(key=lambda r: (r['pattern'], r['qid'], int(r['run'])))
+        traces.sort(key=lambda t: (t['pattern'], t['qid'], t['run']))
+
     with open(csv_path, 'w', newline='', encoding='utf-8') as f:
         w = csv.DictWriter(f, fieldnames=FIELDS, extrasaction='ignore')
         w.writeheader()
         for r in rows:
             w.writerow(r)
+    # The traces are committed to a public repo, so a chunk leaves this file as an excerpt, not
+    # as the passage. Same limits and the same reason as export_replay.py: highlights are the
+    # book's words under the short-excerpt rule, notes are Shirley's and get more room. Grading
+    # never needed the full text - the sheet prints titles and scores - and the panel publishes
+    # excerpts anyway, so nothing downstream loses anything.
+    from export_replay import excerpt
+    for t in traces:
+        for c in t.get('context', []):
+            if c.get('text'):
+                c['text'], c['text_truncated'] = excerpt(c['text'], c.get('source'))
+
     json.dump({'tag': a.tag, 'date': stamp, 'model': config.GEN_MODEL,
                'embed_model': config.EMBED_MODEL, 'rerank_model': config.RERANK_MODEL,
                'runs': a.runs, 'traces': traces}, open(json_path, 'w', encoding='utf-8'),

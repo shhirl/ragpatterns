@@ -22,9 +22,8 @@ def run(question, image=None, k=K, candidates=CANDIDATES, cache_query=False):
     t0 = time.time()
     wide, embed_tokens, cached = vector.search(question, k=candidates, cache_query=cache_query)
     retrieve_ms = int((time.time() - t0) * 1000)
-    t1 = time.time()
-    chunks, rerank_tokens = rr.rerank(question, wide, k=k)
-    rerank_ms = int((time.time() - t1) * 1000)
+    chunks, rerank_tokens, rt = rr.rerank(question, wide, k=k)
+    rerank_ms, rerank_wait_ms = rt['api_ms'], rt['wait_ms']
     out = _generate.generate(question, chunks)
     out.update({
         'route': 'embed -> top-%d by cosine -> cross-encoder rerank -> top-%d -> generate' % (candidates, k),
@@ -32,7 +31,7 @@ def run(question, image=None, k=K, candidates=CANDIDATES, cache_query=False):
                      'cosine': c['score'], 'vector_rank': c['vector_rank'], 'stage': 'reranked',
                      'text': c['text'], 'author': c['author'], 'location': c.get('location'),
                      'book_id': c['book_id']} for c in chunks],
-        'retrieve_ms': retrieve_ms, 'rerank_ms': rerank_ms,
+        'retrieve_ms': retrieve_ms, 'rerank_ms': rerank_ms, 'rerank_wait_ms': rerank_wait_ms,
         'embed_tokens': embed_tokens, 'rerank_tokens': rerank_tokens,
         'query_embedding_cached': cached,
     })

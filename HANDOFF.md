@@ -486,3 +486,95 @@ can be attributed: the chunk knows its book without the title being embedded.
 7. Method page §7: v1 `done`, with the date and the real numbers.
 8. Update the `v0` kicker on both pages only when Shirley says the version has shipped.
 9. One PR, the template checklist, Shirley merges. **Never merge, never push to main.**
+
+## 11. Session 5 (10 Sep 2026, evening): v1 measured
+
+**Read §10 first for what was built. This section is what happened when it ran.**
+
+### 11.1 The run
+
+`eval/results/v1-2026-09-10.{csv,json}` — 16 cells (naive and rerank × Q1, Q2, Q3, Q4, Q6, Q7,
+Q8, Q9), five runs each, **80 answers, $1.06, about 21 minutes of wall clock**. Q5 is not in it:
+it needs a photograph and this pipeline takes text, so that cell stays a prediction until v3.
+The pilot of §10.1a is preserved as `v1-pilot-2026-09-10.*`.
+
+Shirley's decisions this session, both taken before anything was spent:
+
+- **The prompt sentence came out** (§10.1a finding 2, option A). `_generate.py` no longer tells
+  the model that the context holds no ratings, dates or page counts. The general grounding rules
+  stayed — a baseline with no "use only the context" instruction would be a straw man. Checked on
+  Q2 before the full run: both patterns still refuse. **The refusal is the pattern's, not the
+  prompt's.** The prompt is now published verbatim on the method page, so a reader can check.
+- **Eight questions, five runs.** Q5 excluded for the reason above.
+- **"I can't answer that" is partial** (Shirley, 10 Sep 2026). This is now the rule `grade.py`
+  proposes by, and it sits **above** the retrieval-miss rule: a pattern that never retrieved the
+  book and then said so has failed at retrieval and been honest about it; one that never
+  retrieved it and answered anyway is the one that is wrong.
+
+### 11.2 What the run found
+
+1. **Nothing invented a book, in any of the 80 answers.** The v0 page predicted naive/Q2 would
+   produce "a confident list of five or six titles with dates". It refuses. This is the single
+   biggest correction the measurement makes to the page.
+2. **naive/Q3 never retrieved the book at all** — 0 of 1, every run, both patterns. Only passage
+   text is embedded (§10.7), so naming a book in the question does not fetch that book. The v0
+   prediction (retrieves the admiring highlights, speculates about the ending) was wrong about
+   *where* the failure is, and reranking cannot fix it: the book is not among the thirty
+   candidates, so there is nothing to promote.
+3. **Reranking changed no verdict.** It bought margin (Q1: a 0.13 cosine gap became a 0.57
+   cross-encoder gap), better chunks (Q7: A Different Drummer from 13th; Q8: the two notes that
+   state a preference rather than the ones that list themes) and one real find (Q4: the note where
+   Shirley records Pullman against Narnia — an ARGUES_WITH edge without a graph). Naive and rerank
+   score **identically, 5.0 of 9**.
+4. **The prediction most expected to fail held.** naive/Q1 did not misattribute: 0.560 against
+   0.433, all five runs.
+
+### 11.3 The grading regimes do not match, and the page says so
+
+A measured refusal scores half a mark under Shirley's ruling. The five predicted rows were written
+assuming invention, which scores nothing. So naive and rerank sit higher on the shelf than they may
+once the others are actually run. `#scorecard` states this plainly; do not quietly drop it when v2
+lands — restate it, or re-grade the predictions.
+
+### 11.4 Bugs the run exposed, all fixed here
+
+- **Two rate limiters, one budget.** `vector.py` and `rerank.py` each held their own, each stayed
+  inside three requests a minute, and together they did six. Fourteen rerank answers died on 429s.
+  There is now one `config.VOYAGE` limiter and both take their turn from it. The reranker also
+  **retries** a 429 now; the embedder always did.
+- **`--merge`.** A refilled cell replaces its old rows and the rest of the run survives. Both
+  refills used it.
+- **Rerank time included the queueing.** One cell reported 58 s for a model that takes a third of
+  a second. `rerank()` now returns `api_ms` and `wait_ms` separately, and only `api_ms` is
+  published. Same reasoning as §10.1a finding 3 for embedding.
+- **The automatic checks were wrong in four ways** and each one turned an honest cell red: the
+  abstention pattern missed "can't answer", "there's nothing about X in your library context",
+  "I can't break your themes down by year" and "I'd need a note"; a title the question itself
+  names counted as invented (Q3); "One Day" counted in any sentence about a day; and "Shirley"
+  counted because it is a Brontë novel as well as the person being addressed.
+- **`grade.py` proposed `wrong` for quoting.** The quoted-phrase check fires on any short
+  quotation, including the exact highlight a correct Q1 answer must quote.
+- **The checks now live in `eval/checks.py`**, imported by both scripts, and `grade.py`
+  **recomputes them from the recorded answers**. That is what let all of the above be fixed
+  without paying to measure anything again. Keep that property.
+- **`run.py` refuses to write an empty run.** `--runs 0` wrote a 0-row CSV over the measurement;
+  it was recoverable only because the results were already committed. Commit results immediately.
+
+### 11.5 What is still open
+
+1. **Shirley has confirmed the ruling, not the grid.** The 14 cells her rule settles carry it; Q1
+   (good, both) is unchanged from v0 and agrees with the measurement; **Q4 (both patterns) is
+   still hers to rule on** and carries its v0 `partial`. `eval/results/v1-2026-09-10-verdicts.csv`
+   has an empty `final` column. §3.8 stands.
+2. `service/data/replay.json` is exported and committed, ungraded — the panel says "measured, not
+   yet graded" until `final` is filled and it is re-exported.
+3. ~~`api.ragpatterns.com` does not exist yet.~~ **Deployed 10 Sep 2026**, Claude driving
+   Shirley's browser, she was signed in to Railway and Cloudflare already. Project `ragpatterns`,
+   service `web`, `main`, auto-deploy on push; CNAME + the TXT verification record Railway now
+   also wants. `https://api.ragpatterns.com/health` answers 200 with the right CORS header.
+   **Until PR #19 merges the service is serving `main`, which has no `replay.json`, so only the
+   SQL route answers and naive/rerank return 404.** Merging fixes that by itself: Railway
+   redeploys on push to main. Full record in `DEPLOY.md`.
+4. `eval/questions.yaml` still has not been formally approved (§6.3, §10.5).
+5. The kicker on both pages now reads **v1**. Shirley has not said the word "shipped"; if she
+   would rather it stayed v0 until she merges, that is a one-line revert.

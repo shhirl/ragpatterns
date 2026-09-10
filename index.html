@@ -174,6 +174,8 @@
   .matrix td.c .vc{display:block;margin:0 auto}
   .matrix td.c:hover .vc{outline:2px solid var(--ink);outline-offset:1px}
   .matrix td.c.sel .vc{outline:2px solid var(--ink);outline-offset:1px}
+  .matrix td.c.meas{position:relative}
+  .matrix td.c.meas::after{content:"";position:absolute;left:50%;transform:translateX(-50%);bottom:1px;width:var(--sq);height:2px;background:var(--ink)}
   .matrix th:first-child,.matrix td.name{width:1%}
   .matrix td.name{white-space:nowrap;font-weight:600;padding-left:16px;padding-right:26px}
   .matrix td.name i{display:inline-block;width:7px;height:22px;margin-right:10px;vertical-align:middle;border-radius:1px;background:var(--c);box-shadow:inset -2px 0 0 rgba(0,0,0,.2)}
@@ -183,6 +185,7 @@
   .legend{display:flex;gap:20px;align-items:center;color:var(--mute);margin:14px 0 0;font-family:var(--sans);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;flex-wrap:wrap}
   .legend span{display:inline-flex;align-items:center;gap:8px}
   .legend .vc{--sq:12px}
+  .legend .vc.meask{background:var(--soft);border:1px solid var(--line);box-shadow:0 3px 0 -1px var(--ink)}
   .guide{display:grid;grid-template-columns:1fr;gap:0;border-top:1px solid var(--ink);margin-top:16px}
   .g{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:16px 0;border-bottom:1px solid var(--line)}
   .g .ask{font-size:18px;line-height:1.35}
@@ -229,7 +232,7 @@
 </div></div>
 
 <div class="wrap hero">
-  <p class="kicker"><i>v0</i> · every result is a prediction until a version measures it</p>
+  <p class="kicker"><i>v1</i> · naive and rerank measured September 2026 · the other five are still predictions</p>
   <h1>RAG patterns, side by side. Tested on my own bookshelf.</h1>
   <p class="lede">Retrieval-augmented generation is not one technique any more. It is seven designs that solve seven different problems, and most teams pick one by accident. This page runs all seven on the same small, real knowledge base and the same nine questions, so the only thing that changes between columns is the architecture.</p>
   <p>The knowledge base is my own bookshelf: a Goodreads export, my Kindle highlights, a list of who recommended what, and a few photographed pages. I chose it because I can tell a right answer from a plausible one in a second, which is the whole job when you evaluate retrieval, and because "it invented a book I never read" is the most legible failure a RAG system can have. Every trace below is a prediction of how each pipeline handles the question. Nothing is measured yet. <a href="how-its-built.html">How it's built</a> says what gets measured and when. The first real piece is already running: <a href="#live">ask the ledger ↓</a>.</p>
@@ -269,7 +272,7 @@
     <tr><td>Extracted graph</td><td>who wrote what, who recommended what, which books mention or argue with which, themes</td><td>built once by a model with a fixed schema, published as JSON so a missed edge is visible</td></tr>
   </table>
   <h3>The nine questions</h3>
-  <p>Six were planned, one per failure mode plus one that everything should get right. Three more came from asking my own shelf what I actually wanted to know: my favourites in a theme, my top themes, and my top themes by year. Each has a reference answer written before any pipeline runs, computed from the ledger where it can be. Q2 and Q3 now name real books; Q1 waits for the Kindle file. The graded predictions are in the explorer below.</p>
+  <p>Six were planned, one per failure mode plus one that everything should get right. Three more came from asking my own shelf what I actually wanted to know: my favourites in a theme, my top themes, and my top themes by year. Each has a reference answer written before any pipeline runs, computed from the ledger where it can be. Q1, Q2 and Q3 name real books: the Kindle file never arrived, but five of my Notion pages turned out to hold pasted clippings, so the control question has a real target. The graded predictions are in the explorer below.</p>
 </section>
 </div>
 
@@ -293,13 +296,13 @@
       <div class="qs" id="qs"></div>
       <div class="res">
         <p class="tests" id="tests"></p>
-        <table class="trace"><thead><tr><th>step</th><th>what the pipeline is expected to do</th></tr></thead><tbody id="trace"></tbody></table>
-        <div class="ans"><div class="lab"><span id="alab">predicted answer</span><span class="r"><span class="badge ghost">predicted</span><span class="badge" id="badge"></span></span></div><div class="txt" id="atxt"></div></div>
+        <table class="trace"><thead><tr><th>step</th><th id="thwhat">what the pipeline is expected to do</th></tr></thead><tbody id="trace"></tbody></table>
+        <div class="ans"><div class="lab"><span id="alab">predicted answer</span><span class="r"><span class="badge" id="badge"></span></span></div><div class="txt" id="atxt"></div></div>
         <p class="why" id="why"></p>
       </div>
     </div>
   </div>
-  <p class="note">v0: every trace on this page is a prediction written from how the pipeline is designed and what the corpus contains. No pipeline has run. Each cell is replaced by a real trace, with the date, as the version that measures it ships; the schedule is in <a href="how-its-built.html#versions">How it's built</a>.</p>
+  <p class="note"><b>Two rows are measured, five are not.</b> Naive RAG and retrieve-and-rerank were run against the real shelf in September 2026 — eight questions, five runs each, eighty answers; every trace, cost and refusal is in <a href="https://github.com/shhirl/ragpatterns/tree/main/eval/results">the repo</a>, including the runs that disagree with what this page predicted. The other five patterns, and Q5 for every pattern, are still predictions written from how the pipeline is designed: each cell says which it is, and each is replaced by a real trace as the version that measures it ships. The schedule is in <a href="how-its-built.html#versions">How it's built</a>.</p>
 
   <h3 id="live-h">Ask the ledger, live</h3>
   <p>The built part of the system, running as a service, through the same <code>answer()</code> interface the eval calls. Three routes, and the panel says which one answered. <b>The ledger</b> runs its query against the shelf now, live, for nothing. <b>Naive</b> and <b>rerank</b> replay their measured run: a model call on a public page would spend money on every click and could disagree with the trace above it, so what you get is the measurement, with its date, its cost and the chunks it actually retrieved. The patterns that are still predictions are not offered here at all.</p>
@@ -315,9 +318,13 @@
 <section id="scorecard" class="tri core">
   <h2><span class="n">§04 · The scorecard</span>Nobody wins every column, and the cheapest pattern wins the first one</h2>
   <div class="scroll"><table class="matrix" id="matrix"></table></div>
-  <div class="legend"><span><i class="vc good"></i> predicted correct</span><span><i class="vc partial"></i> partial or generic</span><span><i class="vc wrong"></i> wrong or invented</span><span style="text-transform:none;letter-spacing:0">· click a square to open its trace</span></div>
-  <p style="margin-top:18px">Three things to read off the grid. Every pattern gets the easy question right, so the easy question tells you nothing about which pattern to use. The Q2 column splits the table cleanly into patterns with a tool and patterns without one, and no amount of embedding quality moves a pattern across that line. And reranking fixes the most common failure for the price of one extra call, which is why it should be the first upgrade, not the graph.</p>
-  <p>The prediction I most expect to be wrong is naive on Q1. Kindle highlights are short, so the nearest chunk is sometimes a different book quoting the same author. If that happens, Q1 stops being a control and reranking earns its call one column earlier.</p>
+  <div class="legend"><span><i class="vc good"></i> correct</span><span><i class="vc partial"></i> partial, or right to refuse</span><span><i class="vc wrong"></i> wrong or invented</span><span><i class="vc meask"></i> underscored = measured, September 2026</span><span style="text-transform:none;letter-spacing:0">· click a square to open its trace</span></div>
+  <p style="margin-top:18px">Three things to read off the grid. Every pattern gets the easy question right, so the easy question tells you nothing about which pattern to use. The Q2 column splits the table cleanly into patterns with a tool and patterns without one, and no amount of embedding quality moves a pattern across that line — that one is now measured, not argued: naive and rerank both refuse Q2, and the ledger route answers it in eleven milliseconds with no model call at all. And reranking is still the first upgrade I would make, but for a narrower reason than I wrote here in v0; see below.</p>
+  <h3>What the measured rows changed</h3>
+  <p><b>The prediction I most expected to be wrong held.</b> I expected naive to misattribute Q1, because Kindle highlights are short and the nearest chunk is sometimes a different book quoting the same author. It did not: the right highlight led by 0.13, in all five runs. Two predictions broke instead, and both broke in the same direction.</p>
+  <p><b>Nothing invented a book. Not once in eighty answers.</b> This page predicted that naive on Q2 would produce "a confident list of five or six titles with dates", at least one of them not in the library. What it does is say plainly that the context holds no ratings, dates or page counts, and stop. I removed the sentence in the shared prompt that named those missing fields, in case the prompt was doing the refusing, and re-ran it: it still refuses. The failure this page was built to dramatise is real — retrieval finds nothing useful for a ledger question — but the invention I predicted on top of it did not happen with this model. That is worth more than being right.</p>
+  <p><b>Read the two measured rows against the five predicted ones carefully.</b> They are not graded the same way, and I would rather say so than let the grid flatter them. A measured refusal scores half a mark here, because refusing honestly is not the answer but is not a lie either; the five predicted rows were written assuming the pipeline would invent, and invention scores nothing. Naive and rerank therefore sit higher on the shelf than they might once the other five are actually run — and they now sit at exactly the same height as each other, which is itself the finding: on these nine questions, at v1, one extra call bought margin and better chunks, and not one extra correct answer.</p>
+  <p><b>Reranking cannot fix what was never retrieved.</b> I predicted Q3 was the cell where the cross-encoder earns its call: it would promote my review over my own admiring highlights. In fact <i>The Fellowship of the Ring</i> never reaches the context at all, for either pattern, in any run — only passage text is embedded, so naming a book in the question does not fetch that book. Reranking fixes the wrong four out of thirty. It has nothing to say about a book that was not in the thirty. What it did earn, measured: it turned Q1's 0.13 margin into 0.57 for 361 ms, and on Q4 it surfaced the one note where I wrote down a quarrel between two books — an argument found without a graph.</p>
 </section>
 </div>
 
@@ -335,7 +342,7 @@
 </section>
 
 <div class="pf">
-  <span>Built by Shirley · v0, September 2026 · <a href="how-its-built.html">How it's built →</a></span>
+  <span>Built by Shirley · v1, September 2026 · <a href="how-its-built.html">How it's built →</a></span>
   <span class="mini" id="mini" aria-hidden="true"></span>
 </div>
 </div>
@@ -380,7 +387,7 @@ const P = [
 ];
 
 const Q = [
- {n:'Q1',t:'Where did I read the line about [a phrase from one of my highlights]?',tests:'a single quotation that sits in the index. Every pattern should get this right; what differs is what it costs.'},
+ {n:'Q1',t:'Where did I read the line about leaving a movie theatre and realising it had been dark outside for some time?',tests:'a single quotation that sits in the index. Every pattern should get this right; what differs is what it costs.'},
  {n:'Q2',t:'What did I read in 2024, rated five stars, under 300 pages?',tests:'a filter over the ledger. Numbers and dates have no meaning to a similarity search.'},
  {n:'Q3',t:'Why did I give The Fellowship of the Ring two stars when everyone else loved it?',tests:'contradicting sources: my review, my own admiring highlights from the same book, and the crowd\'s 4.3 average.'},
  {n:'Q4',t:'Which of my books argue with each other?',tests:'a relationship between two books, held in neither book\'s chunks.'},
@@ -392,7 +399,7 @@ const Q = [
 ];
 
 const REF = {
- Q1:'The book and the highlight, with its location, quoted back. Nothing else.',
+ Q1:'Such a Fun Age (Kiley Reid), Kindle location 2290-2293, the passage quoted back. Nothing else: the phrase sits in exactly one chunk, so naming any other book is wrong.',
  Q2:'Exactly three: I Who Have Never Known Men, A Different Drummer, The Color Purple. Nothing else; the four 2024 books I never rated can never appear.',
  Q3:'My own reason, from my notes on the book, ranked above any admiring passage and above the crowd\'s 4.34. If my notes give no reason, say so rather than invent one.',
  Q4:'Pairs of books linked by a MENTIONS or ARGUES_WITH edge, each with the highlight that proves the link.',
@@ -405,61 +412,61 @@ const REF = {
 
 const R = {
 naive:{
- Q1:{v:'good',tr:[['embed','Question embedded as one vector.'],['retrieve','Top-4 by cosine over highlight chunks: the highlight itself, two neighbours from the same book, and one from a different book that quotes the same author.'],['prompt','Four chunks and the question. One call.']],
-  a:'Quotes the line back with the book and its Kindle location. Right, because the highlight is in the index verbatim.',
-  w:'<b>Predicted correct, one call, about a second.</b> Also the prediction most likely to be wrong on this page: if the other book\'s highlight outranks the real one, naive misattributes the quote and Q1 stops being a control.'},
- Q2:{v:'wrong',tr:[['embed','"2024", "five stars" and "300 pages" carry no meaning for a similarity search; the query lands near highlights that happen to mention years or stars.'],['retrieve','Top-4: highlights whose text contains a year, a rating word, or "pages". None is a ledger row, because the ledger is not embedded.'],['prompt','Four unrelated highlights and the question.']],
-  a:'A confident list of five or six titles with dates. Prediction: at least two read in a different year, one still on the to-read shelf, and one that is not in the library at all.',
-  w:'<b>Predicted wrong, and invented.</b> Numbers need a query, not a similarity. This is the column that separates the patterns with a tool from the patterns without one, and no embedding upgrade moves a pattern across that line.'},
- Q3:{v:'wrong',tr:[['embed','Question embedded as one vector.'],['retrieve','Top-4: three of my own highlights from that book, which are exactly the passages I liked enough to mark, and one sentence of my review.'],['prompt','Three admiring quotes, one critical sentence, the question.']],
-  a:'Explains that I clearly enjoyed the book, quoting the highlighted lines, and speculates that the rating must reflect the ending or the pacing.',
-  w:'<b>Predicted wrong.</b> My highlights share more words with the question than the one review that answers it. Similarity found what I marked, not what I thought.'},
- Q4:{v:'partial',tr:[['embed','Question embedded as one vector.'],['retrieve','Top-4: highlights that contain "argue", "disagree", or name another author.'],['prompt','Four chunks and the question.']],
-  a:'Names one or two books whose highlights mention another writer, without knowing whether that writer\'s book is on my shelf.',
-  w:'<b>Partial.</b> A relationship between two books lives in neither book\'s chunks. The pipeline can see one end of the edge at a time.'},
+ Q1:{v:'good',m:1,tr:[['embed','The question becomes one vector. voyage-4, 1024 dimensions, 245 ms.'],['retrieve','Top-4 by cosine: Such a Fun Age 0.560, then Burnt Sugar 0.433, Howards End 0.401, Girl, Woman, Other 0.393. The right highlight leads by 0.13.'],['prompt','Four chunks and the question. One call, 3.1 s, $0.008.']],
+  a:'Quotes the line back, names Such a Fun Age and Kiley Reid, gives the Kindle location. The same answer in all five runs.',
+  w:'<b>Measured correct, September 2026.</b> The control does what a control should: the passage is in the index verbatim and one vector finds it. The misattribution I predicted here did not happen — the three books under it are not near enough to matter.'},
+ Q2:{v:'partial',m:1,tr:[['embed','"2024", "five stars" and "300 pages" become one vector like any other words.'],['retrieve','Top-4: Pachinko 0.441, The Years 0.420, Friday Black 0.415, Murder on the Orient Express 0.414. Four notes about books, no ledger rows — 0 of the 3 books the reference names.'],['prompt','Four unrelated notes and the question. 4.6 s, $0.011.']],
+  a:'Says the context holds no ratings, dates or page counts, names the four books it did get, and stops. Every run.',
+  w:'<b>Measured partial, September 2026 — and the prediction on this page was wrong.</b> I predicted a confident list of five or six titles, at least one invented. What happens is a refusal. Retrieval fails completely, because the ledger is rows and rows are never embedded, and the model says so rather than filling the gap. Honest, and still not the answer.'},
+ Q3:{v:'partial',m:1,tr:[['embed','Question embedded as one vector, the book\'s title included in the words.'],['retrieve','Top-4: Acceptance 0.430, A Wizard of Earthsea 0.384, Such a Fun Age 0.369, Little Fires Everywhere 0.354. The Fellowship of the Ring is not among them — 0 of 1, in every run.'],['prompt','Four chunks about four other books. 3.9 s, $0.010.']],
+  a:'Says there is nothing about The Fellowship of the Ring in the context, lists what it did get, and says it would need a note or highlight from the Tolkien.',
+  w:'<b>Measured partial, September 2026 — and it fails earlier than predicted.</b> I predicted it would retrieve my admiring highlights and speculate about the ending. It never retrieved the book at all. Only passage text is embedded, so naming a book in the question does not fetch that book. The failure is retrieval\'s, and the model is honest about it.'},
+ Q4:{v:'partial',m:1,tr:[['embed','Question embedded as one vector.'],['retrieve','Top-4, and the scores are the lowest on the page: Such a Fun Age 0.320, The Amber Spyglass 0.318, Girl, Woman, Other 0.318, The Song of Achilles 0.314. Nothing in the index is much like this question.'],['prompt','Four chunks and the question. 8.6 s, $0.020 — the most expensive naive answer measured.']],
+  a:'Says nothing in the context stages an explicit dispute, then pairs Such a Fun Age with Girl, Woman, Other on privilege: a real resonance, not an argument.',
+  w:'<b>Measured September 2026.</b> Four chunks, four books, no edges. A relationship between two books lives in neither book\'s chunks, so what comes back is theme-matching — and it writes at length about what it cannot quite show, which is what makes it the priciest cell in this row.'},
  Q5:{v:'partial',tr:[['embed','There is nothing to embed: the pipeline takes text, so the best it gets is the user describing the page in words.'],['retrieve','Top-4 highlights nearest that description.'],['prompt','Four chunks and the description.']],
-  a:'Guesses a book from the description and lists highlights from it. Cannot see the page.',
-  w:'<b>Partial at best.</b> Nothing in a text index can look at a photograph.'},
- Q6:{v:'partial',tr:[['embed','Question embedded as one vector.'],['retrieve','Top-4: highlights near "holiday", "recommend", "gave up". Nothing from the to-read shelf, no page counts, no recommendation list.'],['prompt','Four chunks and the question.']],
-  a:'A friendly list of books, some already read, page counts unknown, recommendations unverified, abandoned books ignored.',
-  w:'<b>Partial.</b> Four constraints, four sources, one retrieval. It cannot compose, so it improvises.'},
- Q7:{v:'partial',tr:[['embed','"favourite" and "race" embedded together as one vector.'],['retrieve','Top-4: my notes on Beloved and The Nickel Boys, a copied passage from Such a Fun Age, a highlight about class. Ratings never appear, because the ledger is not embedded.'],['prompt','Four chunks and the question.']],
-  a:'Beloved, The Nickel Boys, Such a Fun Age, and one more it half-remembers, all presented as favourites.',
-  w:'<b>Predicted partial: right theme, wrong "favourite".</b> Similarity can find what a book is about; it cannot see the rating column. Such a Fun Age was five stars, but that is luck, not retrieval.'},
- Q8:{v:'wrong',tr:[['embed','"themes I like most" is a question about the whole shelf, embedded as if it were about one chunk.'],['retrieve','Top-4: whichever notes contain the word "theme" or "love". Four books out of two hundred.'],['prompt','Four chunks and the question.']],
-  a:'A confident ranking with counts: "you read mostly literary fiction and memoir".',
-  w:'<b>Predicted wrong.</b> An aggregate needs every row; a similarity search returns four. The counts in the answer are invented, and Fantasy, the real top tag, is not even in the context.'},
- Q9:{v:'wrong',tr:[['embed','Years are numbers; the vector lands near notes that happen to mention a year.'],['retrieve','Top-4: three notes, one copied passage, from three different years.'],['prompt','Four chunks and the question.']],
-  a:'A theme per year for 2019 through 2024, each sounding plausible.',
-  w:'<b>Predicted wrong, twice over.</b> It cannot group, and it does not know that my tags stop after 2022, so it produces confident themes for 2024 from nothing. The trap in this question is the confident answer.'}},
+  a:'A guess from the description, not the page.',
+  w:'<b>Not measured at v1.</b> The question needs a photograph and this pipeline takes text. The cell stays a prediction until the multimodal version exists.'},
+ Q6:{v:'partial',m:1,tr:[['embed','Question embedded as one vector.'],['retrieve','Top-4: Pachinko 0.416, Howards End 0.405, Lanark 0.405, A Little Luck 0.401. Notes on four books already read.'],['prompt','Four chunks and the question. 5.8 s, $0.014.']],
+  a:'Refuses: no to-read shelf, no page counts, no record of who recommended what, no abandoned list. Names what it did get and stops.',
+  w:'<b>Measured partial, September 2026.</b> The question needs four sources and the index holds one. Every source it is missing is a row or an edge, and neither is in the index.'},
+ Q7:{v:'partial',m:1,tr:[['embed','Question embedded as one vector: "favourite" and "race" together.'],['retrieve','Top-4: Beloved 0.539, Natives 0.536, Howards End 0.523, Girl, Woman, Other 0.522. All genuinely about race — and 0 of the 4 books the reference names.'],['prompt','Four chunks and the question. 7.0 s, $0.017.']],
+  a:'Says the notes do not rank favourites, then lists the four books in the context that touch on race.',
+  w:'<b>Measured partial, September 2026.</b> The theme half of the question works: everything retrieved really is about race. The rating half cannot, because "favourite" is a number in the ledger and numbers are not embedded. Half a question answered is exactly what this pattern can do.'},
+ Q8:{v:'partial',m:1,tr:[['embed','Question embedded as one vector.'],['retrieve','Top-4: The Broken Kingdoms 0.467, Lanark 0.464, Cold Enough for Snow 0.404, The Catcher in the Rye 0.398.'],['prompt','Four chunks standing in for two hundred read books. 6.1 s, $0.012.']],
+  a:'Says the notes do not record which themes I like most, then points at what recurs in the four it has: identity, outsiderness, alienation.',
+  w:'<b>Measured partial, September 2026.</b> Not wrong — just four books\' worth of an answer about a shelf of five hundred. A count is not something four chunks can hold.'},
+ Q9:{v:'partial',m:1,tr:[['embed','Question embedded as one vector.'],['retrieve','Top-4: The Broken Kingdoms 0.392, Lanark 0.373, The Underground Railroad 0.322, Tales of Nevèrÿon 0.320. No chunk carries a date.'],['prompt','Four undated chunks and a question about years. 4.1 s, $0.009.']],
+  a:'Says the notes carry no dates, so it cannot break the themes down by year, and says what it would need instead.',
+  w:'<b>Measured partial, September 2026.</b> The one thing this question turns on — when I read each book — is the one thing the index never sees.'}},
 rerank:{
- Q1:{v:'good',tr:[['retrieve','Top-20 by cosine, including the same-author highlight from another book.'],['rerank','Cross-encoder scores each chunk against the question: the exact highlight first, the other book\'s highlight drops to the bottom.'],['prompt','Top-4 after reranking.']],
-  a:'Quotes the line back with book and location.',
-  w:'<b>Same answer, one more call.</b> If naive misattributes on this question, this is the row that fixes it, for about 400 ms.'},
- Q2:{v:'wrong',tr:[['retrieve','Top-20 by cosine: twenty highlights.'],['rerank','Every candidate is a highlight. The reranker cannot rank rows that were never retrieved, and the ledger is not in the index.'],['prompt','Top-4 after reranking, all irrelevant.']],
-  a:'A shorter, hedged list of titles with guessed dates.',
-  w:'<b>Predicted wrong, less confidently.</b> A reranker cleans a list; it cannot create the ledger.'},
- Q3:{v:'good',tr:[['retrieve','Top-20: my highlights from the book, my review in two chunks, the ledger row rendered as text with both ratings.'],['rerank','Question and chunk read together: "why two stars" matches the review, not the admiring quotes. Review first, the ratings row second, highlights below the cut.'],['prompt','Top-4 after reranking.']],
-  a:'Quotes the reason from my review and notes the gap between my rating and the crowd\'s average.',
-  w:'<b>Predicted correct by one extra call.</b> The cheapest fix for the most common failure: the reranker knows the difference between what I marked and what I said.'},
- Q4:{v:'partial',tr:[['retrieve','Top-20 highlights that mention other authors.'],['rerank','Scores each chunk alone. A link between two chunks is not a property of either.'],['prompt','Top-4 after reranking.']],
-  a:'Names a few books whose highlights mention other writers. Same answer as naive, cleaner.',
-  w:'<b>Partial.</b> Reranking sharpens relevance to the words in the question. The edge between two books is not in any chunk to rank.'},
+ Q1:{v:'good',m:1,tr:[['retrieve','Top-30 by cosine. The right highlight is already first, at 0.560, with Burnt Sugar behind it at 0.433.'],['rerank','The cross-encoder reads the question and each chunk together: Such a Fun Age rises to 0.922, the runner-up falls to 0.356. A margin of 0.13 becomes 0.57. 362 ms.'],['prompt','Top-4 after reranking. 3.0 s to generate, $0.008.']],
+  a:'The same answer as naive: the line, the book, the author, the Kindle location. All five runs.',
+  w:'<b>Measured correct, September 2026.</b> The reranker did exactly what it exists to do and changed nothing, because naive was already right. What it bought is margin: 0.560 against 0.433 is a coin-flip away from misattribution, 0.922 against 0.356 is not. The insurance cost 362 ms and no extra model call.'},
+ Q2:{v:'partial',m:1,tr:[['retrieve','Top-30 by cosine: thirty notes and highlights, no ledger rows.'],['rerank','Real work on relevance — Annihilation climbs from 23rd to 3rd, Mr Loverman from 8th — and none of it helps. 362 ms.'],['prompt','Top-4 after reranking: Pachinko 0.508, Friday Black 0.500, Annihilation 0.496, Mr Loverman 0.490. 3.9 s, $0.011.']],
+  a:'The same refusal as naive, in fewer words. Nothing invented, in any run.',
+  w:'<b>Measured partial, September 2026.</b> This is the line the whole page is about, and one extra call does not cross it. A reranker reorders what the vector search found; the ledger was never in the list to be reordered.'},
+ Q3:{v:'partial',m:1,tr:[['retrieve','Top-30 by cosine. The Fellowship of the Ring is not among the thirty.'],['rerank','The cross-encoder promotes Howards End from 12th to 1st and Authority from 25th to 4th: confident reordering of the wrong candidates.'],['prompt','Top-4 after reranking, none of them the book asked about. 3.4 s, $0.009.']],
+  a:'Refuses in all five runs: the book is not in the context.',
+  w:'<b>Measured partial, September 2026 — and this is where the prediction was most wrong.</b> I predicted this was the cell where reranking earns its keep, promoting my review over my admiring highlights. It cannot. The book never appears in the thirty candidates, so there is nothing to promote. Reranking fixes the wrong four out of thirty; it cannot fix a book that was never retrieved.'},
+ Q4:{v:'partial',m:1,tr:[['retrieve','Top-30 by cosine, all of them weak: nothing in the index is much like this question.'],['rerank','Pulls The Amber Spyglass from 5th to 1st, A Promised Land from 23rd, Poverty, by America from 28th. 404 ms.'],['prompt','Top-4 after reranking. 11.1 s, $0.024 — the most expensive answer measured on this page.']],
+  a:'Says nothing sets two books directly against each other, then finds a real quarrel anyway: my own note on The Amber Spyglass recording Pullman against Narnia.',
+  w:'<b>Measured September 2026, and the most interesting cell here.</b> Reranking surfaced the one note where I wrote down a fight between two books — an ARGUES_WITH edge, found without a graph. But it found it <i>inside one note</i>, not across two books, and Narnia is not on the shelf as a book of its own. Close enough to show what the graph is for.'},
  Q5:{v:'partial',tr:[['retrieve','Text only: highlights near the user\'s description of the page.'],['rerank','Reorders text. Still no image.'],['prompt','Top-4 chunks.']],
-  a:'A guess from the description.',
-  w:'<b>Same as naive.</b> Reranking text does not create images.'},
- Q6:{v:'partial',tr:[['retrieve','Top-20 highlights near the question\'s words.'],['rerank','Sharper highlights, same missing sources: no shelf, no page counts, no recommendations, no abandoned list.'],['prompt','Top-4 after reranking.']],
-  a:'A list with better-chosen books and the same unverified constraints.',
-  w:'<b>Partial.</b> The sources this question needs are not mentioned in the question, so they cannot win a relevance contest.'},
- Q7:{v:'partial',tr:[['retrieve','Top-20 by similarity: notes and passages about race, class, empire.'],['rerank','The cross-encoder promotes chunks that actually discuss race over ones that merely mention it.'],['prompt','Top-4 after reranking. Still no ratings.']],
-  a:'Beloved, The Nickel Boys, The Underground Railroad, Natives, as the books I "clearly loved".',
-  w:'<b>Predicted partial.</b> Better chunks, same blind spot: the reranker ranks text, and my rating is not text. Natives was five stars but tagged Politics and Memoir, so even the theme is a guess.'},
- Q8:{v:'wrong',tr:[['retrieve','Top-20 by similarity.'],['rerank','Reranks twenty chunks against "themes I like most". None of them is a count.'],['prompt','Top-4.']],
-  a:'A ranking with invented proportions.',
-  w:'<b>Predicted wrong.</b> Reranking improves which four chunks the model sees. Four chunks cannot answer a question about two hundred rows.'},
- Q9:{v:'wrong',tr:[['retrieve','Top-20.'],['rerank','Chunks that mention years rise to the top.'],['prompt','Top-4.']],
-  a:'Themes per year, confident for every year including the ones with no tags.',
-  w:'<b>Predicted wrong.</b> Same failure as naive, better dressed.'}},
+  a:'A guess from the description, not the page.',
+  w:'<b>Not measured at v1.</b> The question needs a photograph and this pipeline takes text. The cell stays a prediction until the multimodal version exists.'},
+ Q6:{v:'partial',m:1,tr:[['retrieve','Top-30 by cosine.'],['rerank','Reorders thirty notes about books already read: Cold Enough for Snow from 7th, Pachinko from 11th.'],['prompt','Top-4 after reranking. 5.6 s, $0.013.']],
+  a:'The same refusal as naive, listing the four sources it would need and does not have.',
+  w:'<b>Measured partial, September 2026.</b> Reranking changed which four books it refuses with. It changed nothing else.'},
+ Q7:{v:'partial',m:1,tr:[['retrieve','Top-30 by cosine: notes and passages about race, class and empire.'],['rerank','The highest scores measured anywhere on this page — Beloved 0.664 — and it promotes A Different Drummer from 13th, one of the three books the ledger route gets right on Q2.'],['prompt','Top-4 after reranking. Still no ratings. 7.2 s, $0.018.']],
+  a:'Says the notes do not name favourites, then names the books in the context that are about race.',
+  w:'<b>Measured partial, September 2026.</b> The cross-encoder is visibly better at the theme half: its scores are 0.66 where naive\'s were 0.54, and it reached deeper into the list for a book that belongs. It still cannot see a rating, so it still cannot answer "favourite".'},
+ Q8:{v:'partial',m:1,tr:[['retrieve','Top-30 by cosine.'],['rerank','Promotes Tales of Nevèrÿon from 15th and Dune Messiah from 7th: the two notes where I state a preference outright, rather than the notes that merely list themes. 433 ms.'],['prompt','Top-4 after reranking. 7.8 s, $0.019.']],
+  a:'Says the notes do not rank themes, then quotes the two places where I say plainly what interests me.',
+  w:'<b>Measured partial, September 2026.</b> The best answer either pattern gives to this question, and a genuinely better four chunks — the reranker found the notes that state a preference instead of the notes that mention a theme. Four notes are still not a count over two hundred books.'},
+ Q9:{v:'partial',m:1,tr:[['retrieve','Top-30 by cosine.'],['rerank','Reorders by relevance to themes; no chunk carries a year, so nothing about time can be promoted.'],['prompt','Top-4 after reranking. 4.4 s, $0.012.']],
+  a:'Refuses on the dates, then lists the themes it can see without them.',
+  w:'<b>Measured partial, September 2026.</b> The same wall as naive, reached by a better road. The years are in the ledger.'}},
 multimodal:{
  Q1:{v:'good',tr:[['embed','Question embedded in the shared text-image space.'],['retrieve','Top-4: the highlight, two neighbours, and the cover image of that book (image-to-text match).'],['prompt','Three chunks and one image go to the vision-language model.']],
   a:'Quotes the line back and shows the cover.',
@@ -618,7 +625,7 @@ function shelf(){
   const SHORT={naive:'Naive',rerank:'Rerank',multimodal:'Multimodal',graph:'Graph',hybrid:'Hybrid',agentic:'Agentic',multiagent:'Multi-agent'};
   const fmt=n=>Number.isInteger(n)?String(n):n.toFixed(1);
   $('books').innerHTML=P.map((p,i)=>{const sc=score(p.id),h=Math.round(140+sc*140/9),w=Math.round(40+14*Math.log2(costx(p.id)));
-    return `<button class="spine" data-i="${i}" style="--c:${p.color};--h:${h};--w:${w}" title="${esc(p.name)} · predicted ${fmt(sc)} of 9 · ${COST[p.id][2]} cost of naive"><span class="t long">${esc(p.name)}</span><span class="t short">${SHORT[p.id]}</span><span class="num">0${i+1}<em>${fmt(sc)}/9</em></span></button>`;}).join('');
+    return `<button class="spine" data-i="${i}" style="--c:${p.color};--h:${h};--w:${w}" title="${esc(p.name)} · ${R[p.id].Q1.m?'measured':'predicted'} ${fmt(sc)} of 9 · ${COST[p.id][2]} cost of naive"><span class="t long">${esc(p.name)}</span><span class="t short">${SHORT[p.id]}</span><span class="num">0${i+1}<em>${fmt(sc)}/9</em></span></button>`;}).join('');
   $('mini').innerHTML=P.map(p=>`<i style="--c:${p.color};--h:${Math.round(140+score(p.id)*140/9)}"></i>`).join('');
 }
 
@@ -695,11 +702,14 @@ function render(){
   $('ledger').innerHTML=`calls<b>${esc(COST[p.id][0])}</b><br>latency<b>${esc(COST[p.id][1])}</b><br>cost vs naive<b>${esc(COST[p.id][2])}</b>`;
   $('diag').innerHTML=diagram(p)+`<p class="fig">${figcaption(p,pi)}</p>`;
   $('padds').textContent=p.adds;$('pcost').textContent=p.cost;$('pfail').textContent=p.fail;
-  $('qs').innerHTML=Q.map((qq,i)=>{const v=R[p.id][qq.n].v;return `<button class="q${i===qi?' on':''}" data-i="${i}"><span class="qn">${qq.n}</span><i class="vc ${v}" title="predicted ${VL[v]}"></i><span>${esc(qq.t)}</span></button>`}).join('');
+  $('qs').innerHTML=Q.map((qq,i)=>{const v=R[p.id][qq.n].v;return `<button class="q${i===qi?' on':''}" data-i="${i}"><span class="qn">${qq.n}</span><i class="vc ${v}" title="${R[p.id][qq.n].m?'measured':'predicted'} ${VL[v]}"></i><span>${esc(qq.t)}</span></button>`}).join('');
   $('tests').innerHTML=`<b>${q.n} tests</b> ${esc(q.tests)}`;
+  $('thwhat').textContent=r.m?'what the pipeline did':'what the pipeline is expected to do';
   $('trace').innerHTML=r.tr.map(([s,t],i)=>`<tr><td class="st"><em>0${i+1}</em>${esc(s)}</td><td>${t}</td></tr>`).join('')+`<tr class="ref"><td class="st">reference</td><td>${esc(REF[q.n])}</td></tr>`;
-  $('alab').textContent=`predicted answer · ${q.n}`;
-  $('badge').className='badge '+r.v;$('badge').textContent=VL[r.v];
+  // `m` marks a cell a version has actually run. Everything else on this page is still a
+  // prediction, and the two must never look alike.
+  $('alab').textContent=`${r.m?'measured answer':'predicted answer'} · ${q.n}`;
+  $('badge').className='badge '+r.v;$('badge').textContent=(r.m?'measured ':'predicted ')+VL[r.v];
   $('atxt').textContent=r.a;
   $('why').innerHTML=r.w;
   document.querySelectorAll('.matrix td.c').forEach(td=>td.classList.toggle('sel',+td.dataset.p===pi&&+td.dataset.q===qi));
@@ -708,9 +718,9 @@ function render(){
 
 function matrix(){
   let h=`<tr><th>pattern</th>${Q.map(q=>`<th class="c">${q.n}</th>`).join('')}<th class="m gap">calls / query</th><th class="m">latency*</th><th class="m">cost*</th></tr>`;
-  P.forEach((p,i)=>{h+=`<tr><td class="name" style="--c:${p.color}"><i></i>${esc(p.name)}</td>${Q.map((q,j)=>`<td class="c" data-p="${i}" data-q="${j}" title="${esc(p.name)} · ${q.n} · predicted ${VL[R[p.id][q.n].v]}"><i class="vc ${R[p.id][q.n].v}"></i></td>`).join('')}<td class="m gap">${COST[p.id][0]}</td><td class="m">${COST[p.id][1]}</td><td class="m">${COST[p.id][2]}</td></tr>`;});
+  P.forEach((p,i)=>{h+=`<tr><td class="name" style="--c:${p.color}"><i></i>${esc(p.name)}</td>${Q.map((q,j)=>`<td class="c${R[p.id][q.n].m?' meas':''}" data-p="${i}" data-q="${j}" title="${esc(p.name)} · ${q.n} · ${R[p.id][q.n].m?'measured':'predicted'} ${VL[R[p.id][q.n].v]}"><i class="vc ${R[p.id][q.n].v}"></i></td>`).join('')}<td class="m gap">${COST[p.id][0]}</td><td class="m">${COST[p.id][1]}</td><td class="m">${COST[p.id][2]}</td></tr>`;});
   $('matrix').innerHTML=h;
-  document.querySelector('.legend').insertAdjacentHTML('afterend','<p class="small" style="margin-top:10px">* call counts are structural and real; latency and relative cost are estimates for the planned v1 stack, replaced by measurements in v5.</p>');
+  document.querySelector('.legend').insertAdjacentHTML('afterend','<p class="small" style="margin-top:10px">* call counts are structural and real. For naive and rerank the latency and cost columns are now measured: a median of 5.0 s to generate and 361 ms to rerank, $0.008 to $0.024 an answer, over eighty answers in September 2026. The other five rows are still estimates for the planned stack. Retrieval time is not published: the free embedding tier allows three requests a minute, so most of a run\'s wall clock is queueing, not work.</p>');
 }
 
 // live panel: talks to the deployed service; on localhost, to the local api (launch config 'api')
@@ -729,21 +739,35 @@ function lpaint(){
     return `<button data-q="${q}" class="${q===lq?'on':''}" ${off?'disabled':''}><span class="qn">${q}</span><span>${esc(t)}${off?`<small>${esc(off)}</small>`:''}</span></button>`;}).join('');
 }
 function lms(n){return n==null?'':`${Number(n).toLocaleString()} ms`;}
+// Dates on these pages are month and year, never a day. The run records an exact date for the
+// repo; the page says "September 2026".
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+function lwhen(d){const m=/^(\d{4})-(\d{2})/.exec(d||'');return m?`${MONTHS[+m[2]-1]} ${m[1]}`:(d||'');}
 function lrender(q,t,d){
   const bits=[`route: ${esc(d.route||'')}`];
   if(d.calls!=null)bits.push(`${d.calls} model ${d.calls===1?'call':'calls'}`);
-  if(d.ms!=null)bits.push(lms(d.ms));
+  // Wall clock is only honest for the live SQL path. A replayed model cell spent most of its
+  // seconds waiting on Voyage's free tier (three requests a minute), so it reports the work:
+  // generation, and reranking where there is one.
+  if(d.live){if(d.ms!=null)bits.push(lms(d.ms));}
+  else{
+    if(d.gen_ms!=null)bits.push(`${lms(d.gen_ms)} generating`);
+    if(d.rerank_ms!=null)bits.push(`${lms(d.rerank_ms)} reranking`);
+    if(d.gen_ms==null&&d.ms!=null)bits.push(lms(d.ms));
+  }
   if(d.usd)bits.push(`$${Number(d.usd).toFixed(4)}`);
-  bits.push(d.live?'run just now':`measured ${esc(d.measured||'')}, replayed${d.runs>1?` · run ${d.shown_run} of ${d.runs}`:''}`);
+  bits.push(d.live?'run just now':`measured ${esc(lwhen(d.measured))}, replayed${d.runs>1?` · run ${d.shown_run} of ${d.runs}`:''}`);
   let head='';
   if(d.verdict)head=`<div class="vline"><i class="vc ${esc(d.verdict)}"></i>${esc(d.verdict)} · graded by Shirley</div>`;
   else if(!d.live)head=`<div class="vline">measured, not yet graded</div>`;
+  let thr='';
+  if(!d.live&&d.retrieve_ms>2000)thr=`<div class="mv" style="margin-top:6px">Retrieval is not timed here: the free embedding tier allows three requests a minute, so this run waited ${(d.retrieve_ms/1000).toFixed(0)} s for a call that takes about a quarter of a second unthrottled.</div>`;
   let ctx='';
   if(d.context&&d.context.length&&!d.live){
     ctx=`<div class="ctx"><h4>what it retrieved</h4><ol>${d.context.map(c=>
       `<li><span class="sc">${c.score==null?'':Number(c.score).toFixed(3)}</span><span class="bk">${esc(c.id||'')}</span>${c.author?` — ${esc(c.author)}`:''}${c.location?` <span class="mv">loc ${esc(c.location)}</span>`:''}${c.vector_rank?` <span class="mv">(was #${c.vector_rank} by cosine)</span>`:''}<br>${esc(c.excerpt||'')}</li>`).join('')}</ol></div>`;
   }
-  $('lr').innerHTML=`<p class="qq"><b>${q}</b>${esc(t)}</p>${head}<div class="route">${bits.join(' · ')}</div><div class="ans">${esc(d.answer||'')}</div>${d.sql?`<pre>${esc(d.sql)}</pre>`:''}${ctx}`;
+  $('lr').innerHTML=`<p class="qq"><b>${q}</b>${esc(t)}</p>${head}<div class="route">${bits.join(' · ')}</div>${thr}<div class="ans">${esc(d.answer||'')}</div>${d.sql?`<pre>${esc(d.sql)}</pre>`:''}${ctx}`;
 }
 function live(){
   lpaint();

@@ -1,0 +1,174 @@
+{
+ "tag": "v1-promptcheck",
+ "date": "2026-09-10",
+ "model": "claude-opus-5",
+ "embed_model": "voyage-4",
+ "rerank_model": "rerank-3",
+ "runs": 1,
+ "traces": [
+  {
+   "pattern": "naive",
+   "qid": "Q2",
+   "run": 1,
+   "question": "What did I read in 2024, rated five stars, under 300 pages?",
+   "answer": "The context can't answer that. My notes here cover *Pachinko*, *The Years*, *Friday Black*, and *Murder on the Orient Express*, but none of them record a star rating, a page count, or the date you read them — the only time reference is the remark in the *Pachinko* note that it was \"By far one of the best books I've read this year,\" with no year named. You'd need reading-log data (dates, ratings, page counts) that isn't in these notes.",
+   "route": "embed -> top-4 by cosine -> generate",
+   "calls": 1,
+   "ms": 6838,
+   "retrieve_ms": 2178,
+   "rerank_ms": null,
+   "gen_ms": 4005,
+   "usage": {
+    "input_tokens": 1325,
+    "output_tokens": 169,
+    "usd": 0.01085
+   },
+   "checks": {
+    "books_named": [
+     "The Years",
+     "Pachinko",
+     "Friday Black",
+     "Murder on the Orient Express (Hercule Poirot, #10)"
+    ],
+    "named_outside_context": [],
+    "retrieval_hit": 0,
+    "retrieval_expected": 3,
+    "quoted_not_on_shelf": [],
+    "abstained": false
+   },
+   "query_embedding_cached": false,
+   "context": [
+    {
+     "source": "note",
+     "id": "Pachinko",
+     "score": 0.4407,
+     "stage": "retrieved",
+     "text": "Reviews I liked:: [link](https://www.goodreads.com/review/show/2072970680?utm_content=reviews_full_review&utm_medium=email&utm_source=bookend&ref_=pe_7171740_474197500) What a marvelous, deeply engrossing novel about four generations of a Korean family in Japan. There was a lot of story here and a lot of history (of which I was woefully ignorant) and it is all rendered in impeccable prose with a…",
+     "author": "Min Jin Lee",
+     "location": null,
+     "book_id": 171,
+     "text_truncated": false
+    },
+    {
+     "source": "note",
+     "id": "The Years",
+     "score": 0.4196,
+     "stage": "retrieved",
+     "text": "Context/ Facts: - written in french, translated to english - nominated for international booker pricze Thoughts on Writing/ Narrative Details: - What I Liked About It - What I Didn't Like About It - Prose, characters, narration style? - Third person - It’s her story yet it’s everyone’s story - Witty, snarky, sarcastic - It’s about the narrator but also about us. The collective human experience…",
+     "author": "Annie Ernaux",
+     "location": null,
+     "book_id": 73,
+     "text_truncated": false
+    },
+    {
+     "source": "note",
+     "id": "Friday Black",
+     "score": 0.4154,
+     "stage": "retrieved",
+     "text": "The Book in 3 Sentences: 1. A collection of science fiction short stories that focus on the ideas of race, capitalism, terrorism, violence, racial injustice. 2. I am surprised by how the stories included a large amount of violence, science fiction and racism in a very controlled way. All the stories felt very well paced, insightful and gripping. I didn't want to put it down. 3. The extradordinary…",
+     "author": "Nana Kwame Adjei-Brenyah",
+     "location": null,
+     "book_id": 239,
+     "text_truncated": false
+    },
+    {
+     "source": "note",
+     "id": "Murder on the Orient Express (Hercule Poirot, #10)",
+     "score": 0.4141,
+     "stage": "retrieved",
+     "text": "n on crime novels. It must be something naturally human, to want to figure these things out yourself, and get pleasure out of thinking about a puzzle. And when you can't think of a solution at all, it's revealed in the end, and it's shocking. - So glad I read this. I get what all the hype is about! She really is a gifted writer. I'm so imrpessed that she can create an atmosphere that makes keeps…",
+     "author": "Agatha Christie",
+     "location": null,
+     "book_id": 283,
+     "text_truncated": false
+    }
+   ]
+  },
+  {
+   "pattern": "rerank",
+   "qid": "Q2",
+   "run": 1,
+   "question": "What did I read in 2024, rated five stars, under 300 pages?",
+   "answer": "Your notes here don't include publication dates of reading, star ratings, or page counts, so I can't answer that. The four books in the context — *Pachinko*, *Friday Black*, *Annihilation*, and *Mr Loverman* — are recorded only as impressions and summaries. The closest hints of enthusiasm are that *Pachinko* was \"By far one of the best books I've read this year\" and *Annihilation* was \"Probably one of my favourite books of all time,\" but neither states a rating, a year of reading, or a length.",
+   "route": "embed -> top-30 by cosine -> cross-encoder rerank -> top-4 -> generate",
+   "calls": 1,
+   "ms": 5333,
+   "retrieve_ms": 265,
+   "rerank_ms": 590,
+   "gen_ms": 4478,
+   "usage": {
+    "input_tokens": 1338,
+    "output_tokens": 199,
+    "usd": 0.011665
+   },
+   "checks": {
+    "books_named": [
+     "Pachinko",
+     "Mr Loverman",
+     "Friday Black",
+     "Annihilation (Southern Reach, #1)"
+    ],
+    "named_outside_context": [],
+    "retrieval_hit": 0,
+    "retrieval_expected": 3,
+    "quoted_not_on_shelf": [],
+    "abstained": false
+   },
+   "query_embedding_cached": false,
+   "context": [
+    {
+     "source": "note",
+     "id": "Pachinko",
+     "score": 0.5078,
+     "cosine": 0.4409,
+     "vector_rank": 1,
+     "stage": "reranked",
+     "text": "Reviews I liked:: [link](https://www.goodreads.com/review/show/2072970680?utm_content=reviews_full_review&utm_medium=email&utm_source=bookend&ref_=pe_7171740_474197500) What a marvelous, deeply engrossing novel about four generations of a Korean family in Japan. There was a lot of story here and a lot of history (of which I was woefully ignorant) and it is all rendered in impeccable prose with a…",
+     "author": "Min Jin Lee",
+     "location": null,
+     "book_id": 171,
+     "text_truncated": false
+    },
+    {
+     "source": "note",
+     "id": "Friday Black",
+     "score": 0.5,
+     "cosine": 0.4154,
+     "vector_rank": 3,
+     "stage": "reranked",
+     "text": "The Book in 3 Sentences: 1. A collection of science fiction short stories that focus on the ideas of race, capitalism, terrorism, violence, racial injustice. 2. I am surprised by how the stories included a large amount of violence, science fiction and racism in a very controlled way. All the stories felt very well paced, insightful and gripping. I didn't want to put it down. 3. The extradordinary…",
+     "author": "Nana Kwame Adjei-Brenyah",
+     "location": null,
+     "book_id": 239,
+     "text_truncated": false
+    },
+    {
+     "source": "note",
+     "id": "Annihilation (Southern Reach, #1)",
+     "score": 0.4961,
+     "cosine": 0.3681,
+     "vector_rank": 22,
+     "stage": "reranked",
+     "text": "What It's About: - Southern Reach is an area - Expedition goes in to explore it - You learn that there's more to this group... hypnosis, lying, - The tower, it's alive, clues about the man who used to live here... What I Liked About It: - Probably one of my favourite books of all time even though I've seen the movie. It was just as good as the movie. - The book was very atmospheric. It was so…",
+     "author": "Jeff Vandermeer",
+     "location": null,
+     "book_id": 268,
+     "text_truncated": false
+    },
+    {
+     "source": "note",
+     "id": "Mr Loverman",
+     "score": 0.4902,
+     "cosine": 0.3974,
+     "vector_rank": 8,
+     "stage": "reranked",
+     "text": "What It's About: A flamboyant older man who has lived his life in London. He has a a wife, children, and grandchildren. He has also had a relationship with his best friend for decades, but nobody knows. While his wife has travelled back to the Caribbean, It's essentially a love story, but it has a lot of depth, and it feels real. Thoughts: I liked this book more than her booker prize winner. This…",
+     "author": "Bernardine Evaristo",
+     "location": null,
+     "book_id": 237,
+     "text_truncated": false
+    }
+   ]
+  }
+ ]
+}

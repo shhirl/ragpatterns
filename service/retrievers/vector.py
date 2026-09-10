@@ -96,7 +96,7 @@ def unpack(blob):
 # estimates from character counts run low on this text, so the batches are deliberately small
 # and a rate-limit reply is retried rather than treated as a failure.
 BATCH_TOKENS, MAX_INPUTS = 3200, 96   # bigger batches: the 3-per-minute request cap binds first
-_limiter = config.Limiter()
+_limiter = config.VOYAGE          # the account's budget, shared with every other Voyage call
 
 
 def _embed_call(vo, batch, model, input_type, throttle):

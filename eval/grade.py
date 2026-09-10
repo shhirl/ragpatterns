@@ -13,6 +13,38 @@ grade. Nothing reaches the site under `final` until she has written it.
 """
 import argparse, collections, csv, json, os, re, sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from checks import abstained as _abstained, hedged as _hedged, named_outside, norm as _norm  # noqa: E402
+from run import ledger_titles                                              # noqa: E402
+
+_TITLES = None
+
+
+def _titles():
+    global _TITLES
+    if _TITLES is None:
+        _TITLES = ledger_titles()
+    return _TITLES
+
+
+def outside(trace):
+    """Books named that were not in the context, recomputed from the recorded answer.
+
+    Recomputed rather than read back, because a check that turns out to be wrong has to reach the
+    runs measured before the fix. See eval/checks.py."""
+    _, out = named_outside(trace.get('answer'), trace.get('context'), _titles(), trace.get('question'))
+    return out
+
+
+def refused(trace):
+    """Did this run say plainly that it could not answer? Recomputed, for the same reason."""
+    return _abstained(trace.get('answer'))
+
+
+def hedge(trace):
+    """A refusal that then answers a nearby question - still a refusal, a different shape."""
+    return _hedged(trace.get('answer'), trace.get('context'))
+
 
 def consistent(answers):
     """Do the five runs say the same thing? Compared on the set of books each names."""
@@ -24,19 +56,36 @@ def propose(qid, answers, ref):
     """A proposed verdict from the automatic checks alone, plus the reason, in Shirley's terms.
     Deliberately conservative: anything that needs a judgement about meaning is left to her."""
     ch = [a['checks'] for a in answers]
-    invented = any(c['named_outside_context'] or c['quoted_not_on_shelf'] for c in ch)
-    abstained = sum(1 for c in ch if c['abstained'])
+    # Naming a book that was not in the context is an invention. Quoting a phrase that matches no
+    # title is not: the quoted-phrase check fires on any short quotation, including the exact
+    # highlight a correct answer is supposed to quote. It stays in the sheet as something to read.
+    invented = any(outside(a) for a in answers)
+    abstained = sum(1 for a in answers if refused(a))
     hits = [c['retrieval_hit'] for c in ch if c['retrieval_hit'] is not None]
     want = ch[0]['retrieval_expected']
     same, _ = consistent(answers)
 
     if invented:
-        return 'wrong', 'names a book that was not in its context, or quotes a title that is not on the shelf'
-    if want and hits and max(hits) == 0:
-        return 'wrong', 'the book the reference names never reached the context: retrieval missed it in every run'
+        return 'wrong', 'names a book that was not in its context: %s' % ', '.join(
+            sorted({b for a in answers for b in outside(a)}))
+    # Shirley's ruling, 10 Sep 2026: "I can't answer that" is partial. It sits above the
+    # retrieval-miss rule on purpose. A pattern that never retrieved the book and then said so
+    # plainly has failed at retrieval and been honest about it, and honest is not wrong. A
+    # pattern that never retrieved the book and answered anyway is the one that is wrong.
     if abstained == len(ch):
-        return 'partial', ('says plainly that the context cannot answer. Right about itself, and no invention, '
-                           'but it is not the answer: judge whether "I cannot" is the correct answer here')
+        h = sum(1 for a in answers if hedge(a))
+        if h:
+            return 'partial', ('says in all %d runs that the context cannot answer as asked; %d of them then '
+                               'offer what the notes do hold. Partial by your ruling - read whether the '
+                               'substitute answer is any good' % (len(ch), h))
+        return 'partial', ('refuses flatly in all %d runs: says the context cannot answer, and names nothing '
+                           'outside it. Partial by your ruling - honest, but not the answer' % len(ch))
+    if want and hits and max(hits) == 0:
+        return 'wrong', ('answered without the source: the book the reference names never reached the context '
+                         'in any run, and %d of %d runs answered anyway' % (len(ch) - abstained, len(ch)))
+    if abstained:
+        return '', ('%d of %d runs refuse and the rest answer, so the cell is not one thing: read whether the '
+                    'answers are right and whether the refusals should have been' % (abstained, len(ch)))
     if want and hits and min(hits) == want:
         return 'good', 'every book the reference names was retrieved in every run, nothing outside the context is named'
     if want and hits and max(hits) > 0:
@@ -66,13 +115,25 @@ def main():
           % (data['model'], data['embed_model'], data['rerank_model'], data['runs']), '',
           'The **proposed** verdict is Claude\'s, from the automatic checks only. The **verdict** is '
           'Shirley\'s and is the one that ships. Write it in `%s-verdicts.csv`.' % os.path.basename(base), '',
-          'Scale: `good` answers the question · `partial` right in part, or right to refuse · `wrong`.', '', '---', '']
+          'Scale: `good` answers the question · `partial` right in part, or right to refuse · `wrong`.', '',
+          'Two caveats on the automatic checks. A title the question itself names is not counted as '
+          'named-outside-context. And "quoted a title not on the shelf" flags any short quoted phrase '
+          'that matches no book, so an ordinary quotation from a note lands there too: read it, do not '
+          'trust it.', '', '---', '']
     rows = []
     for (pattern, qid), answers in by.items():
         q = qs.get(qid, {})
         verdict, why = propose(qid, answers, q.get('reference', ''))
         same, sets = consistent(answers)
         usd = sum(a['usage'].get('usd', 0) for a in answers)
+
+        def med(key):
+            vals = sorted(v for v in (a.get(key) for a in answers) if v)
+            return vals[len(vals) // 2] if vals else 0
+
+        # Wall clock is not latency here: Voyage's free tier allows three requests a minute, so a
+        # cell can sit for fifty seconds doing nothing. Generation and rerank are the honest
+        # numbers, and they are the ones the site publishes.
         ms = sorted(a['ms'] for a in answers)
         md += ['## %s - %s' % (pattern, qid), '',
                '**Question.** %s' % q.get('question', ''), '',
@@ -80,11 +141,15 @@ def main():
                '**Proposed: `%s`** - %s' % (verdict or '(needs reading)', why), '',
                '| | |', '|---|---|',
                '| runs agree on the books named | %s |' % ('yes' if same else 'no - %s' % (set(sets),)),
-               '| median latency | %d ms |' % ms[len(ms) // 2],
+               '| median generation | %d ms |' % med('gen_ms'),
+               '| median rerank | %s |' % ('%d ms' % med('rerank_ms') if med('rerank_ms') else 'n/a'),
+               '| median retrieval | %d ms %s|' % (med('retrieve_ms'),
+                                                   '(throttled: Voyage allows 3 requests a minute) ' if med('retrieve_ms') > 2000 else ''),
+               '| median wall clock | %d ms - not latency, see above |' % ms[len(ms) // 2],
                '| cost for %d runs | $%0.4f |' % (len(answers), usd),
                '| retrieval hit | %s of %s expected books |' % (answers[0]['checks']['retrieval_hit'],
                                                                 answers[0]['checks']['retrieval_expected']),
-               '| named outside its context | %s |' % (sorted({b for a in answers for b in a['checks']['named_outside_context']}) or 'none'),
+               '| named outside its context | %s |' % (sorted({b for a in answers for b in outside(a)}) or 'none'),
                '| quoted a title not on the shelf | %s |' % (sorted({b for a in answers for b in a['checks']['quoted_not_on_shelf']}) or 'none'),
                '']
         md += ['**Retrieved (run 1).**', '']
