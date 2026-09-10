@@ -50,12 +50,31 @@ def ledger_titles(db=None):
 QUOTED = re.compile(r'[""“]([^""”]{4,80})[""”]|\*([^*\n]{4,80})\*')
 
 
-def checks(text, context, expects, titles):
+def _really_named(orig, norm, text):
+    """Guard against short titles that are also ordinary English.
+
+    "One Day" is a book on the shelf and also two words that appear in any sentence about a day.
+    For titles of three words or fewer, insist on the title's own capitalisation in the raw
+    answer, so `One Day` counts and `one day the narrator` does not. Longer titles are safe
+    enough on the lowercase match, and this way a title in italics or quotes still counts.
+    """
+    if len(norm.split()) > 3:
+        return True
+    bare = re.sub(r'\s*\(.*?\)\s*$', '', orig or '').strip()
+    return re.search(r'(?<![A-Za-z])%s(?![A-Za-z])' % re.escape(bare), text or '') is not None
+
+
+def checks(text, context, expects, titles, question=''):
     """Three things a machine can settle, so Shirley only has to judge the answer itself."""
     low = ' ' + re.sub(r'[^a-z0-9 ]', ' ', (text or '').lower()) + ' '
-    named = [orig for orig, n in titles if n and len(n) > 6 and (' ' + n + ' ') in low]
+    named = [orig for orig, n in titles
+             if n and len(n) > 6 and (' ' + n + ' ') in low and _really_named(orig, n, text)]
     in_context = {c.get('id') for c in (context or [])}
-    outside = sorted(set(named) - set(in_context))
+    # A title the question itself names is not an invention: Q3 asks about The Fellowship of the
+    # Ring by name, so repeating it back proves nothing either way.
+    qlow = ' ' + re.sub(r'[^a-z0-9 ]', ' ', (question or '').lower()) + ' '
+    from_question = {orig for orig, n in titles if n and len(n) > 6 and (' ' + n + ' ') in qlow}
+    outside = sorted(set(named) - set(in_context) - from_question)
     hit = None
     if expects:
         want = [_norm(e) for e in expects]
@@ -67,8 +86,16 @@ def checks(text, context, expects, titles):
         cand = _norm(m.group(1) or m.group(2) or '')
         if cand and len(cand.split()) <= 8 and not any(cand in n or n in cand for _, n in titles if n):
             invented.append((m.group(1) or m.group(2)).strip())
-    abstained = bool(re.search(r"\b(not in the context|cannot answer|does not contain|no (?:ratings|dates|page)"
-                               r"|isn't in the context|is not in the context|nothing (?:was )?retrieved)\b",
+    # contractions matter here: the pilot's two clean refusals both said "can't answer", which an
+    # earlier version of this pattern missed and recorded as a non-abstention.
+    abstained = bool(re.search(r"\b(?:can'?t|cannot|unable to|couldn'?t)\s+(?:answer|tell|say|determine)"
+                               r"|\b(?:is |are |it'?s )?not in (?:the |these |my )?(?:context|notes)"
+                               r"|\bdoes(?:n'?t| not) (?:contain|include|record|have)"
+                               r"|\bdo(?:n'?t| not) (?:contain|include|record|have)"
+                               r"|\bno (?:ratings|dates|page|star)"
+                               r"|\bisn'?t (?:in the context|here)"
+                               r"|\bnothing (?:was )?retrieved"
+                               r"|\bnot enough (?:information|context)",
                                (text or '').lower()))
     return {'books_named': named, 'named_outside_context': outside,
             'retrieval_hit': hit, 'retrieval_expected': len(expects or []),
@@ -116,7 +143,7 @@ def main():
                 rec = {'pattern': pattern, 'qid': q['id'], 'run': run, 'verdict': '', 'error': ''}
                 try:
                     r = answer(q['question'], pattern=pattern, cache_query=(run > 1))
-                    ch = checks(r['answer'], r.get('context'), q.get('expects'), titles)
+                    ch = checks(r['answer'], r.get('context'), q.get('expects'), titles, q['question'])
                     u = r.get('usage') or {}
                     rec.update({
                         'ok': 1, 'answer': r['answer'], 'route': r.get('route', ''),

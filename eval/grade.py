@@ -14,6 +14,34 @@ grade. Nothing reaches the site under `final` until she has written it.
 import argparse, collections, csv, json, os, re, sys
 
 
+def _norm(t):
+    return re.sub(r'[^a-z0-9 ]', ' ', (t or '').lower())
+
+
+def outside(trace):
+    """Books named that were not in the context, after two false positives are removed.
+
+    First: a title the question itself names. Q3 asks about The Fellowship of the Ring by name,
+    so an answer that repeats it has invented nothing. Second: a short title that is also
+    ordinary English. "One Day" is on the shelf and is also two words in any sentence about a
+    day, so titles of three words or fewer must appear with their own capitalisation.
+
+    Both filters live here as well as in the runner, so a run recorded before they existed still
+    grades correctly."""
+    q = ' ' + _norm(trace.get('question')) + ' '
+    text = trace.get('answer') or ''
+    out = []
+    for b in trace['checks']['named_outside_context']:
+        bare = re.sub(r'\s*\(.*?\)\s*$', '', b).strip()
+        if (' ' + _norm(bare).strip() + ' ') in q:
+            continue
+        if len(_norm(bare).split()) <= 3 and not re.search(
+                r'(?<![A-Za-z])%s(?![A-Za-z])' % re.escape(bare), text):
+            continue
+        out.append(b)
+    return out
+
+
 def consistent(answers):
     """Do the five runs say the same thing? Compared on the set of books each names."""
     sets = [tuple(sorted(a['checks']['books_named'])) for a in answers]
@@ -24,7 +52,7 @@ def propose(qid, answers, ref):
     """A proposed verdict from the automatic checks alone, plus the reason, in Shirley's terms.
     Deliberately conservative: anything that needs a judgement about meaning is left to her."""
     ch = [a['checks'] for a in answers]
-    invented = any(c['named_outside_context'] or c['quoted_not_on_shelf'] for c in ch)
+    invented = any(outside(a) or a['checks']['quoted_not_on_shelf'] for a in answers)
     abstained = sum(1 for c in ch if c['abstained'])
     hits = [c['retrieval_hit'] for c in ch if c['retrieval_hit'] is not None]
     want = ch[0]['retrieval_expected']
@@ -66,13 +94,25 @@ def main():
           % (data['model'], data['embed_model'], data['rerank_model'], data['runs']), '',
           'The **proposed** verdict is Claude\'s, from the automatic checks only. The **verdict** is '
           'Shirley\'s and is the one that ships. Write it in `%s-verdicts.csv`.' % os.path.basename(base), '',
-          'Scale: `good` answers the question · `partial` right in part, or right to refuse · `wrong`.', '', '---', '']
+          'Scale: `good` answers the question · `partial` right in part, or right to refuse · `wrong`.', '',
+          'Two caveats on the automatic checks. A title the question itself names is not counted as '
+          'named-outside-context. And "quoted a title not on the shelf" flags any short quoted phrase '
+          'that matches no book, so an ordinary quotation from a note lands there too: read it, do not '
+          'trust it.', '', '---', '']
     rows = []
     for (pattern, qid), answers in by.items():
         q = qs.get(qid, {})
         verdict, why = propose(qid, answers, q.get('reference', ''))
         same, sets = consistent(answers)
         usd = sum(a['usage'].get('usd', 0) for a in answers)
+
+        def med(key):
+            vals = sorted(v for v in (a.get(key) for a in answers) if v)
+            return vals[len(vals) // 2] if vals else 0
+
+        # Wall clock is not latency here: Voyage's free tier allows three requests a minute, so a
+        # cell can sit for fifty seconds doing nothing. Generation and rerank are the honest
+        # numbers, and they are the ones the site publishes.
         ms = sorted(a['ms'] for a in answers)
         md += ['## %s - %s' % (pattern, qid), '',
                '**Question.** %s' % q.get('question', ''), '',
@@ -80,11 +120,15 @@ def main():
                '**Proposed: `%s`** - %s' % (verdict or '(needs reading)', why), '',
                '| | |', '|---|---|',
                '| runs agree on the books named | %s |' % ('yes' if same else 'no - %s' % (set(sets),)),
-               '| median latency | %d ms |' % ms[len(ms) // 2],
+               '| median generation | %d ms |' % med('gen_ms'),
+               '| median rerank | %s |' % ('%d ms' % med('rerank_ms') if med('rerank_ms') else 'n/a'),
+               '| median retrieval | %d ms %s|' % (med('retrieve_ms'),
+                                                   '(throttled: Voyage allows 3 requests a minute) ' if med('retrieve_ms') > 2000 else ''),
+               '| median wall clock | %d ms - not latency, see above |' % ms[len(ms) // 2],
                '| cost for %d runs | $%0.4f |' % (len(answers), usd),
                '| retrieval hit | %s of %s expected books |' % (answers[0]['checks']['retrieval_hit'],
                                                                 answers[0]['checks']['retrieval_expected']),
-               '| named outside its context | %s |' % (sorted({b for a in answers for b in a['checks']['named_outside_context']}) or 'none'),
+               '| named outside its context | %s |' % (sorted({b for a in answers for b in outside(a)}) or 'none'),
                '| quoted a title not on the shelf | %s |' % (sorted({b for a in answers for b in a['checks']['quoted_not_on_shelf']}) or 'none'),
                '']
         md += ['**Retrieved (run 1).**', '']
