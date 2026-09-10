@@ -2,6 +2,7 @@ corpus/*.csv
 corpus/*.txt
 service/data/*
 !service/data/graph.json
+!service/data/library.public.sqlite
 .env
 __pycache__/
 .DS_Store

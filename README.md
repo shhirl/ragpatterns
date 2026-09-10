@@ -1,4 +1,6 @@
-# Seven RAGs, one shelf
+# RAG patterns, side by side
+
+Working name until 10 Sep 2026: "Seven RAGs, one shelf".
 
 A one-project site that runs the seven common RAG design patterns (naive, retrieve-and-rerank, multimodal, graph, hybrid, agentic router, multi-agent) on **one** real knowledge base, Shirley's own bookshelf, and **the same nine questions**, so the only thing that changes between columns is the architecture.
 
