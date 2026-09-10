@@ -23,6 +23,14 @@ python3 service/ingest/build_db.py
 
 Reads the git-ignored exports in `corpus/` and writes `service/data/library.sqlite`, printing the counts that the method page publishes. `service/answer.py` is the one interface every pattern and the eval call.
 
+## See and interact with the system (local workbench)
+
+```bash
+python3 service/workbench.py
+```
+
+Then open http://localhost:8790. The nine questions as buttons (the ledger ones run through `answer()`; the others say what they wait for), a free SQL box against the read-only tool, and the full `answer()` result. Local only, never deployed.
+
 ## Run locally
 
 ```bash

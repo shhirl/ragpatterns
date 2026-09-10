@@ -12,10 +12,10 @@ from service.patterns import sql_forced
 PATTERNS = {}  # filled as patterns arrive: naive, rerank, multimodal, graph, hybrid, agentic, multiagent
 
 
-def answer(question, pattern=None, image=None, force_route=None):
+def answer(question, pattern=None, image=None, force_route=None, qid='Q2'):
     t0 = time.time()
     if force_route == 'sql':
-        out = sql_forced.run(question)
+        out = sql_forced.run(question, qid)
     elif pattern in PATTERNS:
         out = PATTERNS[pattern](question, image)
     else:
