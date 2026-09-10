@@ -44,7 +44,7 @@
      "author": "Kiley Reid",
      "location": "2290-2293",
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -55,7 +55,7 @@
      "author": "Avni Doshi",
      "location": null,
      "book_id": 294,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -66,7 +66,7 @@
      "author": "E.M. Forster",
      "location": null,
      "book_id": 281,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -77,7 +77,7 @@
      "author": "Bernardine Evaristo",
      "location": "5311-5313",
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -124,7 +124,7 @@
      "author": "Min Jin Lee",
      "location": null,
      "book_id": 171,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -135,7 +135,7 @@
      "author": "Annie Ernaux",
      "location": null,
      "book_id": 73,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -146,7 +146,7 @@
      "author": "Nana Kwame Adjei-Brenyah",
      "location": null,
      "book_id": 239,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -157,7 +157,7 @@
      "author": "Agatha Christie",
      "location": null,
      "book_id": 283,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -201,7 +201,7 @@
      "author": "Kiley Reid",
      "location": "2290-2293",
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -214,7 +214,7 @@
      "author": "Celeste Ng",
      "location": "2133-2144",
      "book_id": 304,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -227,7 +227,7 @@
      "author": "Bernardine Evaristo",
      "location": "2354-2360",
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -240,7 +240,7 @@
      "author": "Avni Doshi",
      "location": null,
      "book_id": 294,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -287,7 +287,7 @@
      "author": "Min Jin Lee",
      "location": null,
      "book_id": 171,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -300,7 +300,7 @@
      "author": "Nana Kwame Adjei-Brenyah",
      "location": null,
      "book_id": 239,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -313,7 +313,7 @@
      "author": "Jeff Vandermeer",
      "location": null,
      "book_id": 268,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -326,7 +326,7 @@
      "author": "Bernardine Evaristo",
      "location": null,
      "book_id": 237,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   }

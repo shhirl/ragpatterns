@@ -150,6 +150,17 @@ def main():
         w.writeheader()
         for r in rows:
             w.writerow(r)
+    # The traces are committed to a public repo, so a chunk leaves this file as an excerpt, not
+    # as the passage. Same limits and the same reason as export_replay.py: highlights are the
+    # book's words under the short-excerpt rule, notes are Shirley's and get more room. Grading
+    # never needed the full text - the sheet prints titles and scores - and the panel publishes
+    # excerpts anyway, so nothing downstream loses anything.
+    from export_replay import excerpt
+    for t in traces:
+        for c in t.get('context', []):
+            if c.get('text'):
+                c['text'], c['text_truncated'] = excerpt(c['text'], c.get('source'))
+
     json.dump({'tag': a.tag, 'date': stamp, 'model': config.GEN_MODEL,
                'embed_model': config.EMBED_MODEL, 'rerank_model': config.RERANK_MODEL,
                'runs': a.runs, 'traces': traces}, open(json_path, 'w', encoding='utf-8'),

@@ -47,7 +47,7 @@
      "author": "Min Jin Lee",
      "location": null,
      "book_id": 171,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -58,7 +58,7 @@
      "author": "Annie Ernaux",
      "location": null,
      "book_id": 73,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -69,7 +69,7 @@
      "author": "Nana Kwame Adjei-Brenyah",
      "location": null,
      "book_id": 239,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -80,7 +80,7 @@
      "author": "Agatha Christie",
      "location": null,
      "book_id": 283,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -127,7 +127,7 @@
      "author": "Min Jin Lee",
      "location": null,
      "book_id": 171,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -140,7 +140,7 @@
      "author": "Nana Kwame Adjei-Brenyah",
      "location": null,
      "book_id": 239,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -153,7 +153,7 @@
      "author": "Jeff Vandermeer",
      "location": null,
      "book_id": 268,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -166,7 +166,7 @@
      "author": "Bernardine Evaristo",
      "location": null,
      "book_id": 237,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   }

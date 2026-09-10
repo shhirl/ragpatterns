@@ -44,7 +44,7 @@
      "author": "Kiley Reid",
      "location": "2290-2293",
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -55,7 +55,7 @@
      "author": "Avni Doshi",
      "location": null,
      "book_id": 294,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -66,7 +66,7 @@
      "author": "E.M. Forster",
      "location": null,
      "book_id": 281,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -77,7 +77,7 @@
      "author": "Bernardine Evaristo",
      "location": "5311-5313",
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -119,7 +119,7 @@
      "author": "Kiley Reid",
      "location": "2290-2293",
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -130,7 +130,7 @@
      "author": "Avni Doshi",
      "location": null,
      "book_id": 294,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -141,7 +141,7 @@
      "author": "E.M. Forster",
      "location": null,
      "book_id": 281,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -152,7 +152,7 @@
      "author": "Bernardine Evaristo",
      "location": "5311-5313",
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -194,7 +194,7 @@
      "author": "Kiley Reid",
      "location": "2290-2293",
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -205,7 +205,7 @@
      "author": "Avni Doshi",
      "location": null,
      "book_id": 294,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -216,7 +216,7 @@
      "author": "E.M. Forster",
      "location": null,
      "book_id": 281,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -227,7 +227,7 @@
      "author": "Bernardine Evaristo",
      "location": "5311-5313",
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -269,7 +269,7 @@
      "author": "Kiley Reid",
      "location": "2290-2293",
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -280,7 +280,7 @@
      "author": "Avni Doshi",
      "location": null,
      "book_id": 294,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -291,7 +291,7 @@
      "author": "E.M. Forster",
      "location": null,
      "book_id": 281,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -302,7 +302,7 @@
      "author": "Bernardine Evaristo",
      "location": "5311-5313",
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -344,7 +344,7 @@
      "author": "Kiley Reid",
      "location": "2290-2293",
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -355,7 +355,7 @@
      "author": "Avni Doshi",
      "location": null,
      "book_id": 294,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -366,7 +366,7 @@
      "author": "E.M. Forster",
      "location": null,
      "book_id": 281,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -377,7 +377,7 @@
      "author": "Bernardine Evaristo",
      "location": "5311-5313",
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -422,7 +422,7 @@
      "author": "Min Jin Lee",
      "location": null,
      "book_id": 171,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -433,7 +433,7 @@
      "author": "Annie Ernaux",
      "location": null,
      "book_id": 73,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -444,7 +444,7 @@
      "author": "Nana Kwame Adjei-Brenyah",
      "location": null,
      "book_id": 239,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -455,7 +455,7 @@
      "author": "Agatha Christie",
      "location": null,
      "book_id": 283,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -497,7 +497,7 @@
      "author": "Min Jin Lee",
      "location": null,
      "book_id": 171,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -508,7 +508,7 @@
      "author": "Annie Ernaux",
      "location": null,
      "book_id": 73,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -519,7 +519,7 @@
      "author": "Nana Kwame Adjei-Brenyah",
      "location": null,
      "book_id": 239,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -530,7 +530,7 @@
      "author": "Agatha Christie",
      "location": null,
      "book_id": 283,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -577,7 +577,7 @@
      "author": "Min Jin Lee",
      "location": null,
      "book_id": 171,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -588,7 +588,7 @@
      "author": "Annie Ernaux",
      "location": null,
      "book_id": 73,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -599,7 +599,7 @@
      "author": "Nana Kwame Adjei-Brenyah",
      "location": null,
      "book_id": 239,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -610,7 +610,7 @@
      "author": "Agatha Christie",
      "location": null,
      "book_id": 283,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -657,7 +657,7 @@
      "author": "Min Jin Lee",
      "location": null,
      "book_id": 171,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -668,7 +668,7 @@
      "author": "Annie Ernaux",
      "location": null,
      "book_id": 73,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -679,7 +679,7 @@
      "author": "Nana Kwame Adjei-Brenyah",
      "location": null,
      "book_id": 239,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -690,7 +690,7 @@
      "author": "Agatha Christie",
      "location": null,
      "book_id": 283,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -737,7 +737,7 @@
      "author": "Min Jin Lee",
      "location": null,
      "book_id": 171,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -748,7 +748,7 @@
      "author": "Annie Ernaux",
      "location": null,
      "book_id": 73,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -759,7 +759,7 @@
      "author": "Nana Kwame Adjei-Brenyah",
      "location": null,
      "book_id": 239,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -770,7 +770,7 @@
      "author": "Agatha Christie",
      "location": null,
      "book_id": 283,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -829,7 +829,7 @@
      "author": "Ursula K. Le Guin",
      "location": "849-852",
      "book_id": 315,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -840,7 +840,7 @@
      "author": "Kiley Reid",
      "location": null,
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -851,7 +851,7 @@
      "author": "Celeste Ng",
      "location": null,
      "book_id": 304,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -910,7 +910,7 @@
      "author": "Ursula K. Le Guin",
      "location": "849-852",
      "book_id": 315,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -921,7 +921,7 @@
      "author": "Kiley Reid",
      "location": null,
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -932,7 +932,7 @@
      "author": "Celeste Ng",
      "location": null,
      "book_id": 304,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -991,7 +991,7 @@
      "author": "Ursula K. Le Guin",
      "location": "849-852",
      "book_id": 315,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -1002,7 +1002,7 @@
      "author": "Kiley Reid",
      "location": null,
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -1013,7 +1013,7 @@
      "author": "Celeste Ng",
      "location": null,
      "book_id": 304,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -1072,7 +1072,7 @@
      "author": "Ursula K. Le Guin",
      "location": "849-852",
      "book_id": 315,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -1083,7 +1083,7 @@
      "author": "Kiley Reid",
      "location": null,
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -1094,7 +1094,7 @@
      "author": "Celeste Ng",
      "location": null,
      "book_id": 304,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -1153,7 +1153,7 @@
      "author": "Ursula K. Le Guin",
      "location": "849-852",
      "book_id": 315,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -1164,7 +1164,7 @@
      "author": "Kiley Reid",
      "location": null,
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -1175,7 +1175,7 @@
      "author": "Celeste Ng",
      "location": null,
      "book_id": 304,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -1221,7 +1221,7 @@
      "author": "Kiley Reid",
      "location": "1795-1797",
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -1232,7 +1232,7 @@
      "author": "Philip Pullman",
      "location": null,
      "book_id": 285,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -1243,7 +1243,7 @@
      "author": "Bernardine Evaristo",
      "location": "1138-1149",
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -1254,7 +1254,7 @@
      "author": "Madeline Miller",
      "location": null,
      "book_id": 279,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -1301,7 +1301,7 @@
      "author": "Kiley Reid",
      "location": "1795-1797",
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -1312,7 +1312,7 @@
      "author": "Philip Pullman",
      "location": null,
      "book_id": 285,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -1323,7 +1323,7 @@
      "author": "Bernardine Evaristo",
      "location": "1138-1149",
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -1334,7 +1334,7 @@
      "author": "Madeline Miller",
      "location": null,
      "book_id": 279,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -1382,7 +1382,7 @@
      "author": "Kiley Reid",
      "location": "1795-1797",
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -1393,7 +1393,7 @@
      "author": "Philip Pullman",
      "location": null,
      "book_id": 285,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -1404,7 +1404,7 @@
      "author": "Bernardine Evaristo",
      "location": "1138-1149",
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -1415,7 +1415,7 @@
      "author": "Madeline Miller",
      "location": null,
      "book_id": 279,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -1463,7 +1463,7 @@
      "author": "Kiley Reid",
      "location": "1795-1797",
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -1474,7 +1474,7 @@
      "author": "Philip Pullman",
      "location": null,
      "book_id": 285,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -1485,7 +1485,7 @@
      "author": "Bernardine Evaristo",
      "location": "1138-1149",
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -1496,7 +1496,7 @@
      "author": "Madeline Miller",
      "location": null,
      "book_id": 279,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -1545,7 +1545,7 @@
      "author": "Kiley Reid",
      "location": "1795-1797",
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -1556,7 +1556,7 @@
      "author": "Philip Pullman",
      "location": null,
      "book_id": 285,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -1567,7 +1567,7 @@
      "author": "Bernardine Evaristo",
      "location": "1138-1149",
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -1578,7 +1578,7 @@
      "author": "Madeline Miller",
      "location": null,
      "book_id": 279,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -1627,7 +1627,7 @@
      "author": "Min Jin Lee",
      "location": null,
      "book_id": 171,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -1638,7 +1638,7 @@
      "author": "E.M. Forster",
      "location": null,
      "book_id": 281,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -1660,7 +1660,7 @@
      "author": "Claudia Piñeiro",
      "location": null,
      "book_id": 58,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -1709,7 +1709,7 @@
      "author": "Min Jin Lee",
      "location": null,
      "book_id": 171,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -1720,7 +1720,7 @@
      "author": "E.M. Forster",
      "location": null,
      "book_id": 281,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -1742,7 +1742,7 @@
      "author": "Claudia Piñeiro",
      "location": null,
      "book_id": 58,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -1786,7 +1786,7 @@
      "author": "Min Jin Lee",
      "location": null,
      "book_id": 171,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -1797,7 +1797,7 @@
      "author": "E.M. Forster",
      "location": null,
      "book_id": 281,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -1819,7 +1819,7 @@
      "author": "Claudia Piñeiro",
      "location": null,
      "book_id": 58,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -1870,7 +1870,7 @@
      "author": "Min Jin Lee",
      "location": null,
      "book_id": 171,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -1881,7 +1881,7 @@
      "author": "E.M. Forster",
      "location": null,
      "book_id": 281,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -1903,7 +1903,7 @@
      "author": "Claudia Piñeiro",
      "location": null,
      "book_id": 58,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -1947,7 +1947,7 @@
      "author": "Min Jin Lee",
      "location": null,
      "book_id": 171,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -1958,7 +1958,7 @@
      "author": "E.M. Forster",
      "location": null,
      "book_id": 281,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -1980,7 +1980,7 @@
      "author": "Claudia Piñeiro",
      "location": null,
      "book_id": 58,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -2027,7 +2027,7 @@
      "author": "Toni Morrison",
      "location": null,
      "book_id": 247,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -2038,7 +2038,7 @@
      "author": "Akala",
      "location": null,
      "book_id": 299,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -2049,7 +2049,7 @@
      "author": "E.M. Forster",
      "location": null,
      "book_id": 281,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -2060,7 +2060,7 @@
      "author": "Bernardine Evaristo",
      "location": null,
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -2106,7 +2106,7 @@
      "author": "Toni Morrison",
      "location": null,
      "book_id": 247,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -2117,7 +2117,7 @@
      "author": "Akala",
      "location": null,
      "book_id": 299,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -2128,7 +2128,7 @@
      "author": "E.M. Forster",
      "location": null,
      "book_id": 281,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -2139,7 +2139,7 @@
      "author": "Bernardine Evaristo",
      "location": null,
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -2184,7 +2184,7 @@
      "author": "Toni Morrison",
      "location": null,
      "book_id": 247,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -2195,7 +2195,7 @@
      "author": "Akala",
      "location": null,
      "book_id": 299,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -2206,7 +2206,7 @@
      "author": "E.M. Forster",
      "location": null,
      "book_id": 281,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -2217,7 +2217,7 @@
      "author": "Bernardine Evaristo",
      "location": null,
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -2260,7 +2260,7 @@
      "author": "Toni Morrison",
      "location": null,
      "book_id": 247,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -2271,7 +2271,7 @@
      "author": "Akala",
      "location": null,
      "book_id": 299,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -2282,7 +2282,7 @@
      "author": "E.M. Forster",
      "location": null,
      "book_id": 281,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -2293,7 +2293,7 @@
      "author": "Bernardine Evaristo",
      "location": null,
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -2340,7 +2340,7 @@
      "author": "Toni Morrison",
      "location": null,
      "book_id": 247,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -2351,7 +2351,7 @@
      "author": "Akala",
      "location": null,
      "book_id": 299,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -2362,7 +2362,7 @@
      "author": "E.M. Forster",
      "location": null,
      "book_id": 281,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -2373,7 +2373,7 @@
      "author": "Bernardine Evaristo",
      "location": null,
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -2453,7 +2453,7 @@
      "author": "J.D. Salinger",
      "location": null,
      "book_id": 188,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -2532,7 +2532,7 @@
      "author": "J.D. Salinger",
      "location": null,
      "book_id": 188,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -2611,7 +2611,7 @@
      "author": "J.D. Salinger",
      "location": null,
      "book_id": 188,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -2690,7 +2690,7 @@
      "author": "J.D. Salinger",
      "location": null,
      "book_id": 188,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -2770,7 +2770,7 @@
      "author": "J.D. Salinger",
      "location": null,
      "book_id": 188,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -2835,7 +2835,7 @@
      "author": "Colson Whitehead",
      "location": null,
      "book_id": 316,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -2846,7 +2846,7 @@
      "author": "Samuel R. Delany",
      "location": null,
      "book_id": 174,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -2911,7 +2911,7 @@
      "author": "Colson Whitehead",
      "location": null,
      "book_id": 316,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -2922,7 +2922,7 @@
      "author": "Samuel R. Delany",
      "location": null,
      "book_id": 174,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -2990,7 +2990,7 @@
      "author": "Colson Whitehead",
      "location": null,
      "book_id": 316,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -3001,7 +3001,7 @@
      "author": "Samuel R. Delany",
      "location": null,
      "book_id": 174,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -3066,7 +3066,7 @@
      "author": "Colson Whitehead",
      "location": null,
      "book_id": 316,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -3077,7 +3077,7 @@
      "author": "Samuel R. Delany",
      "location": null,
      "book_id": 174,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -3142,7 +3142,7 @@
      "author": "Colson Whitehead",
      "location": null,
      "book_id": 316,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -3153,7 +3153,7 @@
      "author": "Samuel R. Delany",
      "location": null,
      "book_id": 174,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -3197,7 +3197,7 @@
      "author": "Kiley Reid",
      "location": "2290-2293",
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -3210,7 +3210,7 @@
      "author": "Celeste Ng",
      "location": "2133-2144",
      "book_id": 304,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -3223,7 +3223,7 @@
      "author": "Bernardine Evaristo",
      "location": "2354-2360",
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -3236,7 +3236,7 @@
      "author": "Avni Doshi",
      "location": null,
      "book_id": 294,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -3280,7 +3280,7 @@
      "author": "Kiley Reid",
      "location": "2290-2293",
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -3293,7 +3293,7 @@
      "author": "Celeste Ng",
      "location": "2133-2144",
      "book_id": 304,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -3306,7 +3306,7 @@
      "author": "Bernardine Evaristo",
      "location": "2354-2360",
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -3319,7 +3319,7 @@
      "author": "Avni Doshi",
      "location": null,
      "book_id": 294,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -3363,7 +3363,7 @@
      "author": "Kiley Reid",
      "location": "2290-2293",
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -3376,7 +3376,7 @@
      "author": "Celeste Ng",
      "location": "2133-2144",
      "book_id": 304,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -3389,7 +3389,7 @@
      "author": "Bernardine Evaristo",
      "location": "2354-2360",
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -3402,7 +3402,7 @@
      "author": "Avni Doshi",
      "location": null,
      "book_id": 294,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -3446,7 +3446,7 @@
      "author": "Kiley Reid",
      "location": "2290-2293",
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -3459,7 +3459,7 @@
      "author": "Celeste Ng",
      "location": "2133-2144",
      "book_id": 304,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -3472,7 +3472,7 @@
      "author": "Bernardine Evaristo",
      "location": "2354-2360",
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -3485,7 +3485,7 @@
      "author": "Avni Doshi",
      "location": null,
      "book_id": 294,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -3529,7 +3529,7 @@
      "author": "Kiley Reid",
      "location": "2290-2293",
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -3542,7 +3542,7 @@
      "author": "Celeste Ng",
      "location": "2133-2144",
      "book_id": 304,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -3555,7 +3555,7 @@
      "author": "Bernardine Evaristo",
      "location": "2354-2360",
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -3568,7 +3568,7 @@
      "author": "Avni Doshi",
      "location": null,
      "book_id": 294,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -3615,7 +3615,7 @@
      "author": "Min Jin Lee",
      "location": null,
      "book_id": 171,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -3628,7 +3628,7 @@
      "author": "Nana Kwame Adjei-Brenyah",
      "location": null,
      "book_id": 239,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -3641,7 +3641,7 @@
      "author": "Jeff Vandermeer",
      "location": null,
      "book_id": 268,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -3654,7 +3654,7 @@
      "author": "Bernardine Evaristo",
      "location": null,
      "book_id": 237,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -3701,7 +3701,7 @@
      "author": "Min Jin Lee",
      "location": null,
      "book_id": 171,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -3714,7 +3714,7 @@
      "author": "Nana Kwame Adjei-Brenyah",
      "location": null,
      "book_id": 239,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -3727,7 +3727,7 @@
      "author": "Jeff Vandermeer",
      "location": null,
      "book_id": 268,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -3740,7 +3740,7 @@
      "author": "Bernardine Evaristo",
      "location": null,
      "book_id": 237,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -3785,7 +3785,7 @@
      "author": "Min Jin Lee",
      "location": null,
      "book_id": 171,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -3798,7 +3798,7 @@
      "author": "Nana Kwame Adjei-Brenyah",
      "location": null,
      "book_id": 239,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -3811,7 +3811,7 @@
      "author": "Jeff Vandermeer",
      "location": null,
      "book_id": 268,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -3824,7 +3824,7 @@
      "author": "Bernardine Evaristo",
      "location": null,
      "book_id": 237,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -3871,7 +3871,7 @@
      "author": "Min Jin Lee",
      "location": null,
      "book_id": 171,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -3884,7 +3884,7 @@
      "author": "Nana Kwame Adjei-Brenyah",
      "location": null,
      "book_id": 239,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -3897,7 +3897,7 @@
      "author": "Jeff Vandermeer",
      "location": null,
      "book_id": 268,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -3910,7 +3910,7 @@
      "author": "Bernardine Evaristo",
      "location": null,
      "book_id": 237,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -3957,7 +3957,7 @@
      "author": "Min Jin Lee",
      "location": null,
      "book_id": 171,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -3970,7 +3970,7 @@
      "author": "Nana Kwame Adjei-Brenyah",
      "location": null,
      "book_id": 239,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -3983,7 +3983,7 @@
      "author": "Jeff Vandermeer",
      "location": null,
      "book_id": 268,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -3996,7 +3996,7 @@
      "author": "Bernardine Evaristo",
      "location": null,
      "book_id": 237,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -4057,7 +4057,7 @@
      "author": "Kiley Reid",
      "location": null,
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -4070,7 +4070,7 @@
      "author": "Celeste Ng",
      "location": null,
      "book_id": 304,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -4083,7 +4083,7 @@
      "author": "Jeff Vandermeer",
      "location": null,
      "book_id": 256,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -4144,7 +4144,7 @@
      "author": "Kiley Reid",
      "location": null,
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -4157,7 +4157,7 @@
      "author": "Celeste Ng",
      "location": null,
      "book_id": 304,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -4170,7 +4170,7 @@
      "author": "Jeff Vandermeer",
      "location": null,
      "book_id": 256,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -4231,7 +4231,7 @@
      "author": "Kiley Reid",
      "location": null,
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -4244,7 +4244,7 @@
      "author": "Celeste Ng",
      "location": null,
      "book_id": 304,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -4257,7 +4257,7 @@
      "author": "Jeff Vandermeer",
      "location": null,
      "book_id": 256,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -4318,7 +4318,7 @@
      "author": "Kiley Reid",
      "location": null,
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -4331,7 +4331,7 @@
      "author": "Celeste Ng",
      "location": null,
      "book_id": 304,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -4344,7 +4344,7 @@
      "author": "Jeff Vandermeer",
      "location": null,
      "book_id": 256,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -4405,7 +4405,7 @@
      "author": "Kiley Reid",
      "location": null,
      "book_id": 305,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -4418,7 +4418,7 @@
      "author": "Celeste Ng",
      "location": null,
      "book_id": 304,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -4431,7 +4431,7 @@
      "author": "Jeff Vandermeer",
      "location": null,
      "book_id": 256,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -4478,7 +4478,7 @@
      "author": "Philip Pullman",
      "location": null,
      "book_id": 285,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -4491,7 +4491,7 @@
      "author": "Bernardine Evaristo",
      "location": "1138-1149",
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -4504,7 +4504,7 @@
      "author": "Barack Obama",
      "location": null,
      "book_id": 295,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -4565,7 +4565,7 @@
      "author": "Philip Pullman",
      "location": null,
      "book_id": 285,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -4578,7 +4578,7 @@
      "author": "Bernardine Evaristo",
      "location": "1138-1149",
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -4591,7 +4591,7 @@
      "author": "Barack Obama",
      "location": null,
      "book_id": 295,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -4652,7 +4652,7 @@
      "author": "Philip Pullman",
      "location": null,
      "book_id": 285,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -4665,7 +4665,7 @@
      "author": "Bernardine Evaristo",
      "location": "1138-1149",
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -4678,7 +4678,7 @@
      "author": "Barack Obama",
      "location": null,
      "book_id": 295,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -4740,7 +4740,7 @@
      "author": "Philip Pullman",
      "location": null,
      "book_id": 285,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -4753,7 +4753,7 @@
      "author": "Bernardine Evaristo",
      "location": "1138-1149",
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -4766,7 +4766,7 @@
      "author": "Barack Obama",
      "location": null,
      "book_id": 295,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -4825,7 +4825,7 @@
      "author": "Philip Pullman",
      "location": null,
      "book_id": 285,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "highlight",
@@ -4838,7 +4838,7 @@
      "author": "Bernardine Evaristo",
      "location": "1138-1149",
      "book_id": 313,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -4851,7 +4851,7 @@
      "author": "Barack Obama",
      "location": null,
      "book_id": 295,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -4927,7 +4927,7 @@
      "author": "Min Jin Lee",
      "location": null,
      "book_id": 171,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -4940,7 +4940,7 @@
      "author": "Bernardine Evaristo",
      "location": null,
      "book_id": 237,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -4953,7 +4953,7 @@
      "author": "E.M. Forster",
      "location": null,
      "book_id": 281,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -5016,7 +5016,7 @@
      "author": "Min Jin Lee",
      "location": null,
      "book_id": 171,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5029,7 +5029,7 @@
      "author": "Bernardine Evaristo",
      "location": null,
      "book_id": 237,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5042,7 +5042,7 @@
      "author": "E.M. Forster",
      "location": null,
      "book_id": 281,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -5102,7 +5102,7 @@
      "author": "Min Jin Lee",
      "location": null,
      "book_id": 171,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5115,7 +5115,7 @@
      "author": "Bernardine Evaristo",
      "location": null,
      "book_id": 237,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5128,7 +5128,7 @@
      "author": "E.M. Forster",
      "location": null,
      "book_id": 281,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -5191,7 +5191,7 @@
      "author": "Min Jin Lee",
      "location": null,
      "book_id": 171,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5204,7 +5204,7 @@
      "author": "Bernardine Evaristo",
      "location": null,
      "book_id": 237,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5217,7 +5217,7 @@
      "author": "E.M. Forster",
      "location": null,
      "book_id": 281,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -5282,7 +5282,7 @@
      "author": "Min Jin Lee",
      "location": null,
      "book_id": 171,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5295,7 +5295,7 @@
      "author": "Bernardine Evaristo",
      "location": null,
      "book_id": 237,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5308,7 +5308,7 @@
      "author": "E.M. Forster",
      "location": null,
      "book_id": 281,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -5356,7 +5356,7 @@
      "author": "Toni Morrison",
      "location": null,
      "book_id": 247,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5369,7 +5369,7 @@
      "author": "E.M. Forster",
      "location": null,
      "book_id": 281,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5382,7 +5382,7 @@
      "author": "William Melvin Kelley",
      "location": null,
      "book_id": 78,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5395,7 +5395,7 @@
      "author": "Akala",
      "location": null,
      "book_id": 299,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -5445,7 +5445,7 @@
      "author": "Toni Morrison",
      "location": null,
      "book_id": 247,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5458,7 +5458,7 @@
      "author": "E.M. Forster",
      "location": null,
      "book_id": 281,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5471,7 +5471,7 @@
      "author": "William Melvin Kelley",
      "location": null,
      "book_id": 78,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5484,7 +5484,7 @@
      "author": "Akala",
      "location": null,
      "book_id": 299,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -5532,7 +5532,7 @@
      "author": "Toni Morrison",
      "location": null,
      "book_id": 247,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5545,7 +5545,7 @@
      "author": "E.M. Forster",
      "location": null,
      "book_id": 281,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5558,7 +5558,7 @@
      "author": "William Melvin Kelley",
      "location": null,
      "book_id": 78,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5571,7 +5571,7 @@
      "author": "Akala",
      "location": null,
      "book_id": 299,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -5621,7 +5621,7 @@
      "author": "Toni Morrison",
      "location": null,
      "book_id": 247,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5634,7 +5634,7 @@
      "author": "E.M. Forster",
      "location": null,
      "book_id": 281,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5647,7 +5647,7 @@
      "author": "William Melvin Kelley",
      "location": null,
      "book_id": 78,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5660,7 +5660,7 @@
      "author": "Akala",
      "location": null,
      "book_id": 299,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -5709,7 +5709,7 @@
      "author": "Toni Morrison",
      "location": null,
      "book_id": 247,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5722,7 +5722,7 @@
      "author": "E.M. Forster",
      "location": null,
      "book_id": 281,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5735,7 +5735,7 @@
      "author": "William Melvin Kelley",
      "location": null,
      "book_id": 78,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5748,7 +5748,7 @@
      "author": "Akala",
      "location": null,
      "book_id": 299,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -5796,7 +5796,7 @@
      "author": "Frank Herbert",
      "location": null,
      "book_id": 276,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5809,7 +5809,7 @@
      "author": "Richard Powers",
      "location": null,
      "book_id": 153,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5822,7 +5822,7 @@
      "author": "Samuel R. Delany",
      "location": null,
      "book_id": 174,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5835,7 +5835,7 @@
      "author": "J.D. Salinger",
      "location": null,
      "book_id": 188,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -5886,7 +5886,7 @@
      "author": "Frank Herbert",
      "location": null,
      "book_id": 276,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5899,7 +5899,7 @@
      "author": "Richard Powers",
      "location": null,
      "book_id": 153,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5912,7 +5912,7 @@
      "author": "Samuel R. Delany",
      "location": null,
      "book_id": 174,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5925,7 +5925,7 @@
      "author": "J.D. Salinger",
      "location": null,
      "book_id": 188,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -5975,7 +5975,7 @@
      "author": "Frank Herbert",
      "location": null,
      "book_id": 276,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -5988,7 +5988,7 @@
      "author": "Richard Powers",
      "location": null,
      "book_id": 153,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -6001,7 +6001,7 @@
      "author": "Samuel R. Delany",
      "location": null,
      "book_id": 174,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -6014,7 +6014,7 @@
      "author": "J.D. Salinger",
      "location": null,
      "book_id": 188,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -6063,7 +6063,7 @@
      "author": "Frank Herbert",
      "location": null,
      "book_id": 276,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -6076,7 +6076,7 @@
      "author": "Richard Powers",
      "location": null,
      "book_id": 153,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -6089,7 +6089,7 @@
      "author": "Samuel R. Delany",
      "location": null,
      "book_id": 174,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -6102,7 +6102,7 @@
      "author": "J.D. Salinger",
      "location": null,
      "book_id": 188,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -6151,7 +6151,7 @@
      "author": "Frank Herbert",
      "location": null,
      "book_id": 276,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -6164,7 +6164,7 @@
      "author": "Richard Powers",
      "location": null,
      "book_id": 153,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -6177,7 +6177,7 @@
      "author": "Samuel R. Delany",
      "location": null,
      "book_id": 174,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -6190,7 +6190,7 @@
      "author": "J.D. Salinger",
      "location": null,
      "book_id": 188,
-     "text_truncated": true
+     "text_truncated": false
     }
    ]
   },
@@ -6236,7 +6236,7 @@
      "author": "Colson Whitehead",
      "location": null,
      "book_id": 316,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -6249,7 +6249,7 @@
      "author": "J.D. Salinger",
      "location": null,
      "book_id": 188,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -6262,7 +6262,7 @@
      "author": "Samuel R. Delany",
      "location": null,
      "book_id": 174,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -6321,7 +6321,7 @@
      "author": "Colson Whitehead",
      "location": null,
      "book_id": 316,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -6334,7 +6334,7 @@
      "author": "J.D. Salinger",
      "location": null,
      "book_id": 188,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -6347,7 +6347,7 @@
      "author": "Samuel R. Delany",
      "location": null,
      "book_id": 174,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -6406,7 +6406,7 @@
      "author": "Colson Whitehead",
      "location": null,
      "book_id": 316,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -6419,7 +6419,7 @@
      "author": "J.D. Salinger",
      "location": null,
      "book_id": 188,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -6432,7 +6432,7 @@
      "author": "Samuel R. Delany",
      "location": null,
      "book_id": 174,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -6490,7 +6490,7 @@
      "author": "Colson Whitehead",
      "location": null,
      "book_id": 316,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -6503,7 +6503,7 @@
      "author": "J.D. Salinger",
      "location": null,
      "book_id": 188,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -6516,7 +6516,7 @@
      "author": "Samuel R. Delany",
      "location": null,
      "book_id": 174,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -6575,7 +6575,7 @@
      "author": "Colson Whitehead",
      "location": null,
      "book_id": 316,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -6588,7 +6588,7 @@
      "author": "J.D. Salinger",
      "location": null,
      "book_id": 188,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
@@ -6601,7 +6601,7 @@
      "author": "Samuel R. Delany",
      "location": null,
      "book_id": 174,
-     "text_truncated": true
+     "text_truncated": false
     },
     {
      "source": "note",
