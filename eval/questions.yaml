@@ -46,7 +46,9 @@
   reference: "Only to-read books, every one under 400 pages, at least one with a recommendation edge, none sharing a theme with the last three abandoned, arranged over two weeks."
 
 - id: Q7
-  tests: a numbers filter (her rating) joined to a meaning filter (a theme); the ledger alone cannot name the theme, the index alone cannot see the rating
+  tests: >-
+    a numbers filter (her rating) joined to a meaning filter (a theme); the ledger alone cannot name
+    the theme, the index alone cannot see the rating
   status: ready by her own tags; the extracted-theme version arrives with the graph (v2)
   question: "Give me my favourite books I have read about race."
   reference: |
@@ -55,6 +57,7 @@
     Beloved (five stars, not tagged Race by her) is acceptable only if the answer says it is inferred,
     not tagged. Go Tell It on the Mountain is tagged Race but four stars: naming it as a favourite is
     partial. Any book she has not read, or rated below five, is wrong.
-  note: "favourite" means my_rating = 5 (Lifechanging counts as five). "About race" means her tag at v1 and
-    the graph's ABOUT edge at v2; the site should say which one answered.
-  sql: SELECT b.title, b.author FROM books b JOIN tags t ON t.book_id=b.id WHERE t.tag='Race' AND b.my_rating=5 AND b.shelf='read'
+  note: >-
+    "favourite" means my_rating = 5 (Lifechanging counts as five). "About race" means her tag at v1
+    and the graph's ABOUT edge at v2; the site should say which one answered.
+  sql: "SELECT b.title, b.author FROM books b JOIN tags t ON t.book_id=b.id WHERE t.tag='Race' AND b.my_rating=5 AND b.shelf='read'"
