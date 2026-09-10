@@ -61,3 +61,35 @@
     "favourite" means my_rating = 5 (Lifechanging counts as five). "About race" means her tag at v1
     and the graph's ABOUT edge at v2; the site should say which one answered.
   sql: "SELECT b.title, b.author FROM books b JOIN tags t ON t.book_id=b.id WHERE t.tag='Race' AND b.my_rating=5 AND b.shelf='read'"
+
+- id: Q8
+  tests: >-
+    an aggregate over the whole ledger (count and rank her tags across every read book); similarity
+    search cannot count, and a graph can only count if it carries the ledger's rating
+  status: ready by her own tags (2019–2022 are fully tagged; later years barely); extracted themes at v2 change the answer and the site must say which vocabulary answered
+  question: "What are the themes I like most?"
+  reference: |
+    Ranked by how many read books carry the tag, with five-star counts: Fantasy (39 read, 11 five-star),
+    Science Fiction (23, 8), Classics (23, 9), Historical Fiction (20, 10), Contemporary (18, 6),
+    Literary Fiction (16, 6), Romance (14, 6). A good answer distinguishes "most read" (Fantasy) from
+    "most loved" (Historical Fiction: 10 of 20 five-star, Mystery: 5 of 10) and says the tags are hers.
+    Her tags are genres more than themes; at v2 the extracted themes (grief, race and empire, myth retold …)
+    give the second, deeper answer, and the two are shown side by side.
+  sql: "SELECT t.tag, COUNT(*) AS n, SUM(CASE WHEN b.my_rating=5 THEN 1 ELSE 0 END) AS fav FROM tags t JOIN books b ON b.id=t.book_id WHERE b.shelf='read' GROUP BY t.tag ORDER BY n DESC LIMIT 10"
+
+- id: Q9
+  tests: >-
+    an aggregate grouped by time (top themes per year); needs the ledger's date_read joined to a theme
+    vocabulary, then a ranking within each year
+  status: partially ready; by her tags only 2019–2022 are trustworthy (2023: 4 of 12 books tagged, 2024: 2 of 15, 2025–26: none), so a correct v1 answer must say the later years are unknown; v2 extracted themes cover every year
+  question: "What were my top themes each year?"
+  reference: |
+    Top three tags by books read per year, with five-star counts:
+    2019: Fantasy (7, 3), Dystopia (5, 3), Science Fiction (5, 3).
+    2020: Fantasy (5, 0), Contemporary (4, 3), Historical Fiction (4, 3).
+    2021: Fantasy (13, 5), Thriller (7, 4), Classics (7, 3).
+    2022: Fantasy (13, 3), Classics (8, 2), Science Fiction (8, 2).
+    2023 and 2024: too few tagged books to rank (4 of 12 and 2 of 15); the answer must say so, not invent
+    a ranking. 2018, 2025, 2026: no tags at all. A pattern that produces confident themes for 2024 from
+    two tagged books is wrong even if the words sound right.
+  sql: "WITH c AS (SELECT substr(b.date_read,1,4) AS y, t.tag, COUNT(*) AS n FROM tags t JOIN books b ON b.id=t.book_id WHERE b.shelf='read' AND b.date_read IS NOT NULL GROUP BY y, t.tag), r AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY y ORDER BY n DESC, tag) AS rk FROM c) SELECT y, tag, n FROM r WHERE rk<=3 ORDER BY y, rk"
