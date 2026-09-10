@@ -51,7 +51,32 @@ What it is: `service/api.py`, a standard-library WSGI app run by gunicorn, servi
 
 Files at the repo root, same pattern as fixmybanana: `requirements.txt` (gunicorn only), `Procfile`, `railway.json` (healthcheck `/health`), `.python-version`.
 
-### Railway (Shirley's login; Claude can drive the browser)
+### Railway — done 10 September 2026
+
+Project **ragpatterns** (was auto-named `beautiful-contentment`), service `web`, deployed from
+`shhirl/ragpatterns`, branch `main`, auto-deploy on push. Railway's own domain is
+`web-production-c69c4.up.railway.app`; the custom domain is `api.ragpatterns.com` on port 8080.
+
+Cloudflare DNS carries two records for it, added the same evening:
+
+| type | name | value | proxy |
+|---|---|---|---|
+| CNAME | `api` | `z8yr6xfs.up.railway.app` | proxied |
+| TXT | `_railway-verify.api` | `railway-verify=7fe531c0…b9f457` | DNS only |
+
+Railway now asks for the TXT verification record as well as the CNAME; the version of these
+steps below predates that. Verified live: `https://api.ragpatterns.com/health` answers 200 with
+`access-control-allow-origin: https://ragpatterns.com`.
+
+**If the panel says "service not reachable" on your own machine while everyone else sees it
+working, it is the local DNS cache** holding the NXDOMAIN from before the record existed. `dig
+@1.1.1.1 api.ragpatterns.com` will resolve while the system resolver does not. Flush it:
+
+```
+sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder
+```
+
+### The steps, kept for the next site (Shirley's login; Claude can drive the browser)
 
 1. railway.app → **New Project** → **Deploy from GitHub repo** → `shhirl/ragpatterns` (authorise the Railway GitHub app for this repo if asked).
 2. Railway detects Python from `requirements.txt` and uses the `Procfile` start command. No variables are needed at v1. Wait for the first deploy; **Settings → Networking → Generate Domain** gives a `*.up.railway.app` URL; `/health` on it must return `{"ok": true, …}`.

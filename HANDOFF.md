@@ -568,10 +568,13 @@ lands — restate it, or re-grade the predictions.
    has an empty `final` column. §3.8 stands.
 2. `service/data/replay.json` is exported and committed, ungraded — the panel says "measured, not
    yet graded" until `final` is filled and it is re-exported.
-3. **`api.ragpatterns.com` does not exist yet.** The Railway project has never been created
-   (`DEPLOY.md` has the five steps; it is Shirley's login). Until then the panel on the live site
-   fails soft and says the service is unreachable, which is correct. Locally it works: launch
-   config `api` on :8791, and the pages on :8787 find it automatically.
+3. ~~`api.ragpatterns.com` does not exist yet.~~ **Deployed 10 Sep 2026**, Claude driving
+   Shirley's browser, she was signed in to Railway and Cloudflare already. Project `ragpatterns`,
+   service `web`, `main`, auto-deploy on push; CNAME + the TXT verification record Railway now
+   also wants. `https://api.ragpatterns.com/health` answers 200 with the right CORS header.
+   **Until PR #19 merges the service is serving `main`, which has no `replay.json`, so only the
+   SQL route answers and naive/rerank return 404.** Merging fixes that by itself: Railway
+   redeploys on push to main. Full record in `DEPLOY.md`.
 4. `eval/questions.yaml` still has not been formally approved (§6.3, §10.5).
 5. The kicker on both pages now reads **v1**. Shirley has not said the word "shipped"; if she
    would rather it stayed v0 until she merges, that is a one-line revert.
