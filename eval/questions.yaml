@@ -1,0 +1,99 @@
+# The fixed questions and their reference answers (six planned; Q7, Q8, Q9 added by Shirley on 10 Sep 2026: a join, an aggregate, an aggregate over time). Written before any pipeline runs.
+# Status per question: ready | pending (what it waits for). Shirley approves this file before v1 measures anything.
+# Dates on the site are month + year; exact dates here are fine, they are not published.
+
+- id: Q1
+  tests: a single quotation that sits in the index; the control every pattern should pass
+  status: pending Kindle highlights (next week)
+  question: "Where did I read the line about [a phrase from one of my highlights]?"
+  reference: "The book and the highlight, with its location, quoted back. Nothing else."
+
+- id: Q2
+  tests: a filter over the ledger; numbers and dates have no meaning to a similarity search
+  status: ready (Notion ratings merged 10 Sep 2026; Lifechanging counts as five stars)
+  question: "What did I read in 2024, rated five stars, under 300 pages?"
+  reference: |
+    Exactly three books, and nothing else: I Who Have Never Known Men (Jacqueline Harpman, 206 pages),
+    A Different Drummer (William Melvin Kelley, 245 pages), The Color Purple (Alice Walker, 287 pages).
+    Any other title is wrong; the four 2024 books Shirley chose not to rate can never appear.
+  sql: see service/patterns/sql_forced.py
+
+- id: Q3
+  tests: "contradicting sources about one book: her low rating and notes vs the crowd's average"
+  status: ready (Notion notes are the "review"; crowd average from Open Library)
+  question: "Why did I give The Fellowship of the Ring two stars when everyone else loved it?"
+  reference: |
+    Shirley's own reason, from her Notion notes on the book, stated as hers, ranked above any admiring
+    passages and above the crowd figure (Open Library average 4.34). If her notes give no reason, say so
+    rather than invent one.
+
+- id: Q4
+  tests: a relationship between two books, held in neither book's chunks
+  status: pending graph extraction (v2); reference fixed after the extraction table is reviewed
+  question: "Which of my books argue with each other?"
+  reference: "Pairs linked by a MENTIONS or ARGUES_WITH edge in graph.json, each with the highlight or note that proves the link."
+
+- id: Q5
+  tests: an answer that starts from pixels
+  status: pending photo crops (Shirley's yes on the copyright rule) and the multimodal index (v3)
+  question: "[A photographed page] Which book is this, and what did I highlight near it?"
+  reference: "The correct title from the photo, then the highlights nearest that page."
+
+- id: Q6
+  tests: a deliverable that needs the ledger, the recommendation edges, the abandoned books' themes, and a plan
+  status: "pending recommendations.csv and the graph (v2); the abandoned shelf is `dnf` (one book: In Ascension) plus titles Shirley names"
+  question: "Build me a two-week holiday list from my to-read shelf: nothing over 400 pages, one recommended by a friend, nothing like the last three I abandoned."
+  reference: "Only to-read books, every one under 400 pages, at least one with a recommendation edge, none sharing a theme with the last three abandoned, arranged over two weeks."
+
+- id: Q7
+  tests: >-
+    a numbers filter (her rating) joined to a meaning filter (a theme); the ledger alone cannot name
+    the theme, the index alone cannot see the rating
+  status: ready by her own tags; the extracted-theme version arrives with the graph (v2)
+  question: "Give me my favourite books I have read about race."
+  reference: |
+    By Shirley's own tag "Race" and a five-star rating: The Nickel Boys and The Underground Railroad
+    (Colson Whitehead), The Bluest Eye (Toni Morrison), Friday Black (Nana Kwame Adjei-Brenyah).
+    Beloved (five stars, not tagged Race by her) is acceptable only if the answer says it is inferred,
+    not tagged. Go Tell It on the Mountain is tagged Race but four stars: naming it as a favourite is
+    partial. Any book she has not read, or rated below five, is wrong.
+  note: >-
+    "favourite" means my_rating = 5 (Lifechanging counts as five). "About race" means her tag at v1
+    and the graph's ABOUT edge at v2; the site should say which one answered.
+  sql: "SELECT b.title, b.author FROM books b JOIN tags t ON t.book_id=b.id WHERE t.tag='Race' AND b.my_rating=5 AND b.shelf='read'"
+
+- id: Q8
+  tests: >-
+    an aggregate over the whole ledger (count and rank her tags across every read book); similarity
+    search cannot count, and a graph can only count if it carries the ledger's rating
+  status: >-
+    ready by her own tags (2019–2022 are fully tagged; later years barely); extracted themes at v2
+    change the answer and the site must say which vocabulary answered
+  question: "What are the themes I like most?"
+  reference: |
+    Ranked by how many read books carry the tag, with five-star counts: Fantasy (39 read, 11 five-star),
+    Science Fiction (23, 8), Classics (23, 9), Historical Fiction (20, 10), Contemporary (18, 6),
+    Literary Fiction (16, 6), Romance (14, 6). A good answer distinguishes "most read" (Fantasy) from
+    "most loved" (Historical Fiction: 10 of 20 five-star, Mystery: 5 of 10) and says the tags are hers.
+    Her tags are genres more than themes; at v2 the extracted themes (grief, race and empire, myth retold …)
+    give the second, deeper answer, and the two are shown side by side.
+  sql: "SELECT t.tag, COUNT(*) AS n, SUM(CASE WHEN b.my_rating=5 THEN 1 ELSE 0 END) AS fav FROM tags t JOIN books b ON b.id=t.book_id WHERE b.shelf='read' GROUP BY t.tag ORDER BY n DESC LIMIT 10"
+
+- id: Q9
+  tests: >-
+    an aggregate grouped by time (top themes per year); needs the ledger's date_read joined to a theme
+    vocabulary, then a ranking within each year
+  status: >-
+    partially ready; by her tags only 2019–2022 are trustworthy (2023: 4 of 12 books tagged, 2024: 2 of 15,
+    2025–26: none), so a correct v1 answer must say the later years are unknown; v2 extracted themes cover every year
+  question: "What were my top themes each year?"
+  reference: |
+    Top three tags by books read per year, with five-star counts:
+    2019: Fantasy (7, 3), Dystopia (5, 3), Science Fiction (5, 3).
+    2020: Fantasy (5, 0), Contemporary (4, 3), Historical Fiction (4, 3).
+    2021: Fantasy (13, 5), Thriller (7, 4), Classics (7, 3).
+    2022: Fantasy (13, 3), Classics (8, 2), Science Fiction (8, 2).
+    2023 and 2024: too few tagged books to rank (4 of 12 and 2 of 15); the answer must say so, not invent
+    a ranking. 2018, 2025, 2026: no tags at all. A pattern that produces confident themes for 2024 from
+    two tagged books is wrong even if the words sound right.
+  sql: "WITH c AS (SELECT substr(b.date_read,1,4) AS y, t.tag, COUNT(*) AS n FROM tags t JOIN books b ON b.id=t.book_id WHERE b.shelf='read' AND b.date_read IS NOT NULL GROUP BY y, t.tag), r AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY y ORDER BY n DESC, tag) AS rk FROM c) SELECT y, tag, n FROM r WHERE rk<=3 ORDER BY y, rk"

@@ -13,6 +13,13 @@ Static site comparing seven RAG design patterns on Shirley's own bookshelf (Good
 - **Pipeline diagrams are drawn by `diagram()` from each pattern's `stages`.** Icons are chosen by stage kind (`k`) and by keywords in the label: `in` = open circle with "?", `out` = filled circle, `doc` = stacked pages, `store` = cylinder unless the label contains "graph" (linked nodes), "sql" (table) or "image" (frame); `model` = rect with a glyph for "embedding", "rerank", "router", "entity"/"linking", "planner", else a star. Stores are tinted with the pattern colour. A new stage label that matches none of these gets the default icon; add a keyword rather than a special case. Connectors animate slowly; `prefers-reduced-motion` turns that off.
 - **The shelf hero is a chart.** `shelf()` in `index.html` builds the seven spines from `R` and `COST`: height = predicted score out of 6 (correct 1, partial ½), width = a flex share proportional to cost vs naive, so the seven fill the shelf. Do not hard-code spine sizes; change the data and the shelf follows. Same for the mini spines in the footer of `index.html`; the ones in `how-its-built.html` are static copies of the same numbers.
 
+## Service (v1+)
+
+- `service/ingest/` builds the ledger: `goodreads.py` (export → rows, Private Notes dropped), `ratings.py` (Open Library crowd average, cached), `notion.py` (Notion export → ratings, tags, notes, copied passages), `match.py` (Notion ↔ Goodreads), `build_db.py` → `service/data/library.sqlite`. Rebuild with `python3 service/ingest/build_db.py` after any export changes; it prints the numbers the method page publishes.
+- `service/answer.py` is the one interface; `service/retrievers/sql.py` is the read-only SQL tool; `service/patterns/` holds the seven patterns as they arrive. `sql_forced.py` is a diagnostic, not a pattern: no model call, labelled as such in every result.
+- `eval/questions.yaml` is the question set with reference answers; Shirley approves it before anything is measured. The reasoning behind the set's size and shape is `docs/evals-guide.md` (two tiers: nine diagnostics now, ~36 scored questions at v5, paired differences with CIs).
+- Python 3.9 on this machine: no `X | None` annotations, no `match` statements.
+
 ## Pages
 
 - `index.html` — thesis + explorer. All explorer content is in the `<script>` at the bottom: `P` (patterns, with pipeline `stages` that drive the SVG), `Q` (six questions), `REF` (reference answers), `R[pattern][Qn]` (trace rows, answer, verdict `good|partial|wrong`, why), `COST`. Edit data there; do not fork the renderer.
@@ -41,7 +48,7 @@ v0 traces are predictions, not measurements. Keep the "predicted" labels (kicker
 ## Working on it
 
 - Shirley's rule: present the plan, let her decide, then build. Do not start files off an open brief.
-- **Git:** repo is https://github.com/shhirl/ragpatterns (public). `main` is protected; every change is a branch + pull request with the template checklist, and Shirley merges. An AI session never merges, never pushes to main, never force-pushes. Merging deploys ragpatterns.com through Cloudflare Pages; see `DEPLOY.md`.
+- **Git:** repo is https://github.com/shhirl/ragpatterns (public). **One open PR at a time when `HANDOFF.md` is touched:** every session appends to §9, so two open PRs conflict; wait for the merge, or branch the next PR from the open branch. `main` is protected; every change is a branch + pull request with the template checklist, and Shirley merges. An AI session never merges, never pushes to main, never force-pushes. Merging deploys ragpatterns.com through Cloudflare Pages; see `DEPLOY.md`.
 - Preview: `python3 -m http.server 8787`, or the `static` launch config. The browser caches aggressively; add `?v=N` when checking a CSS change.
 - Check desktop and ~375px mobile: the explorer collapses to one column under 700px; the pipeline diagram and the scorecard scroll horizontally inside their own containers.
 - Deep links: `#compare/<patternId>/<Qn>` selects a cell on load.
