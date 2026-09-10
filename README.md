@@ -1,6 +1,6 @@
 # Seven RAGs, one shelf
 
-A one-project site that runs the seven common RAG design patterns (naive, retrieve-and-rerank, multimodal, graph, hybrid, agentic router, multi-agent) on **one** real knowledge base, Shirley's own bookshelf, and **the same six questions**, so the only thing that changes between columns is the architecture.
+A one-project site that runs the seven common RAG design patterns (naive, retrieve-and-rerank, multimodal, graph, hybrid, agentic router, multi-agent) on **one** real knowledge base, Shirley's own bookshelf, and **the same nine questions**, so the only thing that changes between columns is the architecture.
 
 - `index.html` — the thesis, the corpus, an interactive pattern × question explorer with pipeline diagrams and graded traces, the scorecard, and a decision guide.
 - `how-its-built.html` — the method: why books, trade-offs, the corpus, the question set, how answers are judged, the version plan, the stack.
@@ -11,7 +11,7 @@ No framework, no build step, no external requests. Each page is one self-contain
 
 ## Status
 
-**v0 (9 Sep 2026): predicted traces.** The corpus is chosen (Goodreads export + Kindle highlights + a hand-written recommendations list + a few photos), the six question shapes are fixed, and all 42 pattern × question cells are traced by prediction. No pipeline has run. Every cell is labelled as a prediction; `how-its-built.html#versions` says what becomes a measurement and when.
+**v0 (9 Sep 2026): predicted traces.** The corpus is chosen (Goodreads export + Kindle highlights + a hand-written recommendations list + a few photos), the nine questions are fixed (six planned, three added from her own shelf), and all 63 pattern × question cells are traced by prediction. No pipeline has run. Every cell is labelled as a prediction; `how-its-built.html#versions` says what becomes a measurement and when.
 
 The corpus itself (the curated exports) is not in the repo and never will be. The photos, the extracted graph, the question set and every result CSV will be.
 
