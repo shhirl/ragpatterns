@@ -255,13 +255,61 @@ for records instead. **Everything is built and wired. Nothing has been measured.
 | state | what |
 |---|---|
 | done and verified | corpus cleaning, ingest rebuild, vector retriever, reranker, naive and rerank patterns, `answer()` wiring, eval runner, grading sheet, replay exporter, live-panel rewrite, workbench routes, API replay endpoint, method-page ingest numbers |
-| done, not verified end to end | one naive call. The smoke test died on a **DNS failure**, not a code fault (`Failed to resolve api.voyageai.com`). The pipeline has never returned a complete answer. **Verify before trusting it.** |
-| not started | the measurement run, grading, the site's `R` traces, the version table, README |
+| verified end to end | **the pilot ran and all four answers succeeded** — see §10.1a. An earlier smoke test had died on a DNS failure, not a code fault. |
+| not started | the full measurement run, grading, the site's `R` traces, the version table |
 
 **The vector index is complete: 775 of 775 chunks embedded** (finished at the end of the session,
 10 Sep 2026). 385 highlight chunks and 390 note chunks over 55 books, `voyage-4`, 1024 dimensions,
 47,698 tokens billed against Voyage's free allowance, so it cost nothing. The build is resumable
 and incremental, so re-running it is a no-op unless the ingest changed.
+
+### 10.1a The pilot ran, and it changed three things (10 Sep 2026, 16:39)
+
+Shirley ran `eval/run.py --runs 1 --q Q1,Q2` herself at the end of the session. **The pipeline
+works end to end.** Results are in `eval/results/v1-2026-09-10.{csv,json}` — four answers, all
+four succeeded, ungraded.
+
+| | Q1 (control) | Q2 (ledger) |
+|---|---|---|
+| naive | **correct.** Such a Fun Age top-ranked at 0.560, quoted exactly with attribution | **abstained.** Said plainly there are no dates, ratings or page counts in the context |
+| rerank | **correct.** Same answer; the cross-encoder pushed the right chunk from 0.560 to **0.922** | **abstained**, same reasoning |
+
+Neither pattern named a book outside its context. Neither invented a title. The reranker did
+visibly what it exists to do: it turned a 0.56/0.43 margin into 0.92/0.36.
+
+**Three findings, all of which need a decision before anything is published:**
+
+1. **The cost estimate was five times too high.** $0.0374 for four answers, about **$0.009 an
+   answer**. The full 90-answer set is **roughly $0.85**, not the $4–5 estimated from the model's
+   list price. Adaptive thinking produced far less output than assumed. v1 is comfortably
+   affordable on the $6.79 balance.
+
+2. **The measurement contradicts the v0 prediction, and the prompt may be why.** `index.html`
+   predicts naive/Q2 as *"wrong, and invented … a confident list of five or six titles with
+   dates"*. What actually happened is a clean, honest abstention. That is a genuinely interesting
+   result — but the shared system prompt in `service/patterns/_generate.py` contains the line
+   *"The context contains no ratings, dates, page counts or shelf information. If the question
+   needs those, say that they are not in the context rather than estimating them."* **That
+   sentence arguably hands the model the abstention**, so the run may be measuring the prompt
+   rather than the pattern. This is Shirley's call, and it must be settled before the Q2 cell is
+   published:
+   - *Option A (recommended):* remove that sentence, keep only the general "use only the context
+     / never name a book that is not in the context" rules, and re-run. That tests whether the
+     pattern invents, which is what the site claims to measure.
+   - *Option B:* keep it and **say so on the page** — publish the prompt, and frame the cell as
+     "a well-prompted naive pipeline refuses; the failure the diagram predicts is a prompt away".
+   - Either way the prompt is identical for both patterns, so the naive-vs-rerank comparison is
+     unaffected. It is the "does RAG invent?" claim that is at stake.
+
+3. **The published latency is contaminated.** rerank/Q2 reports 53,390 ms, of which **49,747 ms
+   was `retrieve_ms` waiting on Voyage's 3-requests-per-minute free-tier limit**, not work. Do
+   **not** publish `ms` as latency. Either report `gen_ms` + `rerank_ms` and state that embedding
+   is throttled, or get the rate limit lifted and re-run. Honest figures from this pilot:
+   generation 2.8–4.1 s, rerank 0.35–0.58 s, retrieval ~0.25 s when not throttled.
+
+Minor: the `quoted_not_on_shelf` check produced one false positive — it flagged *"The book is not
+that long,"*, a phrase from Shirley's own note, as a possible invented title. The check is a
+prompt for a human, not a verdict; treat it that way, or tighten it to require title-case.
 
 ### 10.2 The command that finishes v1
 
@@ -284,9 +332,9 @@ Read the pilot's cost, multiply, and **only then** decide the full run:
 #   -> service/data/replay.json  committed; the live panel serves it
 ```
 
-**Check her Anthropic balance before the full run.** It was **$6.79** on 10 Sep 2026 and the run
-is estimated at $4-5. If it is short, run `--runs 1` (18 answers, ~$0.90) and publish
-"one run, consistency not yet measured" rather than a five-run claim that did not happen.
+**Cost is now measured, not estimated:** about **$0.009 an answer**, so the full 90-answer set is
+**roughly $0.85**. The balance was $6.79 on 10 Sep 2026, so the five-run set is affordable.
+(The earlier $4-5 estimate was wrong by five times; see §10.1a.)
 
 ### 10.3 Decisions taken this session
 
@@ -397,7 +445,8 @@ can be attributed: the chunk knows its book without the title being embedded.
 
 ### 10.8 What is still unverified - do not write it into the site as fact
 
-1. **The pipeline has never produced a complete answer.** Run the pilot first.
+1. ~~The pipeline has never produced a complete answer.~~ The pilot ran; see §10.1a. But **settle
+   the prompt question in §10.1a finding 2 before publishing the Q2 cell.**
 2. Every trace in `index.html`'s `R` for naive and rerank is **still a v0 prediction**. The
    "predicted" labels (kicker, the `.note` under the explorer, the scorecard legend and
    footnote) **must stay** until real traces replace them. §3.9 is non-negotiable.
@@ -424,9 +473,9 @@ can be attributed: the chunk knows its book without the title being embedded.
 ### 10.10 Next session, in order
 
 1. ~~Finish the index~~ — done, 775 of 775.
-2. **Pilot**: `eval/run.py --runs 1 --q Q1,Q2`. Read the answers. Q1 must name Such a Fun Age;
-   Q2 must refuse, because the ledger is not in the index. If Q2 confidently lists books, that is
-   the thesis working, not a bug - record it.
+2. ~~Pilot~~ — done, 10 Sep 2026. Q1 correct on both patterns, Q2 abstained on both.
+   **Decide the prompt question first** (§10.1a finding 2): re-running with a more neutral prompt
+   is probably the honest version of this experiment, and it costs under a dollar.
 3. Check the balance, then the full run at the largest number of runs it affords.
 4. `eval/grade.py`, give Shirley the sheet, wait for her `final` column.
 5. Rewrite `R.naive` and `R.rerank` in `index.html` from the real traces - trace rows, answer,
