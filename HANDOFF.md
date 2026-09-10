@@ -1,4 +1,10 @@
-# HANDOFF — Seven RAGs, one shelf
+# HANDOFF — RAG patterns, side by side
+
+> **Newest first:** the latest session is **§10 (10 Sep 2026)** — v1 is built and wired but
+> **nothing has been measured**. If you are picking this up, read §10 before anything else:
+> it has the state, the decisions, what is verified, and the exact commands that finish v1.
+> Then come back and read from §0 for the project's history and rules.
+> (The working name "Seven RAGs, one shelf" was replaced on 10 Sep 2026.)
 
 Written 9 September 2026 at the end of the planning session with Shirley. This is the document the next AI reads first. It says what the project is, what has been decided (and what was rejected, and why), what exists on disk, what does not exist yet, and exactly where to start building. Nothing in this folder should be deleted.
 
