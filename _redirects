@@ -1,2 +1,4 @@
-# Cloudflare Pages: the docs folder (build plan, design mockups) is for the repo, not the site.
+# Cloudflare Pages serves the repo root as-is. These folders are for the repo, not the site.
 /docs/* / 302
+/service/* / 302
+/.claude/* / 302
