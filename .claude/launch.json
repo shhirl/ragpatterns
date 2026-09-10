@@ -19,6 +19,15 @@
         "8790"
       ],
       "port": 8790
+    },
+    {
+      "name": "api",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "service/api.py",
+        "8791"
+      ],
+      "port": 8791
     }
   ]
 }

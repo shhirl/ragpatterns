@@ -53,6 +53,28 @@ def crowd(b, cache):
     return None, None, 'title-disagreed'
 
 
+PUBLIC_DB = os.path.join(ROOT, 'service', 'data', 'library.public.sqlite')
+
+
+def build_public(src=DB, dst=PUBLIC_DB):
+    """The copy that ships to the live service: no notes, no copied passages, no Notion ids.
+    Everything else on the site is public already (titles, dates, pages, her ratings, her tags,
+    the crowd average). Committed to the repo; rebuilt with `build_db.py --public`."""
+    if os.path.exists(dst):
+        os.remove(dst)
+    con = sqlite3.connect(dst)
+    con.executescript(SCHEMA)
+    con.execute(f"ATTACH DATABASE '{src}' AS full")
+    con.execute("INSERT INTO books SELECT id,goodreads_id,title,author,isbn,isbn13,pages,pub_year,orig_year,date_read,date_added,"
+                "shelf,shelves,read_count,my_rating,lifechanging,kind,avg_rating,ratings_count,avg_source,NULL,NULL FROM full.books")
+    con.execute("INSERT INTO tags SELECT * FROM full.tags")
+    con.execute("INSERT INTO recommendations SELECT * FROM full.recommendations")
+    con.commit()
+    n = con.execute("SELECT COUNT(*) FROM books").fetchone()[0]
+    con.close()
+    return n
+
+
 def build(db_path=DB):
     books = load_goodreads(os.path.join(ROOT, 'corpus', 'goodreads_library_export.csv'))
     reviews = load_notion(os.path.join(ROOT, 'corpus', 'notion'))
@@ -100,5 +122,8 @@ def build(db_path=DB):
 
 
 if __name__ == '__main__':
-    c = build()
-    print(json.dumps(c, indent=1))
+    if '--public' in sys.argv:
+        print('public ledger:', build_public(), 'books, no notes, no highlights')
+    else:
+        c = build()
+        print(json.dumps(c, indent=1))

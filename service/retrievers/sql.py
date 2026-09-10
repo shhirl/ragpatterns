@@ -5,7 +5,7 @@ and the agents are shown; keep it in sync with build_db.py.
 """
 import os, re, sqlite3
 
-DB = os.path.join(os.path.dirname(__file__), '..', 'data', 'library.sqlite')
+DB = os.environ.get('LEDGER_DB') or os.path.join(os.path.dirname(__file__), '..', 'data', 'library.sqlite')
 SCHEMA = """books(id, title, author, isbn13, pages, pub_year, orig_year, date_read 'YYYY-MM-DD', date_added,
       shelf in ('read','to-read','currently-reading','abandoned'), shelves, read_count,
       my_rating 1-5 or NULL if Shirley never rated it, lifechanging 0/1, kind 'Fiction'|'Non-Fiction'|...,

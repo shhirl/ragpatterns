@@ -45,9 +45,31 @@ After step 4 the loop is: merge a PR → live in about twenty seconds. There are
 
 Cloudflare Pages keeps every deployment. Project → **Deployments** → pick the previous one → **Rollback to this deployment**. Or revert the merge commit on GitHub through a PR; either is fine, the second leaves a record.
 
-## When v1 adds the service
+## The live service (v1, set up 10 Sep 2026): Railway
 
-- New Railway project from the same repo, root directory `service/`, same pattern as fixmybanana (`railway.json`, `Procfile`, gunicorn). Custom domain `api.ragpatterns.com` added in Railway; Cloudflare gets a CNAME (proxied) to the Railway target.
+What it is: `service/api.py`, a standard-library WSGI app run by gunicorn, serving the **public** ledger `service/data/library.public.sqlite` (committed; rebuilt with `python3 service/ingest/build_db.py --public`; no notes, no copied passages). Endpoints `/health`, `/questions`, `POST /ask {qid}`. CORS only for ragpatterns.com, www, and localhost:8787. No free SQL in public.
+
+Files at the repo root, same pattern as fixmybanana: `requirements.txt` (gunicorn only), `Procfile`, `railway.json` (healthcheck `/health`), `.python-version`.
+
+### Railway (Shirley's login; Claude can drive the browser)
+
+1. railway.app → **New Project** → **Deploy from GitHub repo** → `shhirl/ragpatterns` (authorise the Railway GitHub app for this repo if asked).
+2. Railway detects Python from `requirements.txt` and uses the `Procfile` start command. No variables are needed at v1. Wait for the first deploy; **Settings → Networking → Generate Domain** gives a `*.up.railway.app` URL; `/health` on it must return `{"ok": true, …}`.
+3. **Settings → Networking → Custom Domain** → `api.ragpatterns.com`. Railway shows a CNAME target.
+4. Cloudflare → ragpatterns.com → **DNS** → add **CNAME** `api` → the Railway target, **proxied on**. Wait a minute; `https://api.ragpatterns.com/health` answers.
+5. **Settings → Deploy**: production branch `main`; every merge redeploys. Behaviour changes go through PRs like everything else.
+
+### Local
+
+`python3 service/api.py` (or launch config `api`) serves it on http://localhost:8791 with `wsgiref`; the pages on localhost:8787 talk to it automatically (`API` constant in `index.html`).
+
+### Rollback
+
+Railway → Deployments → previous deployment → **Redeploy**. Or revert the merge on GitHub.
+
+## What the plan said would happen at v1
+
+- Done as above (root directory is the repo root, not `service/`, so the ledger and the package import cleanly).
 - API keys live only in Railway variables and in a git-ignored `.env` locally. Nothing in the pages.
 - Pages call the service with `fetch('https://api.ragpatterns.com/...')`. The service must send `Access-Control-Allow-Origin: https://ragpatterns.com`.
 - Document it here when it happens, with the date.

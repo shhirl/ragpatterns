@@ -6,7 +6,7 @@ Static site comparing seven RAG design patterns on Shirley's own bookshelf (Good
 
 ## Constraints — keep it this simple
 
-- **Plain HTML + inline CSS/JS. No framework, no npm, no external requests** (no CDN fonts, no analytics) unless the owner asks.
+- **Plain HTML + inline CSS/JS. No framework, no npm, no external requests** (no CDN fonts, no analytics) unless the owner asks. The one exception she asked for (10 Sep 2026): the live panel's calls to api.ragpatterns.com.
 - One self-contained file per page. Styles and the explorer data live inside that page.
 - Palette and voice match the owner's other sites (fixmybanana, shhirl.com): cream background with a faint ruled-paper line, serif body, small uppercase sans labels, monospace for numbers and verdicts, numbered "§" sections, honest version tags.
 - Design direction chosen 9 Sep 2026: **option A "the shelf" with option C's explorer** (see `docs/design-options/`). Text sits in `.wrap` (900px); the explorer and scorecard sit in `.wide` (1180px). Verdicts are squares (`.vc`), not dots, everywhere.
@@ -16,6 +16,7 @@ Static site comparing seven RAG design patterns on Shirley's own bookshelf (Good
 ## Service (v1+)
 
 - `service/ingest/` builds the ledger: `goodreads.py` (export → rows, Private Notes dropped), `ratings.py` (Open Library crowd average, cached), `notion.py` (Notion export → ratings, tags, notes, copied passages), `match.py` (Notion ↔ Goodreads), `build_db.py` → `service/data/library.sqlite`. Rebuild with `python3 service/ingest/build_db.py` after any export changes; it prints the numbers the method page publishes.
+- `service/api.py` is the live service (Railway, api.ragpatterns.com): the one interface over HTTP, serving the **public** ledger only (`library.public.sqlite`, no notes, no copied passages; rebuild with `build_db.py --public` and commit it after any export change). Free SQL is never public. The pages' "Ask the ledger, live" panel is the one sanctioned external request; it fails soft when the service is unreachable.
 - `service/answer.py` is the one interface; `service/retrievers/sql.py` is the read-only SQL tool; `service/patterns/` holds the seven patterns as they arrive. `sql_forced.py` is a diagnostic, not a pattern: no model call, labelled as such in every result.
 - `service/workbench.py` is the local page for seeing and interacting with what is built (`python3 service/workbench.py`, or the `workbench` launch config, then http://localhost:8790). Local only; it must never be deployed or linked from the pages.
 - `eval/questions.yaml` is the question set with reference answers; Shirley approves it before anything is measured. The reasoning behind the set's size and shape is `docs/evals-guide.md` (two tiers: nine diagnostics now, ~36 scored questions at v5, paired differences with CIs).

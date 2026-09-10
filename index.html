@@ -128,6 +128,27 @@
   .why{font-family:var(--sans);font-size:13.5px;color:var(--ink2);margin:16px 0 0;line-height:1.55}
   .why b{color:var(--ink)}
   .note{font-family:var(--sans);font-size:13px;color:var(--mute);border:1px dashed #d9d5cb;padding:8px 12px;margin:16px 0;max-width:720px}
+  /* live panel: the one interface, over HTTP, from the deployed service */
+  .live{margin-top:26px;border:1px solid var(--ink);background:#fff}
+  .live .lh{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 24px;border-bottom:1px solid var(--ink)}
+  .live .lh b{font-size:20px;font-weight:500}
+  .live .st{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--mute)}
+  .live .st i{display:inline-block;width:8px;height:8px;border-radius:50%;background:#bbb;margin-right:6px;vertical-align:middle}
+  .live .st.on i{background:var(--good)}.live .st.off i{background:var(--wrong)}
+  .live .lb{display:grid;grid-template-columns:330px minmax(0,1fr)}
+  .live .lq{border-right:1px solid var(--ink);padding:10px 0}
+  .live .lq button{display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;width:100%;text-align:left;border:0;background:transparent;cursor:pointer;padding:11px 18px;border-left:3px solid transparent;font-family:var(--serif);font-size:14.5px;line-height:1.4;color:var(--ink2)}
+  .live .lq button:hover{background:var(--soft)}.live .lq button.on{border-left-color:var(--acc);background:var(--soft);color:var(--ink)}
+  .live .lq button:disabled{cursor:default;color:var(--mute)}.live .lq button:disabled:hover{background:transparent}
+  .live .lq .qn{font-family:var(--sans);font-size:11px;letter-spacing:.1em;font-weight:600;color:var(--ink);padding-top:2px}
+  .live .lq small{display:block;font-family:var(--sans);font-size:11.5px;color:var(--mute);margin-top:2px}
+  .live .lr{padding:18px 24px 22px;min-height:180px}
+  .live .lr .route{font-family:var(--mono);font-size:11.5px;color:var(--mute);margin-bottom:10px}
+  .live .lr .ans{white-space:pre-line;font-size:16px;line-height:1.5;padding:12px 14px;background:var(--soft);border-left:3px solid var(--acc)}
+  .live .lr .q{font-family:var(--sans);font-size:13px;color:var(--mute);margin:0 0 10px}
+  .live .lr .q b{color:var(--ink);letter-spacing:.1em;text-transform:uppercase;font-size:10.5px;margin-right:8px}
+  .live .lr pre{font-family:var(--mono);font-size:11px;background:var(--bg);padding:10px 12px;overflow:auto;margin:12px 0 0;border:1px solid var(--line)}
+  @media (max-width:760px){.live .lb{grid-template-columns:1fr}.live .lq{border-right:0;border-bottom:1px solid var(--ink)}}
   /* scorecard (wide) */
   .scroll{overflow-x:auto;background:#fff;border:1px solid var(--ink);margin-top:22px}
   table.matrix{width:100%;min-width:760px;border-collapse:collapse;font-family:var(--sans);font-size:14px;margin:0}
@@ -264,6 +285,16 @@
     </div>
   </div>
   <p class="note">v0: every trace on this page is a prediction written from how the pipeline is designed and what the corpus contains. No pipeline has run. Each cell is replaced by a real trace, with the date, as the version that measures it ships; the schedule is in <a href="how-its-built.html#versions">How it's built</a>.</p>
+
+  <h3>Ask the ledger, live</h3>
+  <p>The first real piece of the system, running as a service. It holds the ledger and the read-only SQL tool, nothing else: no index, no model. The four questions the ledger alone can answer run through the same <code>answer()</code> interface every pattern will use, and the answer you see is a query result, labelled as such. The other five wait for the parts that are not built yet.</p>
+  <div class="live" id="live">
+    <div class="lh"><b>Ask the ledger</b><span class="st" id="lst"><i></i>checking the service…</span></div>
+    <div class="lb">
+      <div class="lq" id="lq"></div>
+      <div class="lr" id="lr"><p class="q">Pick a question. Nothing here is a prediction: the service runs the query and returns the rows.</p></div>
+    </div>
+  </div>
 </section>
 
 <section id="scorecard" class="tri core">
@@ -667,11 +698,29 @@ function matrix(){
   document.querySelector('.legend').insertAdjacentHTML('afterend','<p class="small" style="margin-top:10px">* call counts are structural and real; latency and relative cost are estimates for the planned v1 stack, replaced by measurements in v5.</p>');
 }
 
+// live panel: talks to the deployed service; on localhost, to the local api (launch config 'api')
+const API=location.hostname==='localhost'||location.hostname==='127.0.0.1'?'http://localhost:8791':'https://api.ragpatterns.com';
+const LIVEQ=[['Q1','Where did I read the line about […]?','waits for the Kindle file'],['Q2','What did I read in 2024, rated five stars, under 300 pages?',''],['Q3','Why did I give The Fellowship of the Ring two stars when everyone else loved it?','waits for the index and a generation call'],['Q4','Which of my books argue with each other?','waits for the graph (v2)'],['Q5','[photo] Which book is this, and what did I highlight near it?','waits for the photo crops (v3)'],['Q6','A two-week holiday list from my to-read shelf…','waits for the recommendations list and the graph (v2)'],['Q7','Give me my favourite books I have read about race.',''],['Q8','What are the themes I like most?',''],['Q9','What were my top themes each year?','']];
+function live(){
+  $('lq').innerHTML=LIVEQ.map(([q,t,w])=>`<button data-q="${q}" ${w?'disabled':''}><span class="qn">${q}</span><span>${esc(t)}${w?`<small>${esc(w)}</small>`:''}</span></button>`).join('');
+  const st=$('lst');
+  fetch(API+'/health').then(r=>r.json()).then(h=>{st.className='st on';st.innerHTML=`<i></i>live · ${esc(h.version)}`;}).catch(()=>{st.className='st off';st.innerHTML='<i></i>service not reachable · the ledger questions will answer once it is deployed';});
+  $('lq').addEventListener('click',async e=>{const b=e.target.closest('button');if(!b||b.disabled)return;
+    document.querySelectorAll('#lq button').forEach(x=>x.classList.toggle('on',x===b));
+    const q=b.dataset.q, t=LIVEQ.find(x=>x[0]===q)[1];
+    $('lr').innerHTML=`<p class="q"><b>${q}</b>${esc(t)}</p><div class="route">asking the service…</div>`;
+    try{const r=await fetch(API+'/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({qid:q})});const d=await r.json();
+      if(!r.ok)throw new Error(d.error||r.status);
+      $('lr').innerHTML=`<p class="q"><b>${q}</b>${esc(t)}</p><div class="route">route: ${esc(d.route)} · calls: ${d.calls} · ${d.ms} ms · served by ${esc(d.version)}</div><div class="ans">${esc(d.answer)}</div><pre>${esc(d.sql||'')}</pre>`;
+    }catch(err){$('lr').innerHTML=`<p class="q"><b>${q}</b>${esc(t)}</p><div class="route">could not reach the service (${esc(String(err.message||err))}). When it is deployed at api.ragpatterns.com this button returns the ledger rows.</div>`;}
+  });
+}
 const goEx=()=>$('ex').scrollIntoView({behavior:'smooth',block:'start'});
 $('tabs').innerHTML=P.map((p,i)=>`<button class="tab" data-i="${i}" style="--pc:${p.color}"><i></i>${esc(p.name)}</button>`).join('');
 $('tabs').addEventListener('click',e=>{const t=e.target.closest('.tab');if(!t)return;pi=+t.dataset.i;render();});
 $('qs').addEventListener('click',e=>{const t=e.target.closest('.q');if(!t)return;qi=+t.dataset.i;render();});
 shelf();
+live();
 $('books').addEventListener('click',e=>{const t=e.target.closest('.spine');if(!t)return;pi=+t.dataset.i;render();goEx();});
 matrix();
 $('matrix').addEventListener('click',e=>{const td=e.target.closest('td.c');if(!td)return;pi=+td.dataset.p;qi=+td.dataset.q;render();goEx();});
