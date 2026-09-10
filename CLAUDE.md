@@ -17,6 +17,7 @@ Static site comparing seven RAG design patterns on Shirley's own bookshelf (Good
 
 - `service/ingest/` builds the ledger: `goodreads.py` (export → rows, Private Notes dropped), `ratings.py` (Open Library crowd average, cached), `notion.py` (Notion export → ratings, tags, notes, copied passages), `match.py` (Notion ↔ Goodreads), `build_db.py` → `service/data/library.sqlite`. Rebuild with `python3 service/ingest/build_db.py` after any export changes; it prints the numbers the method page publishes.
 - `service/answer.py` is the one interface; `service/retrievers/sql.py` is the read-only SQL tool; `service/patterns/` holds the seven patterns as they arrive. `sql_forced.py` is a diagnostic, not a pattern: no model call, labelled as such in every result.
+- `service/workbench.py` is the local page for seeing and interacting with what is built (`python3 service/workbench.py`, or the `workbench` launch config, then http://localhost:8790). Local only; it must never be deployed or linked from the pages.
 - `eval/questions.yaml` is the question set with reference answers; Shirley approves it before anything is measured. The reasoning behind the set's size and shape is `docs/evals-guide.md` (two tiers: nine diagnostics now, ~36 scored questions at v5, paired differences with CIs).
 - Python 3.9 on this machine: no `X | None` annotations, no `match` statements.
 
