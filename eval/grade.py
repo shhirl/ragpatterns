@@ -18,6 +18,12 @@ def _norm(t):
     return re.sub(r'[^a-z0-9 ]', ' ', (t or '').lower())
 
 
+# Titles that are also something else on this particular shelf. "Shirley" is Charlotte Bronte's
+# novel and it is also who the answer is talking to, so an answer that says "Shirley, your notes"
+# is not naming a book. There is no clever rule for this; it is one book, listed by hand.
+AMBIGUOUS = {'Shirley'}
+
+
 def outside(trace):
     """Books named that were not in the context, after two false positives are removed.
 
@@ -33,6 +39,8 @@ def outside(trace):
     out = []
     for b in trace['checks']['named_outside_context']:
         bare = re.sub(r'\s*\(.*?\)\s*$', '', b).strip()
+        if bare in AMBIGUOUS:
+            continue
         if (' ' + _norm(bare).strip() + ' ') in q:
             continue
         if len(_norm(bare).split()) <= 3 and not re.search(
@@ -52,14 +60,18 @@ def propose(qid, answers, ref):
     """A proposed verdict from the automatic checks alone, plus the reason, in Shirley's terms.
     Deliberately conservative: anything that needs a judgement about meaning is left to her."""
     ch = [a['checks'] for a in answers]
-    invented = any(outside(a) or a['checks']['quoted_not_on_shelf'] for a in answers)
+    # Naming a book that was not in the context is an invention. Quoting a phrase that matches no
+    # title is not: the quoted-phrase check fires on any short quotation, including the exact
+    # highlight a correct answer is supposed to quote. It stays in the sheet as something to read.
+    invented = any(outside(a) for a in answers)
     abstained = sum(1 for c in ch if c['abstained'])
     hits = [c['retrieval_hit'] for c in ch if c['retrieval_hit'] is not None]
     want = ch[0]['retrieval_expected']
     same, _ = consistent(answers)
 
     if invented:
-        return 'wrong', 'names a book that was not in its context, or quotes a title that is not on the shelf'
+        return 'wrong', 'names a book that was not in its context: %s' % ', '.join(
+            sorted({b for a in answers for b in outside(a)}))
     if want and hits and max(hits) == 0:
         return 'wrong', 'the book the reference names never reached the context: retrieval missed it in every run'
     if abstained == len(ch):

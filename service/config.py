@@ -51,7 +51,14 @@ def usd(model, input_tokens, output_tokens):
 
 class Limiter(object):
     """Voyage holds an account with no payment method to 3 requests and 10,000 tokens a minute.
-    One limiter per endpoint; it sleeps only as long as the window actually requires."""
+    It sleeps only as long as the window actually requires.
+
+    That budget is the account's, not the endpoint's, which is why there is exactly one of these
+    (`VOYAGE`, below) and both the embedder and the reranker take their turn from it. The first
+    measured run had one limiter per endpoint: each stayed politely inside three requests a
+    minute, the two together did six, and fourteen rerank calls came back 429. Those cells are
+    the empty ones in v1-2026-09-10 before the refill.
+    """
 
     def __init__(self, rpm=3, tpm=10000):
         self.rpm, self.tpm, self.calls = rpm, tpm, []
@@ -68,3 +75,7 @@ class Limiter(object):
     def record(self, tokens):
         import time
         self.calls.append((time.time(), tokens))
+
+
+# One budget, one limiter, shared by every Voyage call in the process.
+VOYAGE = Limiter()

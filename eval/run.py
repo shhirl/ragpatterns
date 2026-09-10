@@ -50,6 +50,12 @@ def ledger_titles(db=None):
 QUOTED = re.compile(r'[""“]([^""”]{4,80})[""”]|\*([^*\n]{4,80})\*')
 
 
+# Titles that are also something else on this shelf: "Shirley" is Charlotte Bronte's novel and
+# also the person the answer is addressing. One book, listed by hand; see grade.py, which holds
+# the same list so an older run still grades correctly.
+AMBIGUOUS = {'Shirley'}
+
+
 def _really_named(orig, norm, text):
     """Guard against short titles that are also ordinary English.
 
@@ -58,9 +64,11 @@ def _really_named(orig, norm, text):
     answer, so `One Day` counts and `one day the narrator` does not. Longer titles are safe
     enough on the lowercase match, and this way a title in italics or quotes still counts.
     """
+    bare = re.sub(r'\s*\(.*?\)\s*$', '', orig or '').strip()
+    if bare in AMBIGUOUS:
+        return False
     if len(norm.split()) > 3:
         return True
-    bare = re.sub(r'\s*\(.*?\)\s*$', '', orig or '').strip()
     return re.search(r'(?<![A-Za-z])%s(?![A-Za-z])' % re.escape(bare), text or '') is not None
 
 
@@ -116,6 +124,8 @@ def main():
     ap.add_argument('--q', default='')
     ap.add_argument('--tag', default='v1')
     ap.add_argument('--all-questions', action='store_true', help='include the ones still pending')
+    ap.add_argument('--merge', action='store_true',
+                    help='keep the rows already in this tag\'s files and replace only the cells re-run now')
     a = ap.parse_args()
 
     qs = questions()
@@ -174,6 +184,23 @@ def main():
                     rec.update({'ok': 0, 'answer': '', 'error': '%s: %s' % (type(e).__name__, e)})
                     print('  [%d/%d] %-7s %s run %d  FAILED %s' % (n, total, pattern, q['id'], run, e), flush=True)
                 rows.append(rec)
+
+    if a.merge and os.path.exists(json_path):
+        # Voyage's free tier can take a cell out mid-run. Re-running just that cell and merging
+        # keeps the rest of the measurement, which cost real money, instead of paying for it
+        # twice. A cell present in this run replaces the old one entirely; everything else stays.
+        redone = {(r['pattern'], r['qid']) for r in rows}
+        old_json = json.load(open(json_path, encoding='utf-8'))
+        kept_traces = [t for t in old_json.get('traces', []) if (t['pattern'], t['qid']) not in redone]
+        kept_rows = []
+        if os.path.exists(csv_path):
+            kept_rows = [r for r in csv.DictReader(open(csv_path, encoding='utf-8'))
+                         if (r['pattern'], r['qid']) not in redone]
+        print('merging: %d rows kept, %d cells replaced' % (len(kept_rows), len(redone)))
+        rows = kept_rows + rows
+        traces = kept_traces + traces
+        rows.sort(key=lambda r: (r['pattern'], r['qid'], int(r['run'])))
+        traces.sort(key=lambda t: (t['pattern'], t['qid'], t['run']))
 
     with open(csv_path, 'w', newline='', encoding='utf-8') as f:
         w = csv.DictWriter(f, fieldnames=FIELDS, extrasaction='ignore')

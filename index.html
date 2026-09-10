@@ -729,6 +729,10 @@ function lpaint(){
     return `<button data-q="${q}" class="${q===lq?'on':''}" ${off?'disabled':''}><span class="qn">${q}</span><span>${esc(t)}${off?`<small>${esc(off)}</small>`:''}</span></button>`;}).join('');
 }
 function lms(n){return n==null?'':`${Number(n).toLocaleString()} ms`;}
+// Dates on these pages are month and year, never a day. The run records an exact date for the
+// repo; the page says "September 2026".
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+function lwhen(d){const m=/^(\d{4})-(\d{2})/.exec(d||'');return m?`${MONTHS[+m[2]-1]} ${m[1]}`:(d||'');}
 function lrender(q,t,d){
   const bits=[`route: ${esc(d.route||'')}`];
   if(d.calls!=null)bits.push(`${d.calls} model ${d.calls===1?'call':'calls'}`);
@@ -742,7 +746,7 @@ function lrender(q,t,d){
     if(d.gen_ms==null&&d.ms!=null)bits.push(lms(d.ms));
   }
   if(d.usd)bits.push(`$${Number(d.usd).toFixed(4)}`);
-  bits.push(d.live?'run just now':`measured ${esc(d.measured||'')}, replayed${d.runs>1?` · run ${d.shown_run} of ${d.runs}`:''}`);
+  bits.push(d.live?'run just now':`measured ${esc(lwhen(d.measured))}, replayed${d.runs>1?` · run ${d.shown_run} of ${d.runs}`:''}`);
   let head='';
   if(d.verdict)head=`<div class="vline"><i class="vc ${esc(d.verdict)}"></i>${esc(d.verdict)} · graded by Shirley</div>`;
   else if(!d.live)head=`<div class="vline">measured, not yet graded</div>`;

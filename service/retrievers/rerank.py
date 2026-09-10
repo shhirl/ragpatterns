@@ -15,19 +15,33 @@ import os, sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from service import config
 
-_limiter = config.Limiter()
+_limiter = config.VOYAGE          # the account's budget, shared with every other Voyage call
 
 
 def rerank(question, chunks, k=4, model=None):
     """-> (top-k chunks with a `rerank_score` and their old rank, tokens billed)."""
-    import voyageai
+    import time, voyageai
     if not chunks:
         return [], 0
     model = model or config.RERANK_MODEL
     docs = [c['text'] for c in chunks]
+    # Thirty chunks and a question is most of the free tier's 10,000 tokens a minute, and a
+    # character-count estimate runs low on this text, so the reply that matters is 429. The
+    # embedder has retried since it was written; this call did not, and fourteen cells of the
+    # first measured run died on it. Retrieval is deterministic, so a retry costs wall clock
+    # and changes no answer.
     est = sum(max(1, len(d) // 4) for d in docs) + max(1, len(question) // 4)
-    _limiter.wait(est)
-    r = voyageai.Client().rerank(question, docs, model=model, top_k=min(k, len(docs)))
+    r = None
+    for attempt in range(6):
+        _limiter.wait(est)
+        try:
+            r = voyageai.Client().rerank(question, docs, model=model, top_k=min(k, len(docs)))
+            break
+        except voyageai.error.RateLimitError:
+            _limiter.record(est)             # it counted against the window even though it failed
+            time.sleep(20 * (attempt + 1))
+    if r is None:
+        raise RuntimeError('the reranker was rate-limited six times in a row')
     _limiter.record(r.total_tokens)
     out = []
     for res in r.results:

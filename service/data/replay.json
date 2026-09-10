@@ -1,0 +1,1115 @@
+{
+ "measured": "2026-09-10",
+ "tag": "v1",
+ "model": "claude-opus-5",
+ "embed_model": "voyage-4",
+ "rerank_model": "rerank-3",
+ "runs": 5,
+ "graded": false,
+ "cells": {
+  "naive/Q1": {
+   "pattern": "naive",
+   "qid": "Q1",
+   "question": "Where did I read the line about leaving a movie theatre and realising it had been dark outside for some time?",
+   "answer": "That's from *Such a Fun Age* by Kiley Reid: \"Emira had all those feelings of leaving a movie theater and realizing that it was dark outside and that it had been for some time.\" It comes just after \"awkward and stunted good-byes inside the Chamberlain house.\"",
+   "route": "embed -> top-4 by cosine -> generate",
+   "calls": 1,
+   "ms": 4416,
+   "retrieve_ms": 967,
+   "rerank_ms": null,
+   "gen_ms": 2911,
+   "usd": 0.0076,
+   "input_tokens": 1060,
+   "output_tokens": 91,
+   "context": [
+    {
+     "id": "Such a Fun Age",
+     "author": "Kiley Reid",
+     "kind": "highlight",
+     "score": 0.5604,
+     "cosine": null,
+     "vector_rank": null,
+     "location": "2290-2293",
+     "excerpt": "After awkward and stunted good-byes inside the Chamberlain house, Emira had all those feelings of leaving a movie theater and realizing that it was dark outside and that it had…"
+    },
+    {
+     "id": "Burnt Sugar",
+     "author": "Avni Doshi",
+     "kind": "note",
+     "score": 0.4326,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "> I disown so I can never be disowned\" > Life went on as though nothing had changed. Perhaps, in a sense, that was true. We all went on living in separate realities. Once more, the fly passes by the door, gaping as it is. I watch it and wonder if it can see the door at all, or if the map it has made of this era in its little life is so persistent that the outside world ceases to exist. It is…"
+    },
+    {
+     "id": "Howards End",
+     "author": "E.M. Forster",
+     "kind": "highlight",
+     "score": 0.4005,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "nowledged it for years. You and I and the Wilcoxes stand upon money as upon islands. It is so firm beneath our feet that we forget its very existence. It’s only when we see…"
+    },
+    {
+     "id": "Girl, Woman, Other",
+     "author": "Bernardine Evaristo",
+     "kind": "highlight",
+     "score": 0.3926,
+     "cosine": null,
+     "vector_rank": null,
+     "location": "5311-5313",
+     "excerpt": "during the interval at the bar she noticed a few members of the white audience looking at her differently from when they’d all arrived in the lobby earlier, much more friendly, as…"
+    }
+   ],
+   "excerpts_truncated": true,
+   "verdict": "",
+   "runs": 5,
+   "shown_run": 1,
+   "ms_all": [
+    4416,
+    23635,
+    3380,
+    3054,
+    2979
+   ],
+   "agree": true
+  },
+  "naive/Q2": {
+   "pattern": "naive",
+   "qid": "Q2",
+   "question": "What did I read in 2024, rated five stars, under 300 pages?",
+   "answer": "The context doesn't include ratings, page counts, or dates read for any of these books, so I can't answer that. The notes I have cover *Pachinko*, *The Years*, *Friday Black*, and *Murder on the Orient Express*, but they only record impressions and themes — for example, you called *Pachinko* \"By far one of the best books I've read this year,\" without saying which year. To answer, I'd need star ratings, page lengths, and the dates you finished each book.",
+   "route": "embed -> top-4 by cosine -> generate",
+   "calls": 1,
+   "ms": 29597,
+   "retrieve_ms": 24759,
+   "rerank_ms": null,
+   "gen_ms": 4838,
+   "usd": 0.0103,
+   "input_tokens": 1325,
+   "output_tokens": 149,
+   "context": [
+    {
+     "id": "Pachinko",
+     "author": "Min Jin Lee",
+     "kind": "note",
+     "score": 0.4407,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "Reviews I liked:: [link](https://www.goodreads.com/review/show/2072970680?utm_content=reviews_full_review&utm_medium=email&utm_source=bookend&ref_=pe_7171740_474197500) What a marvelous, deeply engrossing novel about four generations of a Korean family in Japan. There was a lot of story here and a lot of history (of which I was woefully ignorant) and it is all rendered in impeccable prose with a…"
+    },
+    {
+     "id": "The Years",
+     "author": "Annie Ernaux",
+     "kind": "note",
+     "score": 0.4196,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "Context/ Facts: - written in french, translated to english - nominated for international booker pricze Thoughts on Writing/ Narrative Details: - What I Liked About It - What I Didn't Like About It - Prose, characters, narration style? - Third person - It’s her story yet it’s everyone’s story - Witty, snarky, sarcastic - It’s about the narrator but also about us. The collective human experience…"
+    },
+    {
+     "id": "Friday Black",
+     "author": "Nana Kwame Adjei-Brenyah",
+     "kind": "note",
+     "score": 0.4154,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "The Book in 3 Sentences: 1. A collection of science fiction short stories that focus on the ideas of race, capitalism, terrorism, violence, racial injustice. 2. I am surprised by how the stories included a large amount of violence, science fiction and racism in a very controlled way. All the stories felt very well paced, insightful and gripping. I didn't want to put it down. 3. The extradordinary…"
+    },
+    {
+     "id": "Murder on the Orient Express (Hercule Poirot, #10)",
+     "author": "Agatha Christie",
+     "kind": "note",
+     "score": 0.4141,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "n on crime novels. It must be something naturally human, to want to figure these things out yourself, and get pleasure out of thinking about a puzzle. And when you can't think of a solution at all, it's revealed in the end, and it's shocking. - So glad I read this. I get what all the hype is about! She really is a gifted writer. I'm so imrpessed that she can create an atmosphere that makes keeps…"
+    }
+   ],
+   "excerpts_truncated": true,
+   "verdict": "",
+   "runs": 5,
+   "shown_run": 1,
+   "ms_all": [
+    29597,
+    4199,
+    4067,
+    4930,
+    4571
+   ],
+   "agree": false
+  },
+  "naive/Q3": {
+   "pattern": "naive",
+   "qid": "Q3",
+   "question": "Why did I give The Fellowship of the Ring two stars when everyone else loved it?",
+   "answer": "There's nothing in the context about The Fellowship of the Ring — no highlights or notes from it appear here, so I can't tell you your reasoning or your rating. The only books represented are your notes on *Acceptance*, *Such a Fun Age*, and *Little Fires Everywhere*, plus a highlight from *A Wizard of Earthsea*. If you'd like, point me to the note or review where you rated Tolkien and I can work from that.",
+   "route": "embed -> top-4 by cosine -> generate",
+   "calls": 1,
+   "ms": 5236,
+   "retrieve_ms": 1300,
+   "rerank_ms": null,
+   "gen_ms": 3936,
+   "usd": 0.01,
+   "input_tokens": 1140,
+   "output_tokens": 171,
+   "context": [
+    {
+     "id": "Acceptance (Southern Reach, #3)",
+     "author": "Jeff Vandermeer",
+     "kind": "note",
+     "score": 0.43,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "f it even after the trilogy ends. Halfway through the second book, I started to miss the creepiness of Area X, and I wanted to go back to the \"tower\". I didn't want to stay at Southern Reach anymore, and the characters weren't interesting enough for me to want to stick around at the party."
+    },
+    {
+     "id": "A Wizard of Earthsea",
+     "author": "Ursula K. Le Guin",
+     "kind": "highlight",
+     "score": 0.3842,
+     "cosine": null,
+     "vector_rank": null,
+     "location": "849-852",
+     "excerpt": "\"Nor do I know. It has no name. You have great power inborn in you, and you used that power wrongly, to work a spell over which you had no control, not knowing how that spell…"
+    },
+    {
+     "id": "Such a Fun Age",
+     "author": "Kiley Reid",
+     "kind": "note",
+     "score": 0.3692,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "18th Dec 2020 felt like it was plot driven at the beginning, and prose is very light heartedly. seemingly silly emotions, feelings, reactions, choice of actions by characters (not many) seems like the world is small. very focused on just 3-4 characters in depth but actually you realize it's you see each characters flaws. at some point you hate everyone. but you realize, no-one is definitely right…"
+    },
+    {
+     "id": "Little Fires Everywhere",
+     "author": "Celeste Ng",
+     "kind": "note",
+     "score": 0.3538,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "and extenuating circumstances. This is the wrong way to live you life because actually everything is grey. It's impossible to only live by the rules. It's an ironic scene when mrs richardson wants to break the rules and get information that can help herself. - Writing style - you're told everything about everyone. not much guessing. Although there are recurring themes, and interesting reflections…"
+    }
+   ],
+   "excerpts_truncated": true,
+   "verdict": "",
+   "runs": 5,
+   "shown_run": 1,
+   "ms_all": [
+    5236,
+    37544,
+    3859,
+    4247,
+    3752
+   ],
+   "agree": true
+  },
+  "naive/Q4": {
+   "pattern": "naive",
+   "qid": "Q4",
+   "question": "Which of my books argue with each other?",
+   "answer": "Two pairings talk to each other, though the CONTEXT shows resonance rather than any explicit dispute.\n\nOn privilege: the *Such a Fun Age* highlight has Alix hiding books out of fear that Emira would think \"Wow, how privileged are you that you need to buy a hardcover book that tells you how to get rid of all your other expensive shit\" — privilege as private anxiety. The *Girl, Woman, Other* passage puts the same subject up for open argument, with Courtney invoking Roxane Gay against \"playing 'privilege Olympics'\" and the claim \"that we have to find a new discourse for discussing inequality.\"\n\nOn myth and belief: your note on *The Amber Spyglass* praises Pullman for refusing the simple version — \"A straightforward attack on religion... would leave the story there\" — while your note on *The Song of Achilles* praises Miller for asking \"how does it 'really' happen.\" Both notes reward nuance over the flat statement, so they agree more than they argue.\n\nI can't tell you which books genuinely contradict each other; the CONTEXT has only these four fragments and none of them responds to another.",
+   "route": "embed -> top-4 by cosine -> generate",
+   "calls": 1,
+   "ms": 8915,
+   "retrieve_ms": 269,
+   "rerank_ms": null,
+   "gen_ms": 8646,
+   "usd": 0.0202,
+   "input_tokens": 1216,
+   "output_tokens": 564,
+   "context": [
+    {
+     "id": "Such a Fun Age",
+     "author": "Kiley Reid",
+     "kind": "highlight",
+     "score": 0.3201,
+     "cosine": null,
+     "vector_rank": null,
+     "location": "1795-1797",
+     "excerpt": "Alix no longer felt comfortable leaving out certain books or magazines, because she feared Emira eyeing her Marie Kondo book and subsequently thinking, Wow, how privileged are you…"
+    },
+    {
+     "id": "The Amber Spyglass (His Dark Materials, #3)",
+     "author": "Philip Pullman",
+     "kind": "note",
+     "score": 0.3182,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "on't like being told about something, I like being enveloped in the world. - Lyra kills God (or allows him to die) and the book celebrates her for it. But the God of the books is in fact revealed to be no God at all but merely a very old angel, who pretended he was the Creator of all things in order gain power. - A straightforward attack on religion, as the books are sometimes accused of being…"
+    },
+    {
+     "id": "Girl, Woman, Other",
+     "author": "Bernardine Evaristo",
+     "kind": "highlight",
+     "score": 0.318,
+     "cosine": null,
+     "vector_rank": null,
+     "location": "1138-1149",
+     "excerpt": "Courtney replied that Roxane Gay warned against the idea of playing ‘privilege Olympics’ and wrote in Bad Feminist that privilege is relative and contextual, and I agree, Yazz, I…"
+    },
+    {
+     "id": "The Song of Achilles",
+     "author": "Madeline Miller",
+     "kind": "note",
+     "score": 0.3144,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "oy and the battle for helen before. on the surface, the story seems ridiculous. how could they fight for over 10 years? how does that 'really' happen? Here Miller describes the anxiety at the beginning, the loss of hope after a few years, the anger warriors/ civillians faced about being away from family, how to calm them, keep them motivated, how one god-like being can capture people's hearts and…"
+    }
+   ],
+   "excerpts_truncated": true,
+   "verdict": "",
+   "runs": 5,
+   "shown_run": 1,
+   "ms_all": [
+    8915,
+    8397,
+    9087,
+    9748,
+    8082
+   ],
+   "agree": true
+  },
+  "naive/Q6": {
+   "pattern": "naive",
+   "qid": "Q6",
+   "question": "Build me a two-week holiday list from my to-read shelf: nothing over 400 pages, one recommended by a friend, nothing like the last three I abandoned.",
+   "answer": "I can't build that list from what's here. The context contains only notes and highlights on four books she's already engaged with — *Pachinko* (Min Jin Lee), *Howards End* (E.M. Forster), *Lanark: A Life in Four Books* (Alasdair Gray), and *A Little Luck* (Claudia Piñeiro) — with no to-read shelf, no page counts, no record of who recommended anything, and no list of abandoned books.\n\nThe most I can say from the context is what she responded to: *Pachinko* she \"read in one day because I simply could not put it down,\" *Lanark* she called \"playful writing. genius!\", and of *A Little Luck* she wrote \"pacing is incredible. builds suspense in first half.\" To make the list you asked for, I'd need the to-read shelf itself, page counts for those titles, a note of which came from a friend, and the three abandoned books.",
+   "route": "embed -> top-4 by cosine -> generate",
+   "calls": 1,
+   "ms": 7066,
+   "retrieve_ms": 406,
+   "rerank_ms": null,
+   "gen_ms": 6660,
+   "usd": 0.0164,
+   "input_tokens": 1328,
+   "output_tokens": 392,
+   "context": [
+    {
+     "id": "Pachinko",
+     "author": "Min Jin Lee",
+     "kind": "note",
+     "score": 0.4162,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "Reviews I liked:: [link](https://www.goodreads.com/review/show/2072970680?utm_content=reviews_full_review&utm_medium=email&utm_source=bookend&ref_=pe_7171740_474197500) What a marvelous, deeply engrossing novel about four generations of a Korean family in Japan. There was a lot of story here and a lot of history (of which I was woefully ignorant) and it is all rendered in impeccable prose with a…"
+    },
+    {
+     "id": "Howards End",
+     "author": "E.M. Forster",
+     "kind": "note",
+     "score": 0.405,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "e, there was a mix of memoir, and historical fact and history. Is it matter-of-fact? - A fantastic introduction to have race and class work in the UK. It covers a large range of topics and gives a good overview, while at the same time educating you on new topics even if you're quite familiar with a lot of the information. - Pity was at the bottom of her actions all through this crisis. Pity, if…"
+    },
+    {
+     "id": "Lanark: A Life in Four Books",
+     "author": "Alasdair Gray",
+     "kind": "note",
+     "score": 0.4045,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "Thoughts: A life in 4 books: Themes, topics,: - playful writing. genius! - surreal, but mimics real life attitudes, problems, ironies, ugly truths, - ridiculous - very detailed!"
+    },
+    {
+     "id": "A Little Luck",
+     "author": "Claudia Piñeiro",
+     "kind": "note",
+     "score": 0.4008,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "Related Books: - pacing is incredible. builds suspense in first half. - you know that something terrible happened in her home town. She is travelling back there for work. You slowly get… some information about this ‘terriblev event’ but you never quite get the whole story of what happened. - Then in the middle of the book you find out. Even the way you find out is done so well. The (literary…"
+    }
+   ],
+   "excerpts_truncated": true,
+   "verdict": "",
+   "runs": 5,
+   "shown_run": 1,
+   "ms_all": [
+    7066,
+    16538,
+    4611,
+    5362,
+    5823
+   ],
+   "agree": false
+  },
+  "naive/Q7": {
+   "pattern": "naive",
+   "qid": "Q7",
+   "question": "Give me my favourite books I have read about race.",
+   "answer": "Your notes don't rank or name favourites, so I can't tell you which are your favourites — that judgement isn't in the context. What I can say is that four books in your library have notes touching on race:\n\n- **Beloved** (Toni Morrison) — where you wrote about slave narratives being \"difficult to think about - morally\" and about Paul D \"constantly in chains. convict leasing.\"\n- **Natives: Race and Class in the Ruins of Empire** (Akala) — Chapter 1 \"Introduced me to racism I have never knew existed in Britain until so recently,\" which you found angering and called \"Disgusting behaviour.\"\n- **Girl, Woman, Other** (Bernardine Evaristo) — where you noted you \"strongly identified with all these characters' problems and issues with racism.\"\n- **Howards End** (E.M. Forster) — your note there calls something \"A fantastic introduction to have race and class work in the UK\" and mentions Akala as an example of digestible non-fiction.\n\nThat last note is the only one with clearly positive praise, but it's ambiguous which book it refers to.",
+   "route": "embed -> top-4 by cosine -> generate",
+   "calls": 1,
+   "ms": 7498,
+   "retrieve_ms": 252,
+   "rerank_ms": null,
+   "gen_ms": 7245,
+   "usd": 0.0175,
+   "input_tokens": 1266,
+   "output_tokens": 445,
+   "context": [
+    {
+     "id": "Beloved",
+     "author": "Toni Morrison",
+     "kind": "note",
+     "score": 0.5386,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "he broken earth trilogy: both books are about parenting as an oppressed community - what it does to the family unit, how it warps these relationships. and how people find ways of overcoming them, - slave narratives are difficult to think about - morally. modern day history. african oral history - didn’t read or write. really important to continue the conversation. - paul D - constantly in chains…"
+    },
+    {
+     "id": "Natives: Race and Class in the Ruins of Empire",
+     "author": "Akala",
+     "kind": "note",
+     "score": 0.5359,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "Contents: 1. Born in the 1980s Interlude: A guide to denial 2. The Day I realised my mum was white 3. Special needs? 4. Linford's Lunchbox 5. Empire and Slavery in the British Memory 6. Scotland and Jamaica 7. Police, Peers, and Teenage Years 8. Why do white people love mandela? Why do conservatives hate Castro? 9. the Klu Klux Klan stopped crime by killing black people 10. britiain and america…"
+    },
+    {
+     "id": "Howards End",
+     "author": "E.M. Forster",
+     "kind": "note",
+     "score": 0.5233,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "Genres: - speculative fiction: in its very nature sets out to ask questions of the world we live in by changing fundamental elements, and I find that the genre is especially ready to tackle difficult topics and explore concepts in a prolonged and nuanced way, which are things I look for in a book. - non-fiction: does the writer have a way of making very complex ideas easily digestible (very…"
+    },
+    {
+     "id": "Girl, Woman, Other",
+     "author": "Bernardine Evaristo",
+     "kind": "note",
+     "score": 0.5217,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "> Even though one of the main themes is being a person of colour in a world of white supremacy (open or hidden, depending on situation), and even though I belong to the entitled, privileged group of people who have a choice whether racism is a topic to be bothered with or not (as opposed to those who have to live with the issue whether they like it or not as it is imposed on them by a dominant…"
+    }
+   ],
+   "excerpts_truncated": true,
+   "verdict": "",
+   "runs": 5,
+   "shown_run": 1,
+   "ms_all": [
+    7498,
+    22403,
+    6667,
+    6561,
+    6976
+   ],
+   "agree": true
+  },
+  "naive/Q8": {
+   "pattern": "naive",
+   "qid": "Q8",
+   "question": "What are the themes I like most?",
+   "answer": "Your notes don't say which themes you *like* most — they record what each book is about — so I can only point to what recurs. Identity comes up repeatedly: in *Cold Enough for Snow* (\"identity, being a bit of an outsider\") and in *The Catcher in the Rye*, where you list \"phoniness, childhood, sex, alienation, identity\" and add your own thought about \"feelings of emptiness, identity, loneliness, and keeping up with society in our modern world filled with social media.\" Alienation and outsiderness sit alongside that in both. Elsewhere the notes lean toward form and mood rather than theme — \"playful writing. genius!\" and \"surreal\" for *Lanark: A Life in Four Books*, \"atmospheric\" for *Cold Enough for Snow*, and just \"magic\" for *The Broken Kingdoms*. To answer properly I'd need notes where you actually rate or state a preference.",
+   "route": "embed -> top-4 by cosine -> generate",
+   "calls": 1,
+   "ms": 6873,
+   "retrieve_ms": 257,
+   "rerank_ms": null,
+   "gen_ms": 6616,
+   "usd": 0.014,
+   "input_tokens": 863,
+   "output_tokens": 389,
+   "context": [
+    {
+     "id": "The Broken Kingdoms (Inheritance, #2)",
+     "author": "N.K. Jemisin",
+     "kind": "note",
+     "score": 0.4672,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "Themes, topics: - magic -"
+    },
+    {
+     "id": "Lanark: A Life in Four Books",
+     "author": "Alasdair Gray",
+     "kind": "note",
+     "score": 0.4641,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "Thoughts: A life in 4 books: Themes, topics,: - playful writing. genius! - surreal, but mimics real life attitudes, problems, ironies, ugly truths, - ridiculous - very detailed!"
+    },
+    {
+     "id": "Cold Enough for Snow",
+     "author": "Jessica Au",
+     "kind": "note",
+     "score": 0.4035,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "- the book touches on many themes, in a lightness, way where you barely realize they’re being touched on. but when you pass them you recollect, actually yeah she talked about this and this.. - identity, being a bit of an outsider. having to have an opinion on every thing, artefact, that she comes across - there is some real depth in there - atmospheric - feels like you’re walking through a mist?"
+    },
+    {
+     "id": "The Catcher in the Rye",
+     "author": "J.D. Salinger",
+     "kind": "note",
+     "score": 0.3984,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "highly relatable ideals and symbols in society modern living in america coming of age. don’t do something you will regret hugely, mess up your life on a whim. but it feels so real in the moment, and so frustrating. you feel everything all at once. his family obviously have money, and sometimes you feel like maybe that is actually the problem. it’s just expected that he should go back to school, a…"
+    }
+   ],
+   "excerpts_truncated": true,
+   "verdict": "",
+   "runs": 5,
+   "shown_run": 1,
+   "ms_all": [
+    6873,
+    10492,
+    6069,
+    5086,
+    6133
+   ],
+   "agree": false
+  },
+  "naive/Q9": {
+   "pattern": "naive",
+   "qid": "Q9",
+   "question": "What were my top themes each year?",
+   "answer": "Your notes here don't carry any dates or years — the four entries (on *The Broken Kingdoms*, *Lanark*, *The Underground Railroad*, and *Tales of Nevèrÿon*) record themes but nothing about when you read or wrote about them. So I can't break your themes down by year. To answer that, I'd need reading or note dates attached to each book.",
+   "route": "embed -> top-4 by cosine -> generate",
+   "calls": 1,
+   "ms": 3939,
+   "retrieve_ms": 245,
+   "rerank_ms": null,
+   "gen_ms": 3694,
+   "usd": 0.0079,
+   "input_tokens": 888,
+   "output_tokens": 139,
+   "context": [
+    {
+     "id": "The Broken Kingdoms (Inheritance, #2)",
+     "author": "N.K. Jemisin",
+     "kind": "note",
+     "score": 0.3923,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "Themes, topics: - magic -"
+    },
+    {
+     "id": "Lanark: A Life in Four Books",
+     "author": "Alasdair Gray",
+     "kind": "note",
+     "score": 0.373,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "Thoughts: A life in 4 books: Themes, topics,: - playful writing. genius! - surreal, but mimics real life attitudes, problems, ironies, ugly truths, - ridiculous - very detailed!"
+    },
+    {
+     "id": "The Underground Railroad",
+     "author": "Colson Whitehead",
+     "kind": "note",
+     "score": 0.3222,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "- Themes? - bleak? but also positive feeling of changing situations, things are moving.. 'stuck' but not stuck at the same time - upsetting (to highlight human nature?) - dark - how we relate to other people (black vs white vs female vs male vs authority?) - how we think of ourselves - how we form our identities - freedom, what does freedom truly mean. what things make up freedom. it's not just…"
+    },
+    {
+     "id": "Tales of Nevèrÿon (Return to Nevèrÿon, #1)",
+     "author": "Samuel R. Delany",
+     "kind": "note",
+     "score": 0.3203,
+     "cosine": null,
+     "vector_rank": null,
+     "location": null,
+     "excerpt": "torical period to which the novel might refer (and how this relates to when it was written) and of course how these things might relate to the themes. Sometimes I will take down whole quotes that I either like or think are interesting, and obviously recurring imagery or vocab can be notable, too. Ultimately, each book has its own guiding themes and thoughts, so I let the book lead me when it…"
+    }
+   ],
+   "excerpts_truncated": true,
+   "verdict": "",
+   "runs": 5,
+   "shown_run": 1,
+   "ms_all": [
+    3939,
+    26946,
+    4741,
+    4128,
+    4276
+   ],
+   "agree": true
+  },
+  "rerank/Q1": {
+   "pattern": "rerank",
+   "qid": "Q1",
+   "question": "Where did I read the line about leaving a movie theatre and realising it had been dark outside for some time?",
+   "answer": "That line is from **Such a Fun Age** by Kiley Reid: \"After awkward and stunted good-byes inside the Chamberlain house, Emira had all those feelings of leaving a movie theater and realizing that it was dark outside and that it had been for some time.\"",
+   "route": "embed -> top-30 by cosine -> cross-encoder rerank -> top-4 -> generate",
+   "calls": 1,
+   "ms": 4803,
+   "retrieve_ms": 978,
+   "rerank_ms": 459,
+   "gen_ms": 2811,
+   "usd": 0.0074,
+   "input_tokens": 1053,
+   "output_tokens": 87,
+   "context": [
+    {
+     "id": "Such a Fun Age",
+     "author": "Kiley Reid",
+     "kind": "highlight",
+     "score": 0.9219,
+     "cosine": 0.5604,
+     "vector_rank": 1,
+     "location": "2290-2293",
+     "excerpt": "After awkward and stunted good-byes inside the Chamberlain house, Emira had all those feelings of leaving a movie theater and realizing that it was dark outside and that it had…"
+    },
+    {
+     "id": "Little Fires Everywhere",
+     "author": "Celeste Ng",
+     "kind": "highlight",
+     "score": 0.3555,
+     "cosine": 0.379,
+     "vector_rank": 5,
+     "location": "2133-2144",
+     "excerpt": "fic lights. Did you have to burn down the old to make way for the new? The carpet at her feet was soft. The sofa beneath her was patterned with roses. Outside, a mourning dove…"
+    },
+    {
+     "id": "Girl, Woman, Other",
+     "author": "Bernardine Evaristo",
+     "kind": "highlight",
+     "score": 0.3301,
+     "cosine": 0.3252,
+     "vector_rank": 17,
+     "location": "2354-2360",
+     "excerpt": "Augustine worked nights, collapsed fully clothed on to their bed, smelling of the cigarettes he smoked all day and the can of extra stout he drank when he got home just as Bummi…"
+    },
+    {
+     "id": "Burnt Sugar",
+     "author": "Avni Doshi",
+     "kind": "note",
+     "score": 0.3301,
+     "cosine": 0.4326,
+     "vector_rank": 2,
+     "location": null,
+     "excerpt": "> I disown so I can never be disowned\" > Life went on as though nothing had changed. Perhaps, in a sense, that was true. We all went on living in separate realities. Once more, the fly passes by the door, gaping as it is. I watch it and wonder if it can see the door at all, or if the map it has made of this era in its little life is so persistent that the outside world ceases to exist. It is…"
+    }
+   ],
+   "excerpts_truncated": true,
+   "verdict": "",
+   "runs": 5,
+   "shown_run": 1,
+   "ms_all": [
+    4803,
+    60600,
+    61359,
+    61898,
+    60926
+   ],
+   "agree": true
+  },
+  "rerank/Q2": {
+   "pattern": "rerank",
+   "qid": "Q2",
+   "question": "What did I read in 2024, rated five stars, under 300 pages?",
+   "answer": "The CONTEXT can't answer that. Shirley's notes here cover four books — *Pachinko*, *Friday Black*, *Annihilation*, and *Mr Loverman* — but none of them record a star rating, a reading date, or a page count. The only date-ish hint is a remark in the *Pachinko* note that it was \"By far one of the best books I've read this year,\" which doesn't specify which year. To answer, I'd need the ratings, dates read, and page lengths, none of which are in the context.",
+   "route": "embed -> top-30 by cosine -> cross-encoder rerank -> top-4 -> generate",
+   "calls": 1,
+   "ms": 4230,
+   "retrieve_ms": 248,
+   "rerank_ms": 308,
+   "gen_ms": 3673,
+   "usd": 0.0115,
+   "input_tokens": 1338,
+   "output_tokens": 192,
+   "context": [
+    {
+     "id": "Pachinko",
+     "author": "Min Jin Lee",
+     "kind": "note",
+     "score": 0.5078,
+     "cosine": 0.4407,
+     "vector_rank": 1,
+     "location": null,
+     "excerpt": "Reviews I liked:: [link](https://www.goodreads.com/review/show/2072970680?utm_content=reviews_full_review&utm_medium=email&utm_source=bookend&ref_=pe_7171740_474197500) What a marvelous, deeply engrossing novel about four generations of a Korean family in Japan. There was a lot of story here and a lot of history (of which I was woefully ignorant) and it is all rendered in impeccable prose with a…"
+    },
+    {
+     "id": "Friday Black",
+     "author": "Nana Kwame Adjei-Brenyah",
+     "kind": "note",
+     "score": 0.5,
+     "cosine": 0.4154,
+     "vector_rank": 3,
+     "location": null,
+     "excerpt": "The Book in 3 Sentences: 1. A collection of science fiction short stories that focus on the ideas of race, capitalism, terrorism, violence, racial injustice. 2. I am surprised by how the stories included a large amount of violence, science fiction and racism in a very controlled way. All the stories felt very well paced, insightful and gripping. I didn't want to put it down. 3. The extradordinary…"
+    },
+    {
+     "id": "Annihilation (Southern Reach, #1)",
+     "author": "Jeff Vandermeer",
+     "kind": "note",
+     "score": 0.4961,
+     "cosine": 0.368,
+     "vector_rank": 23,
+     "location": null,
+     "excerpt": "What It's About: - Southern Reach is an area - Expedition goes in to explore it - You learn that there's more to this group... hypnosis, lying, - The tower, it's alive, clues about the man who used to live here... What I Liked About It: - Probably one of my favourite books of all time even though I've seen the movie. It was just as good as the movie. - The book was very atmospheric. It was so…"
+    },
+    {
+     "id": "Mr Loverman",
+     "author": "Bernardine Evaristo",
+     "kind": "note",
+     "score": 0.4902,
+     "cosine": 0.3974,
+     "vector_rank": 8,
+     "location": null,
+     "excerpt": "What It's About: A flamboyant older man who has lived his life in London. He has a a wife, children, and grandchildren. He has also had a relationship with his best friend for decades, but nobody knows. While his wife has travelled back to the Caribbean, It's essentially a love story, but it has a lot of depth, and it feels real. Thoughts: I liked this book more than her booker prize winner. This…"
+    }
+   ],
+   "excerpts_truncated": true,
+   "verdict": "",
+   "runs": 5,
+   "shown_run": 1,
+   "ms_all": [
+    4230,
+    61161,
+    4423,
+    58204,
+    4254
+   ],
+   "agree": false
+  },
+  "rerank/Q3": {
+   "pattern": "rerank",
+   "qid": "Q3",
+   "question": "Why did I give The Fellowship of the Ring two stars when everyone else loved it?",
+   "answer": "The context doesn't include anything about The Fellowship of the Ring — the only books here are Howards End, Such a Fun Age, Little Fires Everywhere, and Authority. I can't tell you your reasons for that rating without a note or highlight from that book.",
+   "route": "embed -> top-30 by cosine -> cross-encoder rerank -> top-4 -> generate",
+   "calls": 1,
+   "ms": 56095,
+   "retrieve_ms": 281,
+   "rerank_ms": 52767,
+   "gen_ms": 3046,
+   "usd": 0.0079,
+   "input_tokens": 1169,
+   "output_tokens": 84,
+   "context": [
+    {
+     "id": "Howards End",
+     "author": "E.M. Forster",
+     "kind": "note",
+     "score": 0.5195,
+     "cosine": 0.3245,
+     "vector_rank": 12,
+     "location": null,
+     "excerpt": "The characters are not well drawn out, the men are either blustering dominants, idle entitled layabouts or over-romantic zealots. The women are mostly hysterical, over-emotional, irrational and if sensible than dull either in appearance or imagination or intelligence. The plot is convenient."
+    },
+    {
+     "id": "Such a Fun Age",
+     "author": "Kiley Reid",
+     "kind": "note",
+     "score": 0.4531,
+     "cosine": 0.3692,
+     "vector_rank": 3,
+     "location": null,
+     "excerpt": "18th Dec 2020 felt like it was plot driven at the beginning, and prose is very light heartedly. seemingly silly emotions, feelings, reactions, choice of actions by characters (not many) seems like the world is small. very focused on just 3-4 characters in depth but actually you realize it's you see each characters flaws. at some point you hate everyone. but you realize, no-one is definitely right…"
+    },
+    {
+     "id": "Little Fires Everywhere",
+     "author": "Celeste Ng",
+     "kind": "note",
+     "score": 0.4297,
+     "cosine": 0.3538,
+     "vector_rank": 4,
+     "location": null,
+     "excerpt": "and extenuating circumstances. This is the wrong way to live you life because actually everything is grey. It's impossible to only live by the rules. It's an ironic scene when mrs richardson wants to break the rules and get information that can help herself. - Writing style - you're told everything about everyone. not much guessing. Although there are recurring themes, and interesting reflections…"
+    },
+    {
+     "id": "Authority (Southern Reach, #2)",
+     "author": "Jeff Vandermeer",
+     "kind": "note",
+     "score": 0.4219,
+     "cosine": 0.2954,
+     "vector_rank": 25,
+     "location": null,
+     "excerpt": "wanted to know more about the southern reach. - Everything in this book felt like it was setting it up for the next book, or setting up for something. The whole time, I was wondering where this is going. - The ending was interesting, I think the second half really got things going. When he sees one of the workers in the cupboard with drawings all over the wall, then when the room and door into…"
+    }
+   ],
+   "excerpts_truncated": true,
+   "verdict": "",
+   "runs": 5,
+   "shown_run": 1,
+   "ms_all": [
+    56095,
+    8656,
+    53749,
+    7784,
+    53226
+   ],
+   "agree": true
+  },
+  "rerank/Q4": {
+   "pattern": "rerank",
+   "qid": "Q4",
+   "question": "Which of my books argue with each other?",
+   "answer": "Nothing in the context sets two of your books directly against each other, but a few near-misses:\n\n- Your note on **The Amber Spyglass** records a quarrel with another work: \"Philip pullman says narnia is full of religious propaganda. (Sarah is locked out of heaven by aslan who is jesus??? wtf?)\" — though Narnia only appears as a mention in your note, not as a book of its own in the context.\n- The **Girl, Woman, Other** highlight stages an argument inside itself, with Courtney citing Roxane Gay's *Bad Feminist* against \"playing 'privilege Olympics'\" — again, a book named within the passage rather than one of your own.\n- The clearest disagreement is you against a book: your note on **Poverty, by America** calls it \"more of an opinion piece than investigateive or well-researched text.\"\n\nI can't go further without more of your library in the context — there's nothing here linking, say, **A Promised Land** to any of the others.",
+   "route": "embed -> top-30 by cosine -> cross-encoder rerank -> top-4 -> generate",
+   "calls": 1,
+   "ms": 26896,
+   "retrieve_ms": 16225,
+   "rerank_ms": 293,
+   "gen_ms": 10378,
+   "usd": 0.0239,
+   "input_tokens": 1239,
+   "output_tokens": 707,
+   "context": [
+    {
+     "id": "The Amber Spyglass (His Dark Materials, #3)",
+     "author": "Philip Pullman",
+     "kind": "note",
+     "score": 0.4141,
+     "cosine": 0.3108,
+     "vector_rank": 5,
+     "location": null,
+     "excerpt": "rnia. Philip pullman says narnia is full of religious propaganda. (Sarah is locked out of heaven by aslan who is jesus??? wtf?) I need to read those! - Lyra lies through her teeth - she doesn't know her own story, her own history, so she takes stories about other people's lives and sticks them to herself. But then she's given an alethiometer which really introduces the fundamental importance of…"
+    },
+    {
+     "id": "Girl, Woman, Other",
+     "author": "Bernardine Evaristo",
+     "kind": "highlight",
+     "score": 0.4043,
+     "cosine": 0.318,
+     "vector_rank": 3,
+     "location": "1138-1149",
+     "excerpt": "Courtney replied that Roxane Gay warned against the idea of playing ‘privilege Olympics’ and wrote in Bad Feminist that privilege is relative and contextual, and I agree, Yazz, I…"
+    },
+    {
+     "id": "A Promised Land",
+     "author": "Barack Obama",
+     "kind": "note",
+     "score": 0.4043,
+     "cosine": 0.2714,
+     "vector_rank": 23,
+     "location": null,
+     "excerpt": "- But the strains of young parenthood eventually took their toll. After a blissful few months, Michelle went back to work, and I went back to juggling three jobs. We were lucky to find a wonderful nanny who cared for Malia during the day, but the addition of a full-time employee to our family enterprise squeezed the budget hard. - Michelle bore the brunt of all this, shuttling between mothering…"
+    },
+    {
+     "id": "Poverty, by America",
+     "author": "Matthew Desmond",
+     "kind": "note",
+     "score": 0.3887,
+     "cosine": 0.266,
+     "vector_rank": 28,
+     "location": null,
+     "excerpt": "1. More of an opinion piece than investigateive or well-researched text. But if you want to change people's minds, you need concrete comparisons and well-argued perspectives regarding why changes will help the nation"
+    }
+   ],
+   "excerpts_truncated": true,
+   "verdict": "",
+   "runs": 5,
+   "shown_run": 1,
+   "ms_all": [
+    26896,
+    11520,
+    51214,
+    11481,
+    48845
+   ],
+   "agree": false
+  },
+  "rerank/Q6": {
+   "pattern": "rerank",
+   "qid": "Q6",
+   "question": "Build me a two-week holiday list from my to-read shelf: nothing over 400 pages, one recommended by a friend, nothing like the last three I abandoned.",
+   "answer": "I can't build that list from what's here. The context only holds notes on four books Shirley has already read and written about — *Cold Enough for Snow*, *Pachinko*, *Mr Loverman*, and *Howards End* — with no to-read shelf, no page counts, no record of which books came recommended by friends, and no list of books she abandoned. To do this I'd need the shelf itself plus those three data points.",
+   "route": "embed -> top-30 by cosine -> cross-encoder rerank -> top-4 -> generate",
+   "calls": 1,
+   "ms": 5533,
+   "retrieve_ms": 245,
+   "rerank_ms": 309,
+   "gen_ms": 4978,
+   "usd": 0.0121,
+   "input_tokens": 1209,
+   "output_tokens": 244,
+   "context": [
+    {
+     "id": "Cold Enough for Snow",
+     "author": "Jessica Au",
+     "kind": "note",
+     "score": 0.3984,
+     "cosine": 0.3855,
+     "vector_rank": 7,
+     "location": null,
+     "excerpt": "What It's About: - mother and daughter going on a vacation trip together - not a huge storyline. it’s a quiet, contemplative novel - on this holiday trip, she reflects more on her life than between her and her mother. but through that reflection, you start to see the dynamic between her and her mother"
+    },
+    {
+     "id": "Pachinko",
+     "author": "Min Jin Lee",
+     "kind": "note",
+     "score": 0.3848,
+     "cosine": 0.3711,
+     "vector_rank": 11,
+     "location": null,
+     "excerpt": "One of the most brilliant and heartbreaking books I have ever read, I would like to thank Min Jin Lee for writing *Pachinko* and starting my 2018 with this splendid saga. *Pachinko* follows four generations of a Korean family who move to Japan amidst Japanese colonization and political warfare. The novel starts with Sunja, the beloved daughter of a poor yet well-respected family, whose unplanned…"
+    },
+    {
+     "id": "Mr Loverman",
+     "author": "Bernardine Evaristo",
+     "kind": "note",
+     "score": 0.3828,
+     "cosine": 0.3712,
+     "vector_rank": 10,
+     "location": null,
+     "excerpt": "What It's About: A flamboyant older man who has lived his life in London. He has a a wife, children, and grandchildren. He has also had a relationship with his best friend for decades, but nobody knows. While his wife has travelled back to the Caribbean, It's essentially a love story, but it has a lot of depth, and it feels real. Thoughts: I liked this book more than her booker prize winner. This…"
+    },
+    {
+     "id": "Howards End",
+     "author": "E.M. Forster",
+     "kind": "note",
+     "score": 0.3828,
+     "cosine": 0.405,
+     "vector_rank": 2,
+     "location": null,
+     "excerpt": "e, there was a mix of memoir, and historical fact and history. Is it matter-of-fact? - A fantastic introduction to have race and class work in the UK. It covers a large range of topics and gives a good overview, while at the same time educating you on new topics even if you're quite familiar with a lot of the information. - Pity was at the bottom of her actions all through this crisis. Pity, if…"
+    }
+   ],
+   "excerpts_truncated": true,
+   "verdict": "",
+   "runs": 5,
+   "shown_run": 1,
+   "ms_all": [
+    5533,
+    61927,
+    61863,
+    61459,
+    62390
+   ],
+   "agree": false
+  },
+  "rerank/Q7": {
+   "pattern": "rerank",
+   "qid": "Q7",
+   "question": "Give me my favourite books I have read about race.",
+   "answer": "Your notes don't rank or name favourites, so I can't tell you which are your favourites — that judgement isn't recorded in the context. What I can say is which of these books your notes treat as being about race: *Beloved* (Toni Morrison), where you note slave narratives, African oral history and Paul D \"constantly in chains. convict leasing.\"; *A Different Drummer* (William Melvin Kelley), where you write that \"the mentality of the American south is intensely examined\"; and *Natives: Race and Class in the Ruins of Empire* (Akala), described as \"part introducing the nuance of racism in europe and it's previous colonies.\"\n\nThe closest thing to praise is in the note filed under *Howards End* (E.M. Forster), which mentions \"like many of the books I've been reading at the moment about race\" and calls something \"A fantastic introduction to have race and class work in the UK\" — but that note doesn't say clearly which book it means.",
+   "route": "embed -> top-30 by cosine -> cross-encoder rerank -> top-4 -> generate",
+   "calls": 1,
+   "ms": 61379,
+   "retrieve_ms": 312,
+   "rerank_ms": 54701,
+   "gen_ms": 6364,
+   "usd": 0.016,
+   "input_tokens": 1294,
+   "output_tokens": 381,
+   "context": [
+    {
+     "id": "Beloved",
+     "author": "Toni Morrison",
+     "kind": "note",
+     "score": 0.6641,
+     "cosine": 0.5386,
+     "vector_rank": 1,
+     "location": null,
+     "excerpt": "he broken earth trilogy: both books are about parenting as an oppressed community - what it does to the family unit, how it warps these relationships. and how people find ways of overcoming them, - slave narratives are difficult to think about - morally. modern day history. african oral history - didn’t read or write. really important to continue the conversation. - paul D - constantly in chains…"
+    },
+    {
+     "id": "Howards End",
+     "author": "E.M. Forster",
+     "kind": "note",
+     "score": 0.625,
+     "cosine": 0.5233,
+     "vector_rank": 3,
+     "location": null,
+     "excerpt": "Genres: - speculative fiction: in its very nature sets out to ask questions of the world we live in by changing fundamental elements, and I find that the genre is especially ready to tackle difficult topics and explore concepts in a prolonged and nuanced way, which are things I look for in a book. - non-fiction: does the writer have a way of making very complex ideas easily digestible (very…"
+    },
+    {
+     "id": "A Different Drummer",
+     "author": "William Melvin Kelley",
+     "kind": "note",
+     "score": 0.6133,
+     "cosine": 0.4742,
+     "vector_rank": 13,
+     "location": null,
+     "excerpt": "Although the plot of “A Different Drummer” depends on the autonomous actions of African-Americans, the story is told exclusively through the eyes of these white townspeople. This, too, is a smart idea—a kind of fictional affirmation of the historian Lerone Bennett, Jr.,’s claim that “there is no Negro problem in America. The problem of race in America . . . is a white problem.” Kelley delivers…"
+    },
+    {
+     "id": "Natives: Race and Class in the Ruins of Empire",
+     "author": "Akala",
+     "kind": "note",
+     "score": 0.5977,
+     "cosine": 0.5139,
+     "vector_rank": 5,
+     "location": null,
+     "excerpt": "The Book in 3 Sentences: 1. Part Biographical, part introducing the nuance of racism in europe and it's previous colonies. (I didn't know the proportion of black people in the UK who came from the caribbean vs west africa) 2. highlighting western propaganda (gangs always a problem in the UK, black people dumped with underlcass in britain, now \"black-on-black\" violence) 3. introducing statistics…"
+    }
+   ],
+   "excerpts_truncated": true,
+   "verdict": "",
+   "runs": 5,
+   "shown_run": 1,
+   "ms_all": [
+    61379,
+    8050,
+    54379,
+    7629,
+    53552
+   ],
+   "agree": true
+  },
+  "rerank/Q8": {
+   "pattern": "rerank",
+   "qid": "Q8",
+   "question": "What are the themes I like most?",
+   "answer": "Your notes don't rank your themes, but two places state preferences directly. In your **Tales of Nevèrÿon** note you say what makes a text interesting to you: \"issues of gender, race, class, sexuality, ability, religion, nature/ecology and science, relationships between the parent/child... how power works in the novel, instances of violence,\" plus the book's underlying philosophy and what it leaves unsaid. In **Dune Messiah** you write, \"I like the references to the old world, Hitler, world war, how people hated computers,\" alongside \"intense themes about government, religion, ruling people\" and \"what makes someone human.\"\n\nThose interests recur elsewhere: environmental politics and human selfishness in **The Overstory**, and alienation, identity and \"very human issues\" in **The Catcher in the Rye**. But that's my inference from patterns — no note in the context says outright which theme you like most.",
+   "route": "embed -> top-30 by cosine -> cross-encoder rerank -> top-4 -> generate",
+   "calls": 1,
+   "ms": 8250,
+   "retrieve_ms": 238,
+   "rerank_ms": 433,
+   "gen_ms": 7578,
+   "usd": 0.019,
+   "input_tokens": 1442,
+   "output_tokens": 473,
+   "context": [
+    {
+     "id": "Dune Messiah (Dune #2)",
+     "author": "Frank Herbert",
+     "kind": "note",
+     "score": 0.6406,
+     "cosine": 0.3472,
+     "vector_rank": 7,
+     "location": null,
+     "excerpt": "to do some more research on it... The gas guy? half fish? in the tank? (Guild steersman named Edric Labor) - The ghola Duncan Idaho also called Hayt. They can create people out of dead humans flesh? - At the end, Idaho's humanity prevails over the Tleilaxu conditioning, and he helps Paul resist abdicating in exchange for Chani's restoration - The theme about what makes someone human, - Lots of…"
+    },
+    {
+     "id": "The Overstory",
+     "author": "Richard Powers",
+     "kind": "note",
+     "score": 0.6172,
+     "cosine": 0.3454,
+     "vector_rank": 8,
+     "location": null,
+     "excerpt": "My Thoughts on Themes: - **“knowledge meets imagination”** - environmental politics - it is a novel with an agenda: awareness and ignorance - **The unprecedented environmental catastrophe our species has created** in the century and a half since the publication of his landmark work (Darwin, *On the Origin of Species*) can be taken as a measure of our collective failure to uphold those values…"
+    },
+    {
+     "id": "Tales of Nevèrÿon (Return to Nevèrÿon, #1)",
+     "author": "Samuel R. Delany",
+     "kind": "note",
+     "score": 0.5859,
+     "cosine": 0.324,
+     "vector_rank": 15,
+     "location": null,
+     "excerpt": "issues of gender, race, class, sexuality, ability, religion, nature/ecology and science, relationships between the parent/child, relationships in general, depictions of nonlife or nonhuman life, how power works in the novel, instances of violence. What is the philosophy of the book (humanist/marxist/eco)? What is it saying but also what is it not saying, on purpose or otherwise? To me, these are…"
+    },
+    {
+     "id": "The Catcher in the Rye",
+     "author": "J.D. Salinger",
+     "kind": "note",
+     "score": 0.582,
+     "cosine": 0.3984,
+     "vector_rank": 4,
+     "location": null,
+     "excerpt": "highly relatable ideals and symbols in society modern living in america coming of age. don’t do something you will regret hugely, mess up your life on a whim. but it feels so real in the moment, and so frustrating. you feel everything all at once. his family obviously have money, and sometimes you feel like maybe that is actually the problem. it’s just expected that he should go back to school, a…"
+    }
+   ],
+   "excerpts_truncated": true,
+   "verdict": "",
+   "runs": 5,
+   "shown_run": 1,
+   "ms_all": [
+    8250,
+    54469,
+    8838,
+    52009,
+    7597
+   ],
+   "agree": true
+  },
+  "rerank/Q9": {
+   "pattern": "rerank",
+   "qid": "Q9",
+   "question": "What were my top themes each year?",
+   "answer": "Your notes here don't carry any dates — none of the four entries is tied to a year, so I can't break your themes down chronologically. What I can see is the themes themselves: freedom, identity, and parent/child relationships in *The Underground Railroad*; \"phoniness, childhood, sex, alienation, identity\" in *The Catcher in the Rye*; a broad checklist including gender, race, class, sexuality and power in *Tales of Nevèrÿon*; and just \"magic\" for *The Broken Kingdoms*. To answer by year, I'd need reading or note dates recorded alongside each entry.",
+   "route": "embed -> top-30 by cosine -> cross-encoder rerank -> top-4 -> generate",
+   "calls": 1,
+   "ms": 50188,
+   "retrieve_ms": 238,
+   "rerank_ms": 45929,
+   "gen_ms": 4020,
+   "usd": 0.0114,
+   "input_tokens": 1178,
+   "output_tokens": 220,
+   "context": [
+    {
+     "id": "The Underground Railroad",
+     "author": "Colson Whitehead",
+     "kind": "note",
+     "score": 0.3945,
+     "cosine": 0.3222,
+     "vector_rank": 3,
+     "location": null,
+     "excerpt": "- Themes? - bleak? but also positive feeling of changing situations, things are moving.. 'stuck' but not stuck at the same time - upsetting (to highlight human nature?) - dark - how we relate to other people (black vs white vs female vs male vs authority?) - how we think of ourselves - how we form our identities - freedom, what does freedom truly mean. what things make up freedom. it's not just…"
+    },
+    {
+     "id": "The Catcher in the Rye",
+     "author": "J.D. Salinger",
+     "kind": "note",
+     "score": 0.3887,
+     "cosine": 0.3122,
+     "vector_rank": 5,
+     "location": null,
+     "excerpt": "highly relatable ideals and symbols in society modern living in america coming of age. don’t do something you will regret hugely, mess up your life on a whim. but it feels so real in the moment, and so frustrating. you feel everything all at once. his family obviously have money, and sometimes you feel like maybe that is actually the problem. it’s just expected that he should go back to school, a…"
+    },
+    {
+     "id": "Tales of Nevèrÿon (Return to Nevèrÿon, #1)",
+     "author": "Samuel R. Delany",
+     "kind": "note",
+     "score": 0.3789,
+     "cosine": 0.2752,
+     "vector_rank": 9,
+     "location": null,
+     "excerpt": "issues of gender, race, class, sexuality, ability, religion, nature/ecology and science, relationships between the parent/child, relationships in general, depictions of nonlife or nonhuman life, how power works in the novel, instances of violence. What is the philosophy of the book (humanist/marxist/eco)? What is it saying but also what is it not saying, on purpose or otherwise? To me, these are…"
+    },
+    {
+     "id": "The Broken Kingdoms (Inheritance, #2)",
+     "author": "N.K. Jemisin",
+     "kind": "note",
+     "score": 0.3711,
+     "cosine": 0.3923,
+     "vector_rank": 1,
+     "location": null,
+     "excerpt": "Themes, topics: - magic -"
+    }
+   ],
+   "excerpts_truncated": true,
+   "verdict": "",
+   "runs": 5,
+   "shown_run": 1,
+   "ms_all": [
+    50188,
+    8947,
+    52832,
+    7985,
+    54264
+   ],
+   "agree": false
+  }
+ }
+}
