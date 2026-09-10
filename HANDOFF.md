@@ -258,16 +258,20 @@ for records instead. **Everything is built and wired. Nothing has been measured.
 | done, not verified end to end | one naive call. The smoke test died on a **DNS failure**, not a code fault (`Failed to resolve api.voyageai.com`). The pipeline has never returned a complete answer. **Verify before trusting it.** |
 | not started | the measurement run, grading, the site's `R` traces, the version table, README |
 
-**The vector index is 467 of 775 chunks embedded.** The build is resumable and incremental:
-re-running it continues from 467, it does not start again.
+**The vector index is complete: 775 of 775 chunks embedded** (finished at the end of the session,
+10 Sep 2026). 385 highlight chunks and 390 note chunks over 55 books, `voyage-4`, 1024 dimensions,
+47,698 tokens billed against Voyage's free allowance, so it cost nothing. The build is resumable
+and incremental, so re-running it is a no-op unless the ingest changed.
 
 ### 10.2 The command that finishes v1
 
 ```bash
 set -a; . ./.env; set +a           # both keys are already in .env, git-ignored, chmod 600
-.venv/bin/python service/ingest/build_index.py       # finishes the last ~308 chunks, ~8 min
 .venv/bin/python eval/run.py --runs 1 --q Q1,Q2      # PILOT FIRST: 4 answers, ~$0.20
 ```
+
+The index is already built, so start at the pilot. Only re-run `build_index.py` if you change the
+ingest, which changes the chunk hashes and re-embeds everything.
 
 Read the pilot's cost, multiply, and **only then** decide the full run:
 
@@ -399,9 +403,8 @@ can be attributed: the chunk knows its book without the title being embedded.
    footnote) **must stay** until real traces replace them. §3.9 is non-negotiable.
 3. The method page's §7 version table still lists v1 as `soon`. Do not mark it done until the
    run exists and Shirley has graded it.
-4. `how-its-built.html` now states the ingest numbers as fact - those **are** verified, from
-   `build_db.py`. The claim "775 chunks over 63 books" should be re-checked once the index
-   finishes; at 467 chunks it covered 31 books.
+4. `how-its-built.html` states the ingest numbers as fact - those **are** verified, from
+   `build_db.py` and from the finished index (775 chunks, 55 books; the page says 55).
 5. `api.ragpatterns.com` is **still not deployed**. Railway remains Shirley's login step
    (`DEPLOY.md`). The panel fails soft and says the service is unreachable, which is correct
    behaviour, and the local API on :8791 proves the contract.
@@ -420,7 +423,7 @@ can be attributed: the chunk knows its book without the title being embedded.
 
 ### 10.10 Next session, in order
 
-1. `.venv/bin/python service/ingest/build_index.py` - finish the index.
+1. ~~Finish the index~~ — done, 775 of 775.
 2. **Pilot**: `eval/run.py --runs 1 --q Q1,Q2`. Read the answers. Q1 must name Such a Fun Age;
    Q2 must refuse, because the ledger is not in the index. If Q2 confidently lists books, that is
    the thesis working, not a bug - record it.
