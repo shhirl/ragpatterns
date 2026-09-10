@@ -5,7 +5,7 @@
  "embed_model": "voyage-4",
  "rerank_model": "rerank-3",
  "runs": 5,
- "graded": false,
+ "graded": true,
  "cells": {
   "naive/Q1": {
    "pattern": "naive",
@@ -64,7 +64,7 @@
     }
    ],
    "excerpts_truncated": false,
-   "verdict": "",
+   "verdict": "good",
    "runs": 5,
    "shown_run": 1,
    "ms_all": [
@@ -133,7 +133,7 @@
     }
    ],
    "excerpts_truncated": false,
-   "verdict": "",
+   "verdict": "partial",
    "runs": 5,
    "shown_run": 1,
    "ms_all": [
@@ -202,7 +202,7 @@
     }
    ],
    "excerpts_truncated": false,
-   "verdict": "",
+   "verdict": "partial",
    "runs": 5,
    "shown_run": 1,
    "ms_all": [
@@ -271,7 +271,7 @@
     }
    ],
    "excerpts_truncated": false,
-   "verdict": "",
+   "verdict": "partial",
    "runs": 5,
    "shown_run": 1,
    "ms_all": [
@@ -340,7 +340,7 @@
     }
    ],
    "excerpts_truncated": false,
-   "verdict": "",
+   "verdict": "partial",
    "runs": 5,
    "shown_run": 1,
    "ms_all": [
@@ -409,7 +409,7 @@
     }
    ],
    "excerpts_truncated": false,
-   "verdict": "",
+   "verdict": "partial",
    "runs": 5,
    "shown_run": 1,
    "ms_all": [
@@ -478,7 +478,7 @@
     }
    ],
    "excerpts_truncated": false,
-   "verdict": "",
+   "verdict": "partial",
    "runs": 5,
    "shown_run": 1,
    "ms_all": [
@@ -547,7 +547,7 @@
     }
    ],
    "excerpts_truncated": false,
-   "verdict": "",
+   "verdict": "partial",
    "runs": 5,
    "shown_run": 1,
    "ms_all": [
@@ -616,7 +616,7 @@
     }
    ],
    "excerpts_truncated": false,
-   "verdict": "",
+   "verdict": "good",
    "runs": 5,
    "shown_run": 1,
    "ms_all": [
@@ -685,7 +685,7 @@
     }
    ],
    "excerpts_truncated": false,
-   "verdict": "",
+   "verdict": "partial",
    "runs": 5,
    "shown_run": 1,
    "ms_all": [
@@ -754,7 +754,7 @@
     }
    ],
    "excerpts_truncated": false,
-   "verdict": "",
+   "verdict": "partial",
    "runs": 5,
    "shown_run": 1,
    "ms_all": [
@@ -823,7 +823,7 @@
     }
    ],
    "excerpts_truncated": false,
-   "verdict": "",
+   "verdict": "partial",
    "runs": 5,
    "shown_run": 1,
    "ms_all": [
@@ -892,7 +892,7 @@
     }
    ],
    "excerpts_truncated": false,
-   "verdict": "",
+   "verdict": "partial",
    "runs": 5,
    "shown_run": 1,
    "ms_all": [
@@ -961,7 +961,7 @@
     }
    ],
    "excerpts_truncated": false,
-   "verdict": "",
+   "verdict": "partial",
    "runs": 5,
    "shown_run": 1,
    "ms_all": [
@@ -1030,7 +1030,7 @@
     }
    ],
    "excerpts_truncated": false,
-   "verdict": "",
+   "verdict": "partial",
    "runs": 5,
    "shown_run": 1,
    "ms_all": [
@@ -1099,7 +1099,7 @@
     }
    ],
    "excerpts_truncated": false,
-   "verdict": "",
+   "verdict": "partial",
    "runs": 5,
    "shown_run": 1,
    "ms_all": [

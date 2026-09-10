@@ -1,17 +1,17 @@
 pattern,qid,proposed,final,note
-naive,Q1,good,,"every book the reference names was retrieved in every run, nothing outside the context is named"
-naive,Q2,partial,,says in all 5 runs that the context cannot answer as asked; 4 of them then offer what the notes do hold. Partial by your ruling - read whether the substitute answer is any good
-naive,Q3,partial,,says in all 5 runs that the context cannot answer as asked; 4 of them then offer what the notes do hold. Partial by your ruling - read whether the substitute answer is any good
-naive,Q4,,,"4 of 5 runs refuse and the rest answer, so the cell is not one thing: read whether the answers are right and whether the refusals should have been"
-naive,Q6,partial,,says in all 5 runs that the context cannot answer as asked; 5 of them then offer what the notes do hold. Partial by your ruling - read whether the substitute answer is any good
-naive,Q7,partial,,says in all 5 runs that the context cannot answer as asked; 5 of them then offer what the notes do hold. Partial by your ruling - read whether the substitute answer is any good
-naive,Q8,partial,,says in all 5 runs that the context cannot answer as asked; 5 of them then offer what the notes do hold. Partial by your ruling - read whether the substitute answer is any good
-naive,Q9,partial,,says in all 5 runs that the context cannot answer as asked; 4 of them then offer what the notes do hold. Partial by your ruling - read whether the substitute answer is any good
-rerank,Q1,good,,"every book the reference names was retrieved in every run, nothing outside the context is named"
-rerank,Q2,partial,,says in all 5 runs that the context cannot answer as asked; 4 of them then offer what the notes do hold. Partial by your ruling - read whether the substitute answer is any good
-rerank,Q3,partial,,says in all 5 runs that the context cannot answer as asked; 1 of them then offer what the notes do hold. Partial by your ruling - read whether the substitute answer is any good
-rerank,Q4,,,"3 of 5 runs refuse and the rest answer, so the cell is not one thing: read whether the answers are right and whether the refusals should have been"
-rerank,Q6,partial,,says in all 5 runs that the context cannot answer as asked; 5 of them then offer what the notes do hold. Partial by your ruling - read whether the substitute answer is any good
-rerank,Q7,partial,,says in all 5 runs that the context cannot answer as asked; 5 of them then offer what the notes do hold. Partial by your ruling - read whether the substitute answer is any good
-rerank,Q8,partial,,says in all 5 runs that the context cannot answer as asked; 5 of them then offer what the notes do hold. Partial by your ruling - read whether the substitute answer is any good
-rerank,Q9,partial,,says in all 5 runs that the context cannot answer as asked; 5 of them then offer what the notes do hold. Partial by your ruling - read whether the substitute answer is any good
+naive,Q1,good,good,"retrieval hit 1 of 1 in every run, quoted exactly, nothing named outside the context. Not separately ruled on: it is unchanged from the v0 prediction and the measurement agrees."
+naive,Q2,partial,partial,"Shirley, 10 Sep 2026: ""I can't answer that is partial"""
+naive,Q3,partial,partial,"Shirley, 10 Sep 2026: ""I can't answer that is partial"""
+naive,Q4,,partial,"Shirley, 10 Sep 2026: both partial. Rerank found a real recorded argument (the Pullman note) but inside one note, not across two books."
+naive,Q6,partial,partial,"Shirley, 10 Sep 2026: ""I can't answer that is partial"""
+naive,Q7,partial,partial,"Shirley, 10 Sep 2026: ""I can't answer that is partial"""
+naive,Q8,partial,partial,"Shirley, 10 Sep 2026: ""I can't answer that is partial"""
+naive,Q9,partial,partial,"Shirley, 10 Sep 2026: ""I can't answer that is partial"""
+rerank,Q1,good,good,"retrieval hit 1 of 1 in every run, quoted exactly, nothing named outside the context. Not separately ruled on: it is unchanged from the v0 prediction and the measurement agrees."
+rerank,Q2,partial,partial,"Shirley, 10 Sep 2026: ""I can't answer that is partial"""
+rerank,Q3,partial,partial,"Shirley, 10 Sep 2026: ""I can't answer that is partial"""
+rerank,Q4,,partial,"Shirley, 10 Sep 2026: both partial. Rerank found a real recorded argument (the Pullman note) but inside one note, not across two books."
+rerank,Q6,partial,partial,"Shirley, 10 Sep 2026: ""I can't answer that is partial"""
+rerank,Q7,partial,partial,"Shirley, 10 Sep 2026: ""I can't answer that is partial"""
+rerank,Q8,partial,partial,"Shirley, 10 Sep 2026: ""I can't answer that is partial"""
+rerank,Q9,partial,partial,"Shirley, 10 Sep 2026: ""I can't answer that is partial"""
