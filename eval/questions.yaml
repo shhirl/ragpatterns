@@ -1,4 +1,4 @@
-# The fixed questions and their reference answers (six planned, Q7 added by Shirley on 10 Sep 2026). Written before any pipeline runs.
+# The fixed questions and their reference answers (six planned; Q7, Q8, Q9 added by Shirley on 10 Sep 2026: a join, an aggregate, an aggregate over time). Written before any pipeline runs.
 # Status per question: ready | pending (what it waits for). Shirley approves this file before v1 measures anything.
 # Dates on the site are month + year; exact dates here are fine, they are not published.
 
@@ -66,7 +66,9 @@
   tests: >-
     an aggregate over the whole ledger (count and rank her tags across every read book); similarity
     search cannot count, and a graph can only count if it carries the ledger's rating
-  status: ready by her own tags (2019–2022 are fully tagged; later years barely); extracted themes at v2 change the answer and the site must say which vocabulary answered
+  status: >-
+    ready by her own tags (2019–2022 are fully tagged; later years barely); extracted themes at v2
+    change the answer and the site must say which vocabulary answered
   question: "What are the themes I like most?"
   reference: |
     Ranked by how many read books carry the tag, with five-star counts: Fantasy (39 read, 11 five-star),
@@ -81,7 +83,9 @@
   tests: >-
     an aggregate grouped by time (top themes per year); needs the ledger's date_read joined to a theme
     vocabulary, then a ranking within each year
-  status: partially ready; by her tags only 2019–2022 are trustworthy (2023: 4 of 12 books tagged, 2024: 2 of 15, 2025–26: none), so a correct v1 answer must say the later years are unknown; v2 extracted themes cover every year
+  status: >-
+    partially ready; by her tags only 2019–2022 are trustworthy (2023: 4 of 12 books tagged, 2024: 2 of 15,
+    2025–26: none), so a correct v1 answer must say the later years are unknown; v2 extracted themes cover every year
   question: "What were my top themes each year?"
   reference: |
     Top three tags by books read per year, with five-star counts:
