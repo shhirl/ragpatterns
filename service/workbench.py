@@ -28,7 +28,7 @@ QUESTIONS = [
     ('Q9', 'What were my top themes each year?', None),
 ]
 
-PAGE = """<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Workbench · Seven RAGs, one shelf</title>
+PAGE = """<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Workbench · RAG patterns, side by side</title>
 <style>
 :root{--bg:#fbfaf7;--ink:#1a1a1a;--mute:#7a7568;--line:#e5e2da;--soft:#f3f1ea;--acc:#1f5e4e}
 body{margin:0;font-family:"Iowan Old Style",Palatino,Georgia,serif;background:var(--bg);color:var(--ink);line-height:1.5}

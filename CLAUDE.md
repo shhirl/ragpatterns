@@ -1,4 +1,4 @@
-# Seven RAGs, one shelf
+# RAG patterns, side by side
 
 **New here? Read `HANDOFF.md` first.** It is the decision log and the starting point for building; this file is the day-to-day rules.
 
@@ -31,7 +31,7 @@ Static site comparing seven RAG design patterns on Shirley's own bookshelf (Good
 ## Names (use exactly these)
 
 - **ragpatterns.com** — the site. Appears only as the nav brand.
-- **Seven RAGs, one shelf** — the project and the main page. Every link back to the main page says "← Seven RAGs, one shelf".
+- **RAG patterns, side by side** — the project and the main page (h1: "RAG patterns, side by side. Tested on my own bookshelf."; chosen by Shirley 10 Sep 2026, replacing the working name "Seven RAGs, one shelf", which stays only in old docs). Every link back to the main page says "← RAG patterns, side by side". The kicker reads "v0 · every result is a prediction until a version measures it"; keep that wording, not "predicted, not yet measured".
 - **How it's built** — the method page, in the nav, in body links, in the footer, in its own kicker and `<title>`. Never "the method page", "the comparison", "case study".
 - **The Librarian** — reserved for the live ask box that ships at v5. Not used on the pages until then.
 
