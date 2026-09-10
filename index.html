@@ -210,6 +210,7 @@
   <a href="#compare">compare</a>
   <a href="#scorecard">scorecard</a>
   <a href="#choose">choose</a>
+  <a href="#live">ask</a>
   <a class="tool" href="how-its-built.html">How it's built →</a>
 </div></div>
 
@@ -217,7 +218,7 @@
   <p class="kicker"><i>v0</i> · every result is a prediction until a version measures it</p>
   <h1>RAG patterns, side by side. Tested on my own bookshelf.</h1>
   <p class="lede">Retrieval-augmented generation is not one technique any more. It is seven designs that solve seven different problems, and most teams pick one by accident. This page runs all seven on the same small, real knowledge base and the same nine questions, so the only thing that changes between columns is the architecture.</p>
-  <p>The knowledge base is my own bookshelf: a Goodreads export, my Kindle highlights, a list of who recommended what, and a few photographed pages. I chose it because I can tell a right answer from a plausible one in a second, which is the whole job when you evaluate retrieval, and because "it invented a book I never read" is the most legible failure a RAG system can have. Every trace below is a prediction of how each pipeline handles the question. Nothing is measured yet. <a href="how-its-built.html">How it's built</a> says what gets measured and when.</p>
+  <p>The knowledge base is my own bookshelf: a Goodreads export, my Kindle highlights, a list of who recommended what, and a few photographed pages. I chose it because I can tell a right answer from a plausible one in a second, which is the whole job when you evaluate retrieval, and because "it invented a book I never read" is the most legible failure a RAG system can have. Every trace below is a prediction of how each pipeline handles the question. Nothing is measured yet. <a href="how-its-built.html">How it's built</a> says what gets measured and when. The first real piece is already running: <a href="#live">ask the ledger ↓</a>.</p>
   <div class="shelf">
     <div class="books" id="books"></div>
     <div class="plank"></div>
@@ -286,7 +287,7 @@
   </div>
   <p class="note">v0: every trace on this page is a prediction written from how the pipeline is designed and what the corpus contains. No pipeline has run. Each cell is replaced by a real trace, with the date, as the version that measures it ships; the schedule is in <a href="how-its-built.html#versions">How it's built</a>.</p>
 
-  <h3>Ask the ledger, live</h3>
+  <h3 id="live-h">Ask the ledger, live</h3>
   <p>The first real piece of the system, running as a service. It holds the ledger and the read-only SQL tool, nothing else: no index, no model. The four questions the ledger alone can answer run through the same <code>answer()</code> interface every pattern will use, and the answer you see is a query result, labelled as such. The other five wait for the parts that are not built yet.</p>
   <div class="live" id="live">
     <div class="lh"><b>Ask the ledger</b><span class="st" id="lst"><i></i>checking the service…</span></div>
