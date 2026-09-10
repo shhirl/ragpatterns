@@ -87,12 +87,13 @@
 <h1>A RAG comparison I can actually grade</h1>
 <p class="lede">Seven retrieval patterns, one corpus that happens to be my own bookshelf, nine fixed questions with reference answers written before any pipeline runs, the same generation model everywhere. This page is the lab notebook: what I decided, what I turned down, and what replaces prediction with measurement as each version ships.</p>
 <p>I build the way I learn: make the thing, then find out where it breaks, and publish the finding-out. Version 0 is the design and the predicted traces. The measurements start at v1. Every claim on the comparison page that is currently a prediction is labelled as one, and gets a date here when it becomes a measurement.</p>
+<p class="note"><b>Where this stands, September 2026.</b> The ingest described below has run, and its numbers are real. The first two patterns &mdash; naive and retrieve-and-rerank &mdash; are built and wired behind the same interface, and the ledger's SQL path answers live on the comparison page. <b>The measurement run has not been made yet</b>, so every trace in the explorer is still a prediction and still says so. Nothing here is dated as measured until it has been measured and graded.</p>
 
 <div class="stats">
   <div class="stat"><b>7</b><span>patterns, from the same seven-diagram picture everyone shares</span></div>
   <div class="stat"><b>3</b><span>files in the corpus: a Goodreads export, Kindle highlights, a list of recommendations</span></div>
   <div class="stat"><b>9</b><span>fixed questions, one per failure mode, graded by hand</span></div>
-  <div class="stat"><b>0</b><span>measured runs so far. That number is the roadmap.</span></div>
+  <div class="stat"><b>0</b><span>measured runs so far. Two patterns are built and wired; nothing has been measured. That number is the roadmap.</span></div>
 </div>
 
 <section id="problem" class="tri core">
@@ -151,7 +152,21 @@
     <tr><td>Extracted graph</td><td>edges from the files (who wrote what, who recommended what, what I read after what) and edges a model extracts from highlights and reviews (themes; which books mention or argue with which)</td><td>nothing; the whole graph is committed as JSON</td></tr>
   </table></div>
   <p>The highlights are the semantic index and the ledger is a table. That split is the single most important design decision on this site: it is what makes the "numbers" question an honest test rather than a trick.</p>
-  <p class="note">Exact counts (books, highlights, match rate between the two exports) are published here at v1, after ingest. The curated exports themselves stay out of the repo; the photos, the graph JSON, the question set and every result CSV go in.</p>
+  <h3>What ingest actually found, September 2026</h3>
+  <div class="tw"><table>
+    <tr><th>number</th><th>what it is</th></tr>
+    <tr><td><b>479</b></td><td>books in the Goodreads export. 205 read, 250 to read, 24 in progress; 372 have an ISBN.</td></tr>
+    <tr><td><b>132</b></td><td>reviews in my Notion "Book Reviews" database, every one of them matched to a Goodreads row — 129 on title alone, one on title and author, two through typos of mine, two by alias. Goodreads holds what and when; the ratings and the written verdicts are mine, kept in Notion.</td></tr>
+    <tr><td><b>125</b></td><td>books I have rated. I never rated anything on Goodreads, so a "five stars" question would have returned nothing without this.</td></tr>
+    <tr><td><b>369</b></td><td>of my own genre tags across 102 books. They are genres more than themes, and they stop after 2022. Both facts change what a correct answer to Q8 and Q9 looks like.</td></tr>
+    <tr><td><b>273</b></td><td>highlighted passages, 256 of them carrying a real Kindle location. See below: they arrived from somewhere I did not expect.</td></tr>
+    <tr><td><b>397</b></td><td>books with a crowd average from Open Library — 311 matched by ISBN, 86 by a title I checked agrees. 82 have none, and are counted as having none rather than guessed at. Open Library's crowd is small: the most-rated book here has 759 ratings, not Goodreads' millions.</td></tr>
+    <tr><td><b>775</b></td><td>chunks in the vector index, over 55 books: every highlight, and my notes split into passages. No ledger row is in it, and only the passage text is embedded &mdash; the book and author ride along as metadata.</td></tr>
+  </table></div>
+  <h3>The highlights came from the wrong file</h3>
+  <p>The plan said the highlights would come from <code>My Clippings.txt</code> off the Kindle. That file still has not been plugged in. What I found instead, while writing the ingest, was that ten of my Notion pages already held highlights I had pasted there years ago — five of them raw Kindle clipping dumps, separators, locations, timestamps and all. Splitting them out gave the index 273 passages and gave Q1, the control question, a real target a whole version early.</p>
+  <p>It also found a mistake. Those pasted dumps were sitting inside the field I was calling "my notes": <b>236,000 of the 434,000 characters of what the ingest thought were my own words were actually verbatim book text.</b> That is the field the pages print. Splitting highlights from notes properly took the notes down to 243,000 characters of my writing, and moved the book's words into the highlights table, where the rule is short excerpts with attribution and never the passage. It is the kind of error that would have been invisible until the day the site quoted three pages of someone's book back at a reader.</p>
+  <p class="note">The curated exports themselves stay out of the repo; the photos, the question set and every result CSV go in.</p>
 </section>
 
 <section id="questions" class="tri core">
@@ -217,8 +232,8 @@
     <tr><td>These pages</td><td>Plain HTML, inline CSS, no build step</td><td>Cloudflare Pages, deploys on push. Same as my other sites.</td></tr>
     <tr><td>Pipelines (v1+)</td><td>Python service, five retrievers, seven patterns behind one interface: <code>answer(question, pattern, image) → {answer, context, route, calls, ms, usage}</code></td><td>the eval imports the same function the demo box calls</td></tr>
     <tr><td>Ledger</td><td>SQLite, queried by the SQL tool</td><td>a few hundred rows; never embedded</td></tr>
-    <tr><td>Embeddings</td><td>Voyage text embeddings; the multimodal model for v3; vectors stored in the same SQLite file</td><td>one file, no vector database to run</td></tr>
-    <tr><td>Reranker</td><td>A local cross-encoder</td><td>no API call, so its cost shows up as milliseconds, not dollars</td></tr>
+    <tr><td>Embeddings</td><td>Voyage <code>voyage-4</code>; the multimodal model for v3; vectors in a SQLite file beside the ledger</td><td>one file, no vector database to run. The whole index is about 100,000 tokens, which is inside Voyage's free allowance, so retrieval costs nothing.</td></tr>
+    <tr><td>Reranker</td><td>Voyage <code>rerank-3</code>, a cross-encoder</td><td>the plan said a local cross-encoder; a remote one is the same kind of model without a two-gigabyte dependency in the deploy. Still not an LLM: a second LLM in the loop would muddy which model earned the answer.</td></tr>
     <tr><td>Graph</td><td>NetworkX in memory, extracted by Claude with a fixed schema, committed as JSON</td><td>a graph database would be a fourth thing to run for a graph with under a thousand nodes</td></tr>
     <tr><td>Generation</td><td>Claude Opus 5 with adaptive thinking, one prompt template for every pattern</td><td>the router uses Claude Haiku 4.5: it is a classifier and should cost like one</td></tr>
     <tr><td>Hosting the service</td><td>Railway, Cloudflare in front</td><td>the setup I already run for fixmybanana</td></tr>

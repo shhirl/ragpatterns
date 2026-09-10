@@ -13,7 +13,7 @@
     },
     {
       "name": "workbench",
-      "runtimeExecutable": "python3",
+      "runtimeExecutable": ".venv/bin/python",
       "runtimeArgs": [
         "service/workbench.py",
         "8790"

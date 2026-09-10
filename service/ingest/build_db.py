@@ -114,7 +114,12 @@ def build(db_path=DB):
             for t in r.genres:
                 con.execute('INSERT INTO tags VALUES (?,?,?)', (bid, t, 'shirley')); counts['tags'] += 1
             for h in r.highlights:
-                con.execute('INSERT INTO highlights (book_id,source,text) VALUES (?,?,?)', (bid, 'notion', h))
+                # 'kindle' when the passage came from a pasted My Clippings dump (it has a location),
+                # 'notion' when Shirley typed or pasted it into the page body herself.
+                src = 'kindle' if h.get('location') or h.get('page') else 'notion'
+                con.execute('INSERT INTO highlights (book_id,source,text,location,page,added_on) VALUES (?,?,?,?,?,?)',
+                            (bid, src, h['text'], h.get('location'), h.get('page'), h.get('added_on')))
+                counts['highlights_' + src] = counts.get('highlights_' + src, 0) + 1
                 counts['notion_highlights'] += 1
     con.commit(); con.close()
     counts['notion_reviews'] = len(reviews); counts['notion_matched'] = len(pairs); counts['notion_unmatched'] = len(unmatched)

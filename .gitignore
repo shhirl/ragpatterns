@@ -7,3 +7,6 @@ service/data/*
 __pycache__/
 .DS_Store
 corpus/notion/
+!service/data/replay.json
+.venv/
+corpus/photos/

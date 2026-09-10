@@ -1,4 +1,10 @@
-# HANDOFF — Seven RAGs, one shelf
+# HANDOFF — RAG patterns, side by side
+
+> **Newest first:** the latest session is **§10 (10 Sep 2026)** — v1 is built and wired but
+> **nothing has been measured**. If you are picking this up, read §10 before anything else:
+> it has the state, the decisions, what is verified, and the exact commands that finish v1.
+> Then come back and read from §0 for the project's history and rules.
+> (The working name "Seven RAGs, one shelf" was replaced on 10 Sep 2026.)
 
 Written 9 September 2026 at the end of the planning session with Shirley. This is the document the next AI reads first. It says what the project is, what has been decided (and what was rejected, and why), what exists on disk, what does not exist yet, and exactly where to start building. Nothing in this folder should be deleted.
 
@@ -229,3 +235,254 @@ Memory for the Claude sessions on this machine lives outside the repo (`~/.claud
 - **Title and kicker (10 Sep 2026):** Shirley found "Seven RAGs, one shelf. The pattern is the product." unclear and "predicted, not yet measured" like jargon. New h1: **"RAG patterns, side by side. Tested on my own bookshelf."**; site name **"RAG patterns, side by side"** in titles and back-links; kicker **"v0 · every result is a prediction until a version measures it"**. Applied to both pages, the workbench, README, CLAUDE.md and the GitHub description. "Seven RAGs, one shelf" survives only as the working name in older notes.
 - **Placement of the live panel (10 Sep 2026):** Shirley asked whether "Ask the ledger" should be its own page or higher up. Decision: stays under the explorer in §03 for now; a nav item "ask" and a hero line "ask the ledger ↓" point to it. As patterns go live, the panel dissolves into the explorer: each cell gets a "run it live" button and the live answer appears beside the prediction. A separate /ask page only when it does things the explorer cannot (own questions, history, comparisons).
 - **Next session starts at §6** (first build session: exports into `corpus/`, inspect, real titles, v1), after Shirley has merged the design PR and connected Pages.
+
+---
+
+## 10. Session 4 (10 Sep 2026, afternoon): v1 built, not yet measured
+
+**Read this section first if you are the next AI.** It says exactly what was built, what was
+decided and why, what is verified, what is not, and the one command that finishes v1.
+
+### 10.1 Where v1 stopped, precisely
+
+Shirley's scope for this session (her words): *"Skip graph/hybrid/router/multi-agent for now.
+Build vector + rerank retrievers, implement just the naive and rerank patterns (2 patterns,
+9 questions, ~5 runs each), grade, ship dated traces. Ask the ledger panel shows real data for
+two patterns + SQL forced path. Clean, minimal v1. Graph/hybrid come at v2."*
+
+The session ended early, before the measurement run, because Shirley ran low on credits and asked
+for records instead. **Everything is built and wired. Nothing has been measured.**
+
+| state | what |
+|---|---|
+| done and verified | corpus cleaning, ingest rebuild, vector retriever, reranker, naive and rerank patterns, `answer()` wiring, eval runner, grading sheet, replay exporter, live-panel rewrite, workbench routes, API replay endpoint, method-page ingest numbers |
+| verified end to end | **the pilot ran and all four answers succeeded** — see §10.1a. An earlier smoke test had died on a DNS failure, not a code fault. |
+| not started | the full measurement run, grading, the site's `R` traces, the version table |
+
+**The vector index is complete: 775 of 775 chunks embedded** (finished at the end of the session,
+10 Sep 2026). 385 highlight chunks and 390 note chunks over 55 books, `voyage-4`, 1024 dimensions,
+47,698 tokens billed against Voyage's free allowance, so it cost nothing. The build is resumable
+and incremental, so re-running it is a no-op unless the ingest changed.
+
+### 10.1a The pilot ran, and it changed three things (10 Sep 2026, 16:39)
+
+Shirley ran `eval/run.py --runs 1 --q Q1,Q2` herself at the end of the session. **The pipeline
+works end to end.** Results are in `eval/results/v1-2026-09-10.{csv,json}` — four answers, all
+four succeeded, ungraded.
+
+| | Q1 (control) | Q2 (ledger) |
+|---|---|---|
+| naive | **correct.** Such a Fun Age top-ranked at 0.560, quoted exactly with attribution | **abstained.** Said plainly there are no dates, ratings or page counts in the context |
+| rerank | **correct.** Same answer; the cross-encoder pushed the right chunk from 0.560 to **0.922** | **abstained**, same reasoning |
+
+Neither pattern named a book outside its context. Neither invented a title. The reranker did
+visibly what it exists to do: it turned a 0.56/0.43 margin into 0.92/0.36.
+
+**Three findings, all of which need a decision before anything is published:**
+
+1. **The cost estimate was five times too high.** $0.0374 for four answers, about **$0.009 an
+   answer**. The full 90-answer set is **roughly $0.85**, not the $4–5 estimated from the model's
+   list price. Adaptive thinking produced far less output than assumed. v1 is comfortably
+   affordable on the $6.79 balance.
+
+2. **The measurement contradicts the v0 prediction, and the prompt may be why.** `index.html`
+   predicts naive/Q2 as *"wrong, and invented … a confident list of five or six titles with
+   dates"*. What actually happened is a clean, honest abstention. That is a genuinely interesting
+   result — but the shared system prompt in `service/patterns/_generate.py` contains the line
+   *"The context contains no ratings, dates, page counts or shelf information. If the question
+   needs those, say that they are not in the context rather than estimating them."* **That
+   sentence arguably hands the model the abstention**, so the run may be measuring the prompt
+   rather than the pattern. This is Shirley's call, and it must be settled before the Q2 cell is
+   published:
+   - *Option A (recommended):* remove that sentence, keep only the general "use only the context
+     / never name a book that is not in the context" rules, and re-run. That tests whether the
+     pattern invents, which is what the site claims to measure.
+   - *Option B:* keep it and **say so on the page** — publish the prompt, and frame the cell as
+     "a well-prompted naive pipeline refuses; the failure the diagram predicts is a prompt away".
+   - Either way the prompt is identical for both patterns, so the naive-vs-rerank comparison is
+     unaffected. It is the "does RAG invent?" claim that is at stake.
+
+3. **The published latency is contaminated.** rerank/Q2 reports 53,390 ms, of which **49,747 ms
+   was `retrieve_ms` waiting on Voyage's 3-requests-per-minute free-tier limit**, not work. Do
+   **not** publish `ms` as latency. Either report `gen_ms` + `rerank_ms` and state that embedding
+   is throttled, or get the rate limit lifted and re-run. Honest figures from this pilot:
+   generation 2.8–4.1 s, rerank 0.35–0.58 s, retrieval ~0.25 s when not throttled.
+
+Minor: the `quoted_not_on_shelf` check produced one false positive — it flagged *"The book is not
+that long,"*, a phrase from Shirley's own note, as a possible invented title. The check is a
+prompt for a human, not a verdict; treat it that way, or tighten it to require title-case.
+
+### 10.2 The command that finishes v1
+
+```bash
+set -a; . ./.env; set +a           # both keys are already in .env, git-ignored, chmod 600
+.venv/bin/python eval/run.py --runs 1 --q Q1,Q2      # PILOT FIRST: 4 answers, ~$0.20
+```
+
+The index is already built, so start at the pilot. Only re-run `build_index.py` if you change the
+ingest, which changes the chunk hashes and re-embeds everything.
+
+Read the pilot's cost, multiply, and **only then** decide the full run:
+
+```bash
+.venv/bin/python eval/run.py --runs 5 --all-questions      # 90 answers, est. $4-5, ~45 min
+.venv/bin/python eval/grade.py  eval/results/v1-<date>.json
+#   -> v1-<date>-grading.md      Shirley reads this
+#   -> v1-<date>-verdicts.csv    Shirley fills the `final` column
+.venv/bin/python eval/export_replay.py eval/results/v1-<date>.json
+#   -> service/data/replay.json  committed; the live panel serves it
+```
+
+**Cost is now measured, not estimated:** about **$0.009 an answer**, so the full 90-answer set is
+**roughly $0.85**. The balance was $6.79 on 10 Sep 2026, so the five-run set is affordable.
+(The earlier $4-5 estimate was wrong by five times; see §10.1a.)
+
+### 10.3 Decisions taken this session
+
+- **Keys.** `ANTHROPIC_API_KEY` and `VOYAGE_API_KEY` are in `.env` (git-ignored, `chmod 600`).
+  Created through the browser with Shirley present; the values were piped from the clipboard
+  straight into `.env` and never printed into a transcript. The Anthropic key is scoped to the
+  Default workspace and **expires 10 Oct 2026**.
+- **Python.** The system Python is 3.9 and the `anthropic` 1.x SDK needs 3.10+. There is now a
+  **`.venv` on pyenv's 3.10.13** holding `anthropic` and `voyageai`. Use `.venv/bin/python` for
+  anything that calls a model. `service/api.py` and the ingest still run on plain `python3`, and
+  the 3.9 rules in `CLAUDE.md` still apply to them. `.claude/launch.json`'s `workbench` config now
+  points at the venv.
+- **Models.** `voyage-4` for embeddings, `rerank-3` for the reranker, `claude-opus-5` at its
+  defaults for generation. Voyage's current generation carries 200M free tokens; this index is
+  ~100k tokens, so **retrieval genuinely costs nothing** and the whole bill is the Opus calls.
+- **Reranker: a remote cross-encoder, not a local one.** The plan (§3.10) said a local
+  cross-encoder. Shirley chose Voyage's `rerank-3` instead: the same kind of model, no
+  two-gigabyte torch dependency in the Railway image. Still not an LLM, so §3.10's reason for
+  rejecting an LLM reranker is intact. The method page's stack table says so.
+- **The live panel replays; it does not call a model.** Shirley's choice. A live naive or rerank
+  call on a public page spends her money on every stranger's click and could disagree with the
+  trace printed above it. `service/data/replay.json` holds the measured run, and the panel labels
+  it "measured <date>, replayed, run N of 5". The forced SQL path stays genuinely live because a
+  query is free. **Consequence: the deployed service needs no model keys at all** - do not add
+  `anthropic` or `voyageai` to `requirements.txt`.
+- **Grading.** Shirley chose "a sheet with my proposed verdicts". `eval/grade.py` proposes a
+  verdict from the automatic checks only and labels it as the AI's; she writes `final`. §3.8 is
+  unchanged: **nothing reaches the site under a verdict she has not written.**
+- **Query-embedding cache.** Voyage allows 3 requests a minute on an account with no payment
+  method. The eval therefore caches a question's vector after its first run (`cache_query=True`
+  for runs 2+). Retrieval is deterministic, so this changes no answer, only wall-clock. Run 1 of
+  every cell is a real uncached call and **its latency is the one to publish**; every row carries
+  `query_embedding_cached`. Shirley declined to add a card; if that changes, the cache can go.
+
+### 10.4 What ingest found, and the mistake it caught
+
+- **The Kindle file never arrived, and it turned out not to be needed yet.** Ten Notion pages
+  already held pasted highlights, five of them raw `My Clippings.txt` dumps with separators,
+  locations and timestamps. `service/ingest/notion.py` now splits them out: **273 highlights, 256
+  with a real Kindle location, across 10 books**. Q1, the control question, has a real target a
+  version early.
+- **The mistake.** Those dumps were sitting inside `my_notes`, the field the site prints.
+  **236,000 of the 434,000 characters of "her notes" were verbatim book text.** Had v1 shipped
+  without this, the site would have published pages of copyrighted prose as Shirley's writing and
+  fed it to the index as her voice. Notes are now 243,000 characters of her own words, and the
+  book's words live in `highlights`, under the short-excerpt rule.
+- The splitter handles **three different shapes** Notion produced, which is why it looks
+  over-engineered: clippings with `==========` separators, clippings without them, and clippings
+  where Notion made the passage the *heading* and left only the metadata in the body. All three
+  are in `_classify` / `split_clippings`. If a fourth shape appears, add it there.
+- `MIN_HIGHLIGHT = 20` enforces §3.4's "clippings under 20 characters are dropped".
+  `dedupe_highlights` keeps the longest of any pair where one contains the other, which is what
+  Kindle produces when a highlight is extended.
+- **Rebuild order matters:** `build_db.py` first, then `build_index.py`. Changing the ingest
+  changes the chunk hashes, which re-embeds everything.
+
+### 10.5 Q1 has a real question now
+
+Q1 was a bracketed placeholder. It is now:
+
+> "Where did I read the line about leaving a movie theatre and realising it had been dark outside
+> for some time?"
+
+Answer: **Such a Fun Age** (Kiley Reid), Kindle location 2290-2293. Chosen because the phrasing is
+distinctive, it sits verbatim in exactly one chunk, and nothing else on the shelf is near it - a
+control question that fails only if retrieval is genuinely broken. `eval/questions.yaml` carries
+it with the passage as the reference. **Shirley has still not formally approved the question set**
+(HANDOFF §6.3); she should read `eval/questions.yaml` before the numbers are published.
+
+Every question now has an `expects:` list (the books that must reach the context) which is what
+`eval/run.py` scores `retrieval_hit` against. Q4, Q5, Q6 have none: they stay pending.
+
+### 10.6 New and changed files
+
+```
+service/config.py             NEW  keys, model names, prices, the Voyage rate limiter
+service/retrievers/vector.py  NEW  chunking, embedding, cosine search. Resumable, throttled
+service/retrievers/rerank.py  NEW  the cross-encoder call
+service/patterns/_generate.py NEW  the ONE prompt template + the ONE Claude call, shared
+service/patterns/naive.py     NEW  embed -> top-4 -> generate
+service/patterns/rerank.py    NEW  embed -> top-30 -> rerank -> top-4 -> generate
+service/ingest/build_index.py NEW  builds service/data/index.sqlite
+eval/run.py                   NEW  the runner. Calls the same answer() the site calls
+eval/grade.py                 NEW  the grading sheet + proposed verdicts
+eval/export_replay.py         NEW  run -> service/data/replay.json, excerpts truncated
+service/ingest/notion.py      CHG  the clippings splitter (see 10.4)
+service/ingest/build_db.py    CHG  highlights carry source/location/page/added_on
+service/answer.py             CHG  naive and rerank registered, imported lazily
+service/api.py                CHG  /ask takes {qid, pattern}; replays naive and rerank
+service/workbench.py          CHG  a button per route per question; runs patterns for real
+index.html                    CHG  live panel: pattern selector, verdict, cost, retrieved chunks
+how-its-built.html            CHG  §4 ingest numbers and the copyright find; stack table rows
+eval/questions.yaml           CHG  Q1 real; expects: on every ready question
+.claude/launch.json           CHG  workbench runs on .venv/bin/python
+.gitignore                    CHG  !service/data/replay.json
+```
+
+**`_generate.py` is the file that makes the comparison mean anything.** Naive and rerank differ
+only in which chunks reach it. Same model, same system prompt, same context format, same
+settings. If a future pattern gets its own prompt, the site's whole claim collapses - do not.
+
+### 10.7 What the index deliberately does not contain
+
+Only the passage text is embedded. Title and author ride along as **metadata** and are shown to
+the generator; no rating, date, page count or shelf is in any chunk. This is §3.5 made concrete,
+and it is why Q2, Q8 and Q9 have nothing for a similarity search to match on. It is also why Q1
+can be attributed: the chunk knows its book without the title being embedded.
+
+### 10.8 What is still unverified - do not write it into the site as fact
+
+1. ~~The pipeline has never produced a complete answer.~~ The pilot ran; see §10.1a. But **settle
+   the prompt question in §10.1a finding 2 before publishing the Q2 cell.**
+2. Every trace in `index.html`'s `R` for naive and rerank is **still a v0 prediction**. The
+   "predicted" labels (kicker, the `.note` under the explorer, the scorecard legend and
+   footnote) **must stay** until real traces replace them. §3.9 is non-negotiable.
+3. The method page's §7 version table still lists v1 as `soon`. Do not mark it done until the
+   run exists and Shirley has graded it.
+4. `how-its-built.html` states the ingest numbers as fact - those **are** verified, from
+   `build_db.py` and from the finished index (775 chunks, 55 books; the page says 55).
+5. `api.ragpatterns.com` is **still not deployed**. Railway remains Shirley's login step
+   (`DEPLOY.md`). The panel fails soft and says the service is unreachable, which is correct
+   behaviour, and the local API on :8791 proves the contract.
+
+### 10.9 Verified this session
+
+- `build_db.py` rebuilds cleanly: 479 books, 205 read, 125 rated, 369 tags, 273 highlights,
+  53 books with her own notes, 397 with a crowd average. **Zero verbatim book text left in
+  `my_notes`** (checked by query).
+- The local API answers `/health` and serves the SQL path live: Q2 returns exactly the three
+  reference books in **1-3 ms with zero model calls**.
+- The rewritten live panel renders, connects, greys out naive and rerank while no replay exists,
+  greys out non-ledger questions under the ledger route, and returns the correct Q2 rows on
+  click. No console errors.
+- Both API keys authenticate; `voyage-4`, `rerank-3` and `claude-opus-5` all answered a probe.
+
+### 10.10 Next session, in order
+
+1. ~~Finish the index~~ — done, 775 of 775.
+2. ~~Pilot~~ — done, 10 Sep 2026. Q1 correct on both patterns, Q2 abstained on both.
+   **Decide the prompt question first** (§10.1a finding 2): re-running with a more neutral prompt
+   is probably the honest version of this experiment, and it costs under a dollar.
+3. Check the balance, then the full run at the largest number of runs it affords.
+4. `eval/grade.py`, give Shirley the sheet, wait for her `final` column.
+5. Rewrite `R.naive` and `R.rerank` in `index.html` from the real traces - trace rows, answer,
+   verdict, why - dated **"September 2026"**, month and year only (§ honesty rule). Update the
+   `.note` under the explorer to say which rows are measured and which are still predicted.
+6. `export_replay.py`, commit `service/data/replay.json`.
+7. Method page §7: v1 `done`, with the date and the real numbers.
+8. Update the `v0` kicker on both pages only when Shirley says the version has shipped.
+9. One PR, the template checklist, Shirley merges. **Never merge, never push to main.**
