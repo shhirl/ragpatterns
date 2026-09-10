@@ -235,11 +235,11 @@
   <p class="kicker"><i>v1</i> · naive and rerank measured September 2026 · the other five are still predictions</p>
   <h1>RAG patterns, side by side. Tested on my own bookshelf.</h1>
   <p class="lede">Retrieval-augmented generation is not one technique any more. It is seven designs that solve seven different problems, and most teams pick one by accident. This page runs all seven on the same small, real knowledge base and the same nine questions, so the only thing that changes between columns is the architecture.</p>
-  <p>The knowledge base is my own bookshelf: a Goodreads export, my Kindle highlights, a list of who recommended what, and a few photographed pages. I chose it because I can tell a right answer from a plausible one in a second, which is the whole job when you evaluate retrieval, and because "it invented a book I never read" is the most legible failure a RAG system can have. Every trace below is a prediction of how each pipeline handles the question. Nothing is measured yet. <a href="how-its-built.html">How it's built</a> says what gets measured and when. The first real piece is already running: <a href="#live">ask the ledger ↓</a>.</p>
+  <p>The knowledge base is my own bookshelf: a Goodreads export, my Kindle highlights, a list of who recommended what, and a few photographed pages. I chose it because I can tell a right answer from a plausible one in a second, which is the whole job when you evaluate retrieval, and because "it invented a book I never read" is the most legible failure a RAG system can have. Two of the seven have now been run against the real shelf — eighty answers in September 2026, and the traces below are what they actually did. The other five are still predictions, and every cell says which it is. <a href="how-its-built.html">How it's built</a> says what gets measured and when. The service is live: <a href="#live">ask the ledger ↓</a>.</p>
   <div class="shelf">
     <div class="books" id="books"></div>
     <div class="plank"></div>
-    <div class="shelfcap"><span>height = predicted score out of 9 (correct 1, partial ½) · width = cost vs naive · both predicted, not measured</span><span>pick a spine to open its trace ↓</span></div>
+    <div class="shelfcap"><span>height = score out of 9 (correct 1, partial ½) · width = cost vs naive · naive and rerank measured, the other five predicted</span><span>pick a spine to open its trace ↓</span></div>
   </div>
 </div>
 
@@ -272,7 +272,7 @@
     <tr><td>Extracted graph</td><td>who wrote what, who recommended what, which books mention or argue with which, themes</td><td>built once by a model with a fixed schema, published as JSON so a missed edge is visible</td></tr>
   </table>
   <h3>The nine questions</h3>
-  <p>Six were planned, one per failure mode plus one that everything should get right. Three more came from asking my own shelf what I actually wanted to know: my favourites in a theme, my top themes, and my top themes by year. Each has a reference answer written before any pipeline runs, computed from the ledger where it can be. Q1, Q2 and Q3 name real books: the Kindle file never arrived, but five of my Notion pages turned out to hold pasted clippings, so the control question has a real target. The graded predictions are in the explorer below.</p>
+  <p>Six were planned, one per failure mode plus one that everything should get right. Three more came from asking my own shelf what I actually wanted to know: my favourites in a theme, my top themes, and my top themes by year. Each has a reference answer written before any pipeline runs, computed from the ledger where it can be. Q1, Q2 and Q3 name real books: the Kindle file never arrived, but five of my Notion pages turned out to hold pasted clippings, so the control question has a real target. The results are in the explorer below: measured for naive and rerank, still predicted for the other five.</p>
 </section>
 </div>
 
