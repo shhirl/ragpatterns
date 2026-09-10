@@ -4,9 +4,17 @@
 
 - id: Q1
   tests: a single quotation that sits in the index; the control every pattern should pass
-  status: pending Kindle highlights (next week)
-  question: "Where did I read the line about [a phrase from one of my highlights]?"
-  reference: "The book and the highlight, with its location, quoted back. Nothing else."
+  status: >-
+    ready (10 Sep 2026). The Kindle file has still not arrived, but five of Shirley's Notion pages
+    turned out to hold pasted My Clippings dumps; the ingest now splits them into 256 highlights
+    with real Kindle locations, so the control question has a real target a version early.
+  question: "Where did I read the line about leaving a movie theatre and realising it had been dark outside for some time?"
+  reference: |
+    Such a Fun Age (Kiley Reid), Kindle location 2290-2293, the passage quoted back: "After awkward
+    and stunted good-byes inside the Chamberlain house, Emira had all those feelings of leaving a
+    movie theater and realizing that it was dark outside and that it had been for some time."
+    Nothing else. Naming any other book is wrong; the phrase appears in exactly one chunk.
+  expects: ["Such a Fun Age"]
 
 - id: Q2
   tests: a filter over the ledger; numbers and dates have no meaning to a similarity search
@@ -17,6 +25,7 @@
     A Different Drummer (William Melvin Kelley, 245 pages), The Color Purple (Alice Walker, 287 pages).
     Any other title is wrong; the four 2024 books Shirley chose not to rate can never appear.
   sql: see service/patterns/sql_forced.py
+  expects: ["I Who Have Never Known Men", "A Different Drummer", "The Color Purple"]
 
 - id: Q3
   tests: "contradicting sources about one book: her low rating and notes vs the crowd's average"
@@ -26,6 +35,7 @@
     Shirley's own reason, from her Notion notes on the book, stated as hers, ranked above any admiring
     passages and above the crowd figure (Open Library average 4.34). If her notes give no reason, say so
     rather than invent one.
+  expects: ["The Fellowship of the Ring"]
 
 - id: Q4
   tests: a relationship between two books, held in neither book's chunks
@@ -61,6 +71,7 @@
     "favourite" means my_rating = 5 (Lifechanging counts as five). "About race" means her tag at v1
     and the graph's ABOUT edge at v2; the site should say which one answered.
   sql: "SELECT b.title, b.author FROM books b JOIN tags t ON t.book_id=b.id WHERE t.tag='Race' AND b.my_rating=5 AND b.shelf='read'"
+  expects: ["The Nickel Boys", "The Underground Railroad", "The Bluest Eye", "Friday Black"]
 
 - id: Q8
   tests: >-

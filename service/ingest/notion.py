@@ -31,7 +31,8 @@ class Review:
     notes_status: str
     notes: str = ''            # free text at the top of the page, before the template headings
     sections: dict = field(default_factory=dict)   # heading -> text, her own words
-    highlights: list = field(default_factory=list) # passages copied from the book: quote only short excerpts
+    highlights: list = field(default_factory=list) # dicts {text, page, location, added_on}: the book's
+                                                   # own words. Index them; quote only short excerpts.
     page_id: str = ''
 
 
@@ -75,22 +76,107 @@ def _body(md: str):
 
 QUOTE_HEADS = ('highlight', 'quote', 'my top 3 quotes')
 
+# --- Kindle clippings pasted into a Notion page -------------------------------------------
+# Five pages hold a raw "My Clippings.txt" dump under a "Highlights" bullet: a separator line
+# of '=', the book's title, a metadata line, then the passage. Those are the book's own words.
+# They belong in `highlights` (indexed, quoted as short excerpts with attribution) and must
+# never reach `my_notes`, which the site prints. Before this split, 236k of the 434k characters
+# of "her notes" were verbatim book text.
+CLIP_SEP = re.compile(r'^\s*={5,}\s*$', re.M)
+CLIP_META = re.compile(r'^\s*-?\s*Your\s+(?:Highlight|Note|Bookmark)\b(?P<rest>.*)$', re.I | re.M)
+MIN_HIGHLIGHT = 20          # HANDOFF §3.4: clippings under 20 characters are dropped
+_DUMP_HEADS = ('highlights', 'quotes', 'notes', '')
+
+
+def _clip_meta(rest: str):
+    page = re.search(r'\bon page\s+([\w\-]+)', rest, re.I)
+    loc = re.search(r'\blocation\s+([\d\-]+)', rest, re.I)
+    when = re.search(r'\bAdded on\s+(.+?)\s*$', rest, re.I)
+    return (page.group(1) if page else None, loc.group(1) if loc else None, when.group(1) if when else None)
+
+
+def looks_like_clippings(text: str) -> bool:
+    """One "Your Highlight ..." metadata line is enough. Half of Shirley's pasted dumps have the
+    "==========" separators Kindle writes and half do not, so the metadata line is the anchor."""
+    return bool(CLIP_META.search(text or ''))
+
+
+def split_clippings(text: str):
+    """-> (her own prose that was mixed in, [highlight dicts]). Order is preserved.
+
+    A pasted dump repeats: title header, metadata line, passage. The passage runs from the
+    metadata line to the next one; the non-blank line directly above any metadata line is that
+    clipping's title header, not prose, so it is dropped wherever it appears."""
+    lines = (text or '').split('\n')
+    metas = [i for i, ln in enumerate(lines) if CLIP_META.match(ln)]
+    if not metas:
+        return (text or '').strip(), []
+    headers = set()
+    for i in metas:
+        j = i - 1
+        while j >= 0 and not lines[j].strip():
+            j -= 1
+        if j >= 0 and not CLIP_META.match(lines[j]) and not CLIP_SEP.match(lines[j]):
+            headers.add(j)
+
+    def clean(lo, hi):
+        return [ln for j, ln in enumerate(lines[lo:hi], lo)
+                if j not in headers and not CLIP_SEP.match(ln)]
+
+    out = []
+    for k, i in enumerate(metas):
+        end = metas[k + 1] if k + 1 < len(metas) else len(lines)
+        body = re.sub(r'\s+', ' ', '\n'.join(clean(i + 1, end))).strip()
+        body = re.sub(r'^[#>*\-\s]+', '', body)     # Notion exports a clipping as a heading or a quote
+        if len(body) >= MIN_HIGHLIGHT:
+            page, loc, when = _clip_meta(CLIP_META.match(lines[i]).group('rest'))
+            out.append({'text': body, 'page': page, 'location': loc, 'added_on': when})
+    prose = [ln for ln in clean(0, metas[0])
+             if ln.strip().lower().lstrip('-* \t').strip() not in _DUMP_HEADS]
+    return '\n'.join(prose).strip(), out
+
+
+def dedupe_highlights(hs: list) -> list:
+    """Kindle writes a new clipping every time a highlight is extended, so the short version is
+    a prefix of the long one. Keep the longest of any containing pair, in first-seen order."""
+    ranked = sorted(enumerate(hs), key=lambda p: -len(p[1]['text']))
+    keep = []
+    for i, h in ranked:
+        if not any(h['text'] in k['text'] for _, k in keep):
+            keep.append((i, h))
+    return [h for _, h in sorted(keep)]
+
 
 def _classify(sections: dict):
     """Split page sections into her own notes and copied book text.
-    A heading that is itself a long sentence is a pasted passage (Notion exports Kindle-synced
-    highlights as headings); so is anything under a Highlights/Quotes heading. Those are
-    copyrighted text: the site may quote short excerpts with attribution, never the passage."""
+    A pasted Kindle dump is split apart clipping by clipping. A heading that is itself a long
+    sentence is a pasted passage (Notion exports Kindle-synced highlights as headings); so is
+    anything under a Highlights/Quotes heading. Those are copyrighted text: the site may quote
+    short excerpts with attribution, never the passage."""
     notes, highlights = {}, []
     for head, text in sections.items():
         h = head.lower()
-        if len(head.split()) > 12:
-            highlights.append(head + ('\n' + text if text else ''))
+        if looks_like_clippings(text):
+            prose, clips = split_clippings(text)
+            if clips:
+                highlights.extend(clips)
+                if prose:
+                    notes[head or 'Notes'] = prose
+            else:
+                # Notion also exports a Kindle-synced highlight as a heading, leaving only the
+                # metadata line in the body. Then the heading is the passage.
+                page, loc, when = _clip_meta(CLIP_META.search(text).group('rest'))
+                highlights.append({'text': re.sub(r'^[#>*\-\s]+', '', head.strip()),
+                                   'page': page, 'location': loc, 'added_on': when})
+        elif len(head.split()) > 12:
+            highlights.append({'text': head + ('\n' + text if text else ''), 'page': None, 'location': None, 'added_on': None})
         elif any(q in h for q in QUOTE_HEADS):
-            highlights.extend([x.strip() for x in re.split(r'\n\s*\n', text) if x.strip()])
+            highlights.extend({'text': x.strip(), 'page': None, 'location': None, 'added_on': None}
+                              for x in re.split(r'\n\s*\n', text) if x.strip())
         else:
             notes[head] = text
-    return notes, highlights
+    highlights = [x for x in highlights if len(x['text'].strip()) >= MIN_HIGHLIGHT]
+    return notes, dedupe_highlights(highlights)
 
 
 def _drop_boilerplate(rows):
@@ -134,6 +220,9 @@ def load(root: str = 'corpus/notion') -> list:
                 pid, md = cands[0]
                 notes, sections = _body(open(md, encoding='utf-8').read())
             sections, highlights = _classify(sections)
+            if looks_like_clippings(notes):      # a dump can also sit above the first heading
+                notes, loose = split_clippings(notes)
+                highlights = dedupe_highlights(highlights + loose)
             date = r.get('Date Finished', '').strip().replace('/', '-') or None
             fp = r.get('First Published', '').strip()
             out.append(Review(name=name, authors=authors, rating=rating,

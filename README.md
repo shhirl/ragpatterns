@@ -13,25 +13,56 @@ No framework, no build step, no external requests. Each page is one self-contain
 
 ## Status
 
-**v0 (9 Sep 2026): predicted traces.** The corpus is chosen (Goodreads export + Kindle highlights + a hand-written recommendations list + a few photos), the nine questions are fixed (six planned, three added from her own shelf), and all 63 pattern × question cells are traced by prediction. No pipeline has run. Every cell is labelled as a prediction; `how-its-built.html#versions` says what becomes a measurement and when.
+**v0 (September 2026): predicted traces.** The nine questions are fixed and all 63 pattern × question cells are traced by prediction. Every cell is labelled as a prediction; `how-its-built.html#versions` says what becomes a measurement and when.
+
+**v1 is built but not yet measured (10 Sep 2026).** The ledger, the read-only SQL tool, the vector index, the cross-encoder reranker and two patterns — naive and retrieve-and-rerank — all exist behind the same `answer()` interface. The measurement run has not been made, so **every trace on the site is still a prediction** and still says so. `HANDOFF.md` §10 is the full record: what was decided, what is verified, and the exact commands that finish v1.
 
 The corpus itself (the curated exports) is not in the repo and never will be. The photos, the extracted graph, the question set and every result CSV will be.
 
-## Build the ledger (v1)
+## Build it (v1)
+
+The ingest and the API run on the system Python. Anything that calls a model needs the
+virtualenv, because the `anthropic` SDK requires Python 3.10+ and this machine's default is 3.9:
 
 ```bash
-python3 service/ingest/build_db.py
+python3 -m venv .venv && .venv/bin/pip install anthropic voyageai
 ```
 
-Reads the git-ignored exports in `corpus/` and writes `service/data/library.sqlite`, printing the counts that the method page publishes. `service/answer.py` is the one interface every pattern and the eval call.
+Put `ANTHROPIC_API_KEY` and `VOYAGE_API_KEY` in `.env` (git-ignored). Then:
+
+```bash
+python3 service/ingest/build_db.py            # corpus/ -> service/data/library.sqlite
+.venv/bin/python service/ingest/build_index.py  # -> service/data/index.sqlite (resumable)
+```
+
+Both print the counts the method page publishes. Rebuild in that order: changing the ingest
+changes the chunk hashes and re-embeds the index. `service/answer.py` is the one interface every
+pattern, the eval and the site call.
+
+## Measure it
+
+```bash
+.venv/bin/python eval/run.py --runs 1 --q Q1,Q2                  # pilot: 4 answers, cents
+.venv/bin/python eval/run.py --runs 5 --all-questions            # the real run
+.venv/bin/python eval/grade.py eval/results/v1-<date>.json       # the sheet Shirley grades
+.venv/bin/python eval/export_replay.py eval/results/v1-<date>.json
+```
+
+The runner never grades and never hides a bad run: it writes every answer, its trace, its cost
+and a set of automatic checks, and Shirley writes the verdicts. `export_replay.py` produces
+`service/data/replay.json`, which is what the site's live panel serves — the measured run,
+replayed with its date, rather than a model call charged to Shirley on every visitor's click.
 
 ## See and interact with the system (local workbench)
 
 ```bash
-python3 service/workbench.py
+.venv/bin/python service/workbench.py
 ```
 
-Then open http://localhost:8790. The nine questions as buttons (the ledger ones run through `answer()`; the others say what they wait for), a free SQL box against the read-only tool, and the full `answer()` result. Local only, never deployed.
+Then open http://localhost:8790. Each question gets a button per route that can answer it — the
+ledger's SQL path, naive, rerank — plus a free SQL box against the read-only tool and the full
+`answer()` result. Unlike the public panel, naive and rerank really run here: it is a local page
+and a click costs about half a cent. Local only, never deployed, never linked from the pages.
 
 ## Run locally
 
