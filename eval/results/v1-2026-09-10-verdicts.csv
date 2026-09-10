@@ -1,17 +1,17 @@
 pattern,qid,proposed,final,note
 naive,Q1,good,,"every book the reference names was retrieved in every run, nothing outside the context is named"
-naive,Q2,wrong,,the book the reference names never reached the context: retrieval missed it in every run
-naive,Q3,wrong,,the book the reference names never reached the context: retrieval missed it in every run
-naive,Q4,,,no automatic check settles this one: it needs reading
-naive,Q6,partial,,"says plainly that the context cannot answer. Right about itself, and no invention, but it is not the answer: judge whether ""I cannot"" is the correct answer here"
-naive,Q7,wrong,,the book the reference names never reached the context: retrieval missed it in every run
-naive,Q8,partial,,"the five runs do not name the same books, so at most one of them can be right"
-naive,Q9,,,no automatic check settles this one: it needs reading
+naive,Q2,partial,,says in all 5 runs that the context cannot answer as asked; 4 of them then offer what the notes do hold. Partial by your ruling - read whether the substitute answer is any good
+naive,Q3,partial,,says in all 5 runs that the context cannot answer as asked; 4 of them then offer what the notes do hold. Partial by your ruling - read whether the substitute answer is any good
+naive,Q4,,,"4 of 5 runs refuse and the rest answer, so the cell is not one thing: read whether the answers are right and whether the refusals should have been"
+naive,Q6,partial,,says in all 5 runs that the context cannot answer as asked; 5 of them then offer what the notes do hold. Partial by your ruling - read whether the substitute answer is any good
+naive,Q7,partial,,says in all 5 runs that the context cannot answer as asked; 5 of them then offer what the notes do hold. Partial by your ruling - read whether the substitute answer is any good
+naive,Q8,partial,,says in all 5 runs that the context cannot answer as asked; 5 of them then offer what the notes do hold. Partial by your ruling - read whether the substitute answer is any good
+naive,Q9,partial,,says in all 5 runs that the context cannot answer as asked; 4 of them then offer what the notes do hold. Partial by your ruling - read whether the substitute answer is any good
 rerank,Q1,good,,"every book the reference names was retrieved in every run, nothing outside the context is named"
-rerank,Q2,wrong,,the book the reference names never reached the context: retrieval missed it in every run
-rerank,Q3,wrong,,the book the reference names never reached the context: retrieval missed it in every run
-rerank,Q4,partial,,"the five runs do not name the same books, so at most one of them can be right"
-rerank,Q6,partial,,"says plainly that the context cannot answer. Right about itself, and no invention, but it is not the answer: judge whether ""I cannot"" is the correct answer here"
-rerank,Q7,wrong,,the book the reference names never reached the context: retrieval missed it in every run
-rerank,Q8,,,no automatic check settles this one: it needs reading
-rerank,Q9,partial,,"the five runs do not name the same books, so at most one of them can be right"
+rerank,Q2,partial,,says in all 5 runs that the context cannot answer as asked; 4 of them then offer what the notes do hold. Partial by your ruling - read whether the substitute answer is any good
+rerank,Q3,partial,,says in all 5 runs that the context cannot answer as asked; 1 of them then offer what the notes do hold. Partial by your ruling - read whether the substitute answer is any good
+rerank,Q4,,,"3 of 5 runs refuse and the rest answer, so the cell is not one thing: read whether the answers are right and whether the refusals should have been"
+rerank,Q6,partial,,says in all 5 runs that the context cannot answer as asked; 5 of them then offer what the notes do hold. Partial by your ruling - read whether the substitute answer is any good
+rerank,Q7,partial,,says in all 5 runs that the context cannot answer as asked; 5 of them then offer what the notes do hold. Partial by your ruling - read whether the substitute answer is any good
+rerank,Q8,partial,,says in all 5 runs that the context cannot answer as asked; 5 of them then offer what the notes do hold. Partial by your ruling - read whether the substitute answer is any good
+rerank,Q9,partial,,says in all 5 runs that the context cannot answer as asked; 5 of them then offer what the notes do hold. Partial by your ruling - read whether the substitute answer is any good

@@ -13,41 +13,37 @@ grade. Nothing reaches the site under `final` until she has written it.
 """
 import argparse, collections, csv, json, os, re, sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from checks import abstained as _abstained, hedged as _hedged, named_outside, norm as _norm  # noqa: E402
+from run import ledger_titles                                              # noqa: E402
 
-def _norm(t):
-    return re.sub(r'[^a-z0-9 ]', ' ', (t or '').lower())
+_TITLES = None
 
 
-# Titles that are also something else on this particular shelf. "Shirley" is Charlotte Bronte's
-# novel and it is also who the answer is talking to, so an answer that says "Shirley, your notes"
-# is not naming a book. There is no clever rule for this; it is one book, listed by hand.
-AMBIGUOUS = {'Shirley'}
+def _titles():
+    global _TITLES
+    if _TITLES is None:
+        _TITLES = ledger_titles()
+    return _TITLES
 
 
 def outside(trace):
-    """Books named that were not in the context, after two false positives are removed.
+    """Books named that were not in the context, recomputed from the recorded answer.
 
-    First: a title the question itself names. Q3 asks about The Fellowship of the Ring by name,
-    so an answer that repeats it has invented nothing. Second: a short title that is also
-    ordinary English. "One Day" is on the shelf and is also two words in any sentence about a
-    day, so titles of three words or fewer must appear with their own capitalisation.
-
-    Both filters live here as well as in the runner, so a run recorded before they existed still
-    grades correctly."""
-    q = ' ' + _norm(trace.get('question')) + ' '
-    text = trace.get('answer') or ''
-    out = []
-    for b in trace['checks']['named_outside_context']:
-        bare = re.sub(r'\s*\(.*?\)\s*$', '', b).strip()
-        if bare in AMBIGUOUS:
-            continue
-        if (' ' + _norm(bare).strip() + ' ') in q:
-            continue
-        if len(_norm(bare).split()) <= 3 and not re.search(
-                r'(?<![A-Za-z])%s(?![A-Za-z])' % re.escape(bare), text):
-            continue
-        out.append(b)
+    Recomputed rather than read back, because a check that turns out to be wrong has to reach the
+    runs measured before the fix. See eval/checks.py."""
+    _, out = named_outside(trace.get('answer'), trace.get('context'), _titles(), trace.get('question'))
     return out
+
+
+def refused(trace):
+    """Did this run say plainly that it could not answer? Recomputed, for the same reason."""
+    return _abstained(trace.get('answer'))
+
+
+def hedge(trace):
+    """A refusal that then answers a nearby question - still a refusal, a different shape."""
+    return _hedged(trace.get('answer'), trace.get('context'))
 
 
 def consistent(answers):
@@ -64,7 +60,7 @@ def propose(qid, answers, ref):
     # title is not: the quoted-phrase check fires on any short quotation, including the exact
     # highlight a correct answer is supposed to quote. It stays in the sheet as something to read.
     invented = any(outside(a) for a in answers)
-    abstained = sum(1 for c in ch if c['abstained'])
+    abstained = sum(1 for a in answers if refused(a))
     hits = [c['retrieval_hit'] for c in ch if c['retrieval_hit'] is not None]
     want = ch[0]['retrieval_expected']
     same, _ = consistent(answers)
@@ -72,11 +68,24 @@ def propose(qid, answers, ref):
     if invented:
         return 'wrong', 'names a book that was not in its context: %s' % ', '.join(
             sorted({b for a in answers for b in outside(a)}))
-    if want and hits and max(hits) == 0:
-        return 'wrong', 'the book the reference names never reached the context: retrieval missed it in every run'
+    # Shirley's ruling, 10 Sep 2026: "I can't answer that" is partial. It sits above the
+    # retrieval-miss rule on purpose. A pattern that never retrieved the book and then said so
+    # plainly has failed at retrieval and been honest about it, and honest is not wrong. A
+    # pattern that never retrieved the book and answered anyway is the one that is wrong.
     if abstained == len(ch):
-        return 'partial', ('says plainly that the context cannot answer. Right about itself, and no invention, '
-                           'but it is not the answer: judge whether "I cannot" is the correct answer here')
+        h = sum(1 for a in answers if hedge(a))
+        if h:
+            return 'partial', ('says in all %d runs that the context cannot answer as asked; %d of them then '
+                               'offer what the notes do hold. Partial by your ruling - read whether the '
+                               'substitute answer is any good' % (len(ch), h))
+        return 'partial', ('refuses flatly in all %d runs: says the context cannot answer, and names nothing '
+                           'outside it. Partial by your ruling - honest, but not the answer' % len(ch))
+    if want and hits and max(hits) == 0:
+        return 'wrong', ('answered without the source: the book the reference names never reached the context '
+                         'in any run, and %d of %d runs answered anyway' % (len(ch) - abstained, len(ch)))
+    if abstained:
+        return '', ('%d of %d runs refuse and the rest answer, so the cell is not one thing: read whether the '
+                    'answers are right and whether the refusals should have been' % (abstained, len(ch)))
     if want and hits and min(hits) == want:
         return 'good', 'every book the reference names was retrieved in every run, nothing outside the context is named'
     if want and hits and max(hits) > 0:

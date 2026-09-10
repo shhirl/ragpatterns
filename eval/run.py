@@ -35,9 +35,9 @@ def ready(q):
 
 
 # --- automatic checks --------------------------------------------------------------------
-def _norm(t):
-    t = re.sub(r'\s*\(.*?\)\s*$', '', t or '')          # drop "(The Lord of the Rings, #1)"
-    return re.sub(r'[^a-z0-9 ]', '', t.lower()).strip()
+# They live in eval/checks.py so that grade.py computes exactly the same thing from a recorded
+# run. See that file for why the filters are what they are.
+from checks import checks, norm as _norm       # noqa: E402
 
 
 def ledger_titles(db=None):
@@ -45,69 +45,6 @@ def ledger_titles(db=None):
     out = [(r[0], _norm(r[0])) for r in con.execute('SELECT title FROM books')]
     con.close()
     return out
-
-
-QUOTED = re.compile(r'[""“]([^""”]{4,80})[""”]|\*([^*\n]{4,80})\*')
-
-
-# Titles that are also something else on this shelf: "Shirley" is Charlotte Bronte's novel and
-# also the person the answer is addressing. One book, listed by hand; see grade.py, which holds
-# the same list so an older run still grades correctly.
-AMBIGUOUS = {'Shirley'}
-
-
-def _really_named(orig, norm, text):
-    """Guard against short titles that are also ordinary English.
-
-    "One Day" is a book on the shelf and also two words that appear in any sentence about a day.
-    For titles of three words or fewer, insist on the title's own capitalisation in the raw
-    answer, so `One Day` counts and `one day the narrator` does not. Longer titles are safe
-    enough on the lowercase match, and this way a title in italics or quotes still counts.
-    """
-    bare = re.sub(r'\s*\(.*?\)\s*$', '', orig or '').strip()
-    if bare in AMBIGUOUS:
-        return False
-    if len(norm.split()) > 3:
-        return True
-    return re.search(r'(?<![A-Za-z])%s(?![A-Za-z])' % re.escape(bare), text or '') is not None
-
-
-def checks(text, context, expects, titles, question=''):
-    """Three things a machine can settle, so Shirley only has to judge the answer itself."""
-    low = ' ' + re.sub(r'[^a-z0-9 ]', ' ', (text or '').lower()) + ' '
-    named = [orig for orig, n in titles
-             if n and len(n) > 6 and (' ' + n + ' ') in low and _really_named(orig, n, text)]
-    in_context = {c.get('id') for c in (context or [])}
-    # A title the question itself names is not an invention: Q3 asks about The Fellowship of the
-    # Ring by name, so repeating it back proves nothing either way.
-    qlow = ' ' + re.sub(r'[^a-z0-9 ]', ' ', (question or '').lower()) + ' '
-    from_question = {orig for orig, n in titles if n and len(n) > 6 and (' ' + n + ' ') in qlow}
-    outside = sorted(set(named) - set(in_context) - from_question)
-    hit = None
-    if expects:
-        want = [_norm(e) for e in expects]
-        got = [_norm(c.get('id') or '') for c in (context or [])]
-        hit = sum(1 for w in want if any(w and w in g for g in got))
-    # a title-shaped phrase in quotes that matches nothing on the shelf: a candidate invention
-    invented = []
-    for m in QUOTED.finditer(text or ''):
-        cand = _norm(m.group(1) or m.group(2) or '')
-        if cand and len(cand.split()) <= 8 and not any(cand in n or n in cand for _, n in titles if n):
-            invented.append((m.group(1) or m.group(2)).strip())
-    # contractions matter here: the pilot's two clean refusals both said "can't answer", which an
-    # earlier version of this pattern missed and recorded as a non-abstention.
-    abstained = bool(re.search(r"\b(?:can'?t|cannot|unable to|couldn'?t)\s+(?:answer|tell|say|determine)"
-                               r"|\b(?:is |are |it'?s )?not in (?:the |these |my )?(?:context|notes)"
-                               r"|\bdoes(?:n'?t| not) (?:contain|include|record|have)"
-                               r"|\bdo(?:n'?t| not) (?:contain|include|record|have)"
-                               r"|\bno (?:ratings|dates|page|star)"
-                               r"|\bisn'?t (?:in the context|here)"
-                               r"|\bnothing (?:was )?retrieved"
-                               r"|\bnot enough (?:information|context)",
-                               (text or '').lower()))
-    return {'books_named': named, 'named_outside_context': outside,
-            'retrieval_hit': hit, 'retrieval_expected': len(expects or []),
-            'quoted_not_on_shelf': invented, 'abstained': abstained}
 
 
 # --- the run -----------------------------------------------------------------------------
@@ -184,6 +121,12 @@ def main():
                     rec.update({'ok': 0, 'answer': '', 'error': '%s: %s' % (type(e).__name__, e)})
                     print('  [%d/%d] %-7s %s run %d  FAILED %s' % (n, total, pattern, q['id'], run, e), flush=True)
                 rows.append(rec)
+
+    if not rows:
+        # An empty run must never touch the files: `--runs 0` once wrote a 0-row CSV over a
+        # measurement that had cost an hour and a dollar. It was in git; that was luck.
+        print('nothing was run, so nothing was written')
+        return
 
     if a.merge and os.path.exists(json_path):
         # Voyage's free tier can take a cell out mid-run. Re-running just that cell and merging
