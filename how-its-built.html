@@ -40,6 +40,7 @@
   table{width:100%;border-collapse:collapse;font-family:var(--sans);font-size:14px;margin:8px 0 4px}
   th{text-align:left;font-weight:600;padding:8px 6px;border-bottom:1px solid var(--ink);vertical-align:bottom}td{padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
   code{font-family:var(--mono);font-size:.88em;background:var(--soft);padding:1px 5px}
+  .prompt{font-family:var(--mono);font-size:12.5px;line-height:1.55;background:var(--soft);border-left:3px solid var(--ink);padding:12px 14px;margin:10px 0;white-space:pre-wrap;overflow-x:auto}
   .small{font-family:var(--sans);font-size:13px;color:var(--mute)}
   .note{font-family:var(--sans);font-size:13px;color:var(--mute);border:1px dashed #d9d5cb;padding:8px 12px;margin:10px 0}
   .diag{margin:18px 0;font-family:var(--sans)}.diag svg{width:100%;height:auto;display:block}
@@ -191,7 +192,7 @@
   <div class="diag"><svg viewBox="0 0 720 150" role="img" aria-label="The eval loop">
     <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1a1a1a"/></marker></defs>
     <g font-size="12" fill="#1a1a1a" font-family="-apple-system,Inter,Arial,sans-serif">
-      <rect x="10" y="45" width="120" height="60" fill="#f3f1ea" stroke="#1a1a1a"/><text x="70" y="70" text-anchor="middle">fixed question set</text><text x="70" y="88" text-anchor="middle" fill="#7a7568">6 questions, referenced</text>
+      <rect x="10" y="45" width="120" height="60" fill="#f3f1ea" stroke="#1a1a1a"/><text x="70" y="70" text-anchor="middle">fixed question set</text><text x="70" y="88" text-anchor="middle" fill="#7a7568">9 questions, referenced</text>
       <line x1="132" y1="75" x2="168" y2="75" stroke="#1a1a1a" marker-end="url(#ar)"/>
       <rect x="172" y="45" width="120" height="60" fill="#f3f1ea" stroke="#1a1a1a"/><text x="232" y="70" text-anchor="middle">run 5× per pattern</text><text x="232" y="88" text-anchor="middle" fill="#7a7568">same model, same prompt</text>
       <line x1="294" y1="75" x2="330" y2="75" stroke="#1a1a1a" marker-end="url(#ar)"/>
@@ -200,6 +201,21 @@
       <rect x="496" y="45" width="120" height="60" fill="#1a1a1a"/><text x="556" y="70" text-anchor="middle" fill="#fff">publish the grid</text><text x="556" y="88" text-anchor="middle" fill="#c9c5bb">bad cells included</text>
       <path d="M616 75 h60 v60 H70 v-28" fill="none" stroke="#1f5e4e" stroke-width="2" marker-end="url(#ar)"/><text x="360" y="128" text-anchor="middle" fill="#7a7568">same questions, same grid, every version</text>
     </g></svg></div>
+  <h3>The prompt every pattern shares</h3>
+  <p>Every pattern on this page is given the same system prompt, the same context format, the same model and the same settings. Only the chunks differ. That is the whole basis of the comparison, so here it is, verbatim:</p>
+  <div class="prompt">You answer questions about Shirley&#x27;s personal library, using only the CONTEXT below.
+
+The context holds two kinds of text: passages she highlighted in a book (the book&#x27;s words) and
+notes she wrote about a book (her words). Each is labelled with its book and author.
+
+Rules:
+- Use only the CONTEXT. Do not use anything you know about these books from elsewhere.
+- Never name a book that does not appear in the CONTEXT.
+- If the CONTEXT cannot answer the question, say so plainly and say what is missing. Do not
+  guess, and do not fill a gap with a plausible answer.
+- When you quote, quote exactly and name the book.
+- Answer in a few sentences. No preamble.</div>
+  <p>It was one sentence longer until the first pilot run. The removed line told the model that the context held no ratings, dates or page counts &mdash; which is true, but it is also most of the answer to the ledger questions, and a prompt that names the missing field is measuring itself rather than the pattern. It came out, the run was done again, and the patterns still refused rather than inventing. That refusal is theirs, not the prompt's.</p>
   <h3>What gets recorded per answer</h3>
   <div class="tw"><table>
     <tr><th>measure</th><th>how</th><th>why it matters</th></tr>
