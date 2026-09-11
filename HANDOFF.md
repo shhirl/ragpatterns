@@ -575,6 +575,11 @@ lands — restate it, or re-grade the predictions.
    **Until PR #19 merges the service is serving `main`, which has no `replay.json`, so only the
    SQL route answers and naive/rerank return 404.** Merging fixes that by itself: Railway
    redeploys on push to main. Full record in `DEPLOY.md`.
-4. `eval/questions.yaml` still has not been formally approved (§6.3, §10.5).
+4. ~~`eval/questions.yaml` still has not been formally approved~~ — **approved 11 Sep 2026**, and
+   the file says so. Approved *after* v1 measured and shipped, which is the wrong order: §6.3 says
+   the set is approved before anything is measured. Nothing in the file changed between the run
+   and the approval, so the v1 numbers stand. The set is frozen now — adding a question is allowed
+   and must be dated; editing or removing one invalidates the comparison with every published
+   version.
 5. The kicker on both pages now reads **v1**. Shirley has not said the word "shipped"; if she
    would rather it stayed v0 until she merges, that is a one-line revert.

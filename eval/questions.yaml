@@ -1,5 +1,17 @@
 # The fixed questions and their reference answers (six planned; Q7, Q8, Q9 added by Shirley on 10 Sep 2026: a join, an aggregate, an aggregate over time). Written before any pipeline runs.
-# Status per question: ready | pending (what it waits for). Shirley approves this file before v1 measures anything.
+# Status per question: ready | pending (what it waits for).
+#
+# APPROVED by Shirley, 11 September 2026. The set is frozen: the point of a fixed question set is
+# that the only thing moving the grid between versions is the change made to the pipeline, so a
+# question's wording and its reference answer do not change after this line. Adding a question is
+# allowed and must be dated; editing or removing one invalidates the comparison with every
+# version already published.
+#
+# Recorded honestly: the original rule (HANDOFF §6.3) was that this file is approved BEFORE
+# anything is measured. It was not. v1 ran on 10 September and shipped to the site the same
+# evening; the approval is the next day and therefore retroactive. Nothing in the file changed
+# between the run and the approval, so the v1 numbers stand - but the order was wrong, and v2
+# should not repeat it.
 # Dates on the site are month + year; exact dates here are fine, they are not published.
 
 - id: Q1
